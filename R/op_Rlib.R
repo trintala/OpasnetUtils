@@ -355,12 +355,20 @@ setClass(
 setClass(
 	"ovariable", 
 	representation(
-		name         = "character",
-		output       = "data.frame", 
-		data         = "data.frame", 
-		marginal     = "vector", 
-		formula      = "function", 
-		dependencies = "data.frame"
+		name			= "character",
+		output			= "data.frame", 
+		data			= "data.frame", 
+		marginal		= "logical", 
+		formula			= "function", 
+		dependencies	= "data.frame"
+	),
+	prototype = prototype(
+		name = character(),
+		output = data.frame(),
+		data = data.frame(),
+		marginal = logical(),
+		formula = function(...){0},
+		dependencies = data.frame()
 	)
 )
 
