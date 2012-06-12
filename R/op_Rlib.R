@@ -1,5 +1,3 @@
-n <- 5
-
 # APPLY.DECISIONS ############## apply.decisions takes a decision table and applies that to an assessment.
 ## dec is a decision data.frame that must have columns Decision, Option, Variable, Cell, Change, Result. It can have several variables.
 apply.decisions <- function(assessment) {
@@ -819,7 +817,7 @@ EvalOutput <- function(variable, ...) {
 	#}
 	b <- variable@formula(variable@dependencies)
 	colnames(b)[colnames(b) == "Result"] <- "Formula"
-	if (b == 0) {return(a)
+	if (b == 0) return(a)
 	if (nrow(variable@data)==0) return(b)
 	return(
 		melt(
