@@ -816,7 +816,7 @@ Fetch2 <- function(dependencies, evaluate = FALSE) {
 # EvalOutput #################### evaluates the output slot of ovariables
 ##### Marginals should be also checked and updated here or elsewhere
 
-EvalOutput <- function(variable, ...) {
+EvalOutput <- function(variable, ...) { # ... for e.g na.rm 
 	#if (nrow(variable@data) > 0) { # if interpret can handle zero rows, no problem
 	a <- interpret(variable@data, ...)
 	#}
@@ -825,11 +825,11 @@ EvalOutput <- function(variable, ...) {
 		stop(paste("No proper data nor formula defined for ", variable@name, "!\n", sep = ""))
 	}
 	if (b == 0) {
-		a$Source <- "Data"
+		a[,paste(variable@name, "Source", sep = "_")] <- "Data"
 		return(a)
 	}
 	if (nrow(variable@data) == 0) {
-		b$Source <- "Formula"
+		b[,paste(variable@name, "Source", sep = "_")] <- "Formula"
 		return(b)
 	}
 	colnames(a)[colnames(a) == "Result"] <- "Data"
@@ -837,8 +837,8 @@ EvalOutput <- function(variable, ...) {
 	return(
 		melt(
 			merge(a, b, all = TRUE, ...), 
-			measure.vars = c("Data", "Formula"), 
-			variable.name = "Source", 
+			measure.vars = c("Data", "Formula"),
+			variable.name = paste(variable@name, "Source", sep = "_"),
 			value.name = "Result",
 			...
 		)
@@ -853,8 +853,8 @@ EvalOutput <- function(variable, ...) {
 CheckMarginals <- function(variable) {
 	varmar <- colnames(variable@data)[,!colnames(variable@data) %in% c("Result", "Unit")]
 	# all locs under observation/parameter index should be excluded
-	varmar <- c(varmar, "Source") # Source is usually added by EvalOutput so it should be in the initial list by default
-	# If other variables contain non marginal Source indices it will disappear
+	varmar <- c(varmar, paste(variable@name, "Source", sep = "_")) # Source is usually added 
+	# by EvalOutput so it should be in the initial list by default. 
 	norvarpmar <- colnames(variable@data)[!colnames(variable@data) %in% varmar]
 	for (i in variable@dependencies$Name){
 		varmar <- unique(varmar, colnames(get(i)@output)[get(i)@marginal])
@@ -870,7 +870,7 @@ CheckMarginals <- function(variable) {
 # takes an ovariable as argument, output 
 # returns an ovariable
 
-CheckInput <- function(variable, substitute = FALSE, ...) {
+CheckInput <- function(variable, substitute = FALSE, ...) { # e.g for na.rm
 	if (nrow(variable@output) == 0) stop(paste(variable@name, "output not evaluated yet!"))
 	if (exists(paste("Inp", variable@name, sep = ""))) {
 		inputvar <- get(paste("Inp", variable@name, sep = ""))
@@ -878,16 +878,40 @@ CheckInput <- function(variable, substitute = FALSE, ...) {
 			colnames(inputvar@output)[colnames(inputvar@output) == "Result"] <- "InpVarRes" # Should probably be changed to something
 			colnames(variable@output)[colnames(variable@output) == "Result"] <- "VarRes" # that would never be used in any data.
 			finalvar <- merge(variable, inputvar)
-			finalvar@output$Result <- ifelse(is.na(finalvar@output$InpVarRes), finalvar@output$VarRes, finalvar@output$InpVarRes)
-			finalvar@output$Source <- ifelse(is.na(finalvar@output$InpVarRes), finalvar@output$Source, "Input")
+			finalvar@output$Result <- ifelse(
+				is.na(finalvar@output$InpVarRes), 
+				finalvar@output$VarRes, 
+				finalvar@output$InpVarRes
+			)
+			finalvar@output[,paste(variable@name, "Source", sep = "_")] <- ifelse(
+				is.na(finalvar@output$InpVarRes), 
+				finalvar@output[,paste(variable@name, "Source", sep = "_")], 
+				"Input"
+			)
 			return(finalvar[!colnames(finalvar) %in% c("InpVarRes", "VarRes")])
 		}
-		temp <- data.frame() #variable@output[variable@output$Source,]
-		for (i in levels(variable@output$Source)) {
-			temp <- merge(temp, variable@output[variable@output$Source == i, !colnames(variable@output) %in% "Source"])
-			colnames(temp)[colnames(temp) %in% "Result"] <- i
+		#variable@output[variable@output$Source,]
+		j <- levels(variable@output[,paste(variable@name, "Source", sep = "_")])
+		temp <- j[1]
+		for (i in j[!j == j[1]]) {
+			temp <- merge(
+				temp, 
+				variable@output[
+					variable@output[,paste(variable@name, "Source", sep = "_")] == i, 
+					!colnames(variable@output) %in% paste(variable@name, "Source", sep = "_")
+				]
+			)
 		}
-		return(melt(temp, measure.vars = levels(variable@output$Source), variable.name = "Source", value.name = "Result", ...))
+		colnames(temp)[colnames(temp) %in% "Result"] <- i
+		return(
+			melt(
+				temp, 
+				measure.vars = levels(variable@output[,paste(variable@name, "Source", sep = "_")]), 
+				variable.name = paste(variable@name, "Source", sep = "_"), 
+				value.name = "Result", 
+				...
+			)
+		)
 	}
 	return(variable@output)
 }
