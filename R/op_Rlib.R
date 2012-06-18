@@ -813,20 +813,27 @@ Fetch2 <- function(dependencies, evaluate = FALSE) {
 	}
 }
 
-#library(reshape2)
-#library(reshape) # for older version
-
 # EvalOutput #################### evaluates the output slot of ovariables
+##### Marginals should be also checked and updated here or elsewhere
 
 EvalOutput <- function(variable, ...) {
 	#if (nrow(variable@data) > 0) { # if interpret can handle zero rows, no problem
 	a <- interpret(variable@data, ...)
-	colnames(a)[colnames(a) == "Result"] <- "Data"
 	#}
 	b <- variable@formula(variable@dependencies)
+	if (b == 0 & nrow(variable@data) == 0) {
+		stop(paste("No proper data nor formula defined for ", variable@name, "!\n", sep = ""))
+	}
+	if (b == 0) {
+		a$Source <- "Data"
+		return(a)
+	}
+	if (nrow(variable@data) == 0) {
+		b$Source <- "Formula"
+		return(b)
+	}
+	colnames(a)[colnames(a) == "Result"] <- "Data"
 	colnames(b)[colnames(b) == "Result"] <- "Formula"
-	if (b == 0) return(a)
-	if (nrow(variable@data)==0) return(b)
 	return(
 		melt(
 			merge(a, b, all = TRUE, ...), 
@@ -838,3 +845,49 @@ EvalOutput <- function(variable, ...) {
 	)
 }
 
+# CheckMarginals ############# Assumes that all depended upon variables are in memory, as should be the case.
+##################
+# Returns a marginal devised from the data and upstream variable marginals. 
+# Marginal values for data should be stored into the database somehow
+
+CheckMarginals(variable) {
+	varmar <- colnames(variable@data)[,!colnames(variable@data) %in% c("Result", "Unit")]
+	# all locs under observation/parameter index should be excluded
+	varmar <- c(varmar, "Source") # Source is usually added by EvalOutput so it should be in the initial list by default
+	# If other variables contain non marginal Source indices it will disappear
+	norvarpmar <- colnames(variable@data)[!colnames(variable@data) %in% varmar]
+	for (i in variable@dependencies$Name){
+		varmar <- unique(varmar, colnames(get(i)@output)[get(i)@marginal])
+		novarmar <- unique(novarmar, colnames(get(i)@output)[!get(i)@marginal])
+	}
+	varmar <- varmar[!varmar %in% novarmar]
+	return(colnames(variable@output) %in% varmar)
+}
+
+#marginal <- ifelse(colnames(output) %in% c("Result", "Unit"), FALSE, TRUE)
+
+# CheckInput ################# checks and uses outside input (user inputs in models or decision variables)
+# takes an ovariable as argument, output 
+# returns an ovariable
+
+CheckInput <- function(variable, substitute = FALSE, ...) {
+	if (nrow(variable@output) == 0) stop(paste(variable@name, "output not evaluated yet!"))
+	if (exists(paste("Inp", variable@name, sep = ""))) {
+		inputvar <- get(paste("Inp", variable@name, sep = ""))
+		if (substitute) {
+			colnames(inputvar@output)[colnames(inputvar@output) == "Result"] <- "InpVarRes" # Should probably be changed to something
+			colnames(variable@output)[colnames(variable@output) == "Result"] <- "VarRes" # that would never be used in any data.
+			finalvar <- merge(variable, inputvar)
+			finalvar@output$Result <- ifelse(is.na(finalvar@output$InpVarRes), finalvar@output$VarRes, finalvar@output$InpVarRes)
+			finalvar@output$Source <- ifelse(is.na(finalvar@output$InpVarRes), finalvar@output$Source, "Input")
+			return(finalvar[!colnames(finalvar) %in% c("InpVarRes", "VarRes")])
+		}
+		temp <- data.frame() #variable@output[variable@output$Source,]
+		for (i in levels(variable@output$Source)) {
+			temp <- merge(temp, variable@output[variable@output$Source == i, !colnames(variable@output) %in% "Source"])
+			colnames(temp)[colnames(temp) %in% "Result"] <- i
+		}
+		return(melt(temp, measure.vars = levels(variable@output$Source), variable.name = "Source", value.name = "Result", ...))
+	}
+	return(variable@output)
+}
