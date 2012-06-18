@@ -850,7 +850,7 @@ EvalOutput <- function(variable, ...) {
 # Returns a marginal devised from the data and upstream variable marginals. 
 # Marginal values for data should be stored into the database somehow
 
-CheckMarginals(variable) {
+CheckMarginals <- function(variable) {
 	varmar <- colnames(variable@data)[,!colnames(variable@data) %in% c("Result", "Unit")]
 	# all locs under observation/parameter index should be excluded
 	varmar <- c(varmar, "Source") # Source is usually added by EvalOutput so it should be in the initial list by default
