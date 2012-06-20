@@ -942,7 +942,9 @@ EvalOutput <- function(variable, ...) { # ... for e.g na.rm
 		"Result", 
 		paste(variable@name, "Result", sep = ":")
 	)
-	a <- interpret(variable@data, rescol = rescol, N = NIterations, ...)
+	if (!is.numeric(variable@data[[rescol]])) {
+		a <- interpret(variable@data, rescol = rescol, N = NIterations, ...) 
+	} else a <- variable@data
 	#}
 	b <- variable@formula(variable@dependencies)
 	if (b == 0 & nrow(variable@data) == 0) {
