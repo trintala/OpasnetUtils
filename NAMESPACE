@@ -26,5 +26,8 @@ export(
 	tidy,
 	fetch,
 	Fetch2,
-	EvalOutput
+	EvalOutput,
+	CheckMarginals,
+	CheckInput,
+	ComputeDependencies
 	)
