@@ -1056,3 +1056,15 @@ CheckInput <- function(variable, substitute = FALSE, ...) { # ... e.g for na.rm
 	#cat("No input found for ", variable@name, ". Continuing...\n")
 	return(variable@output)
 }
+
+# ComputeDependencies ############ uses Fetch2, EvalOutput, CheckMarginals and CheckInput to load and pre-process
+# upstream variables. Typically seen on the first line of ovariable formula code. 
+
+ComputeDependencies <- function(dependencies) {
+	Fetch2(dependencies)
+	for (i in dependencies$Name) {
+		get(i)@output <- EvalOutput(get(i))
+		get(i)@marginals <- CheckMarginals(get(i))
+		get(i)@output <- CheckInput(get(i))
+	}
+}
