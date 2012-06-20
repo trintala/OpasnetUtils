@@ -161,40 +161,126 @@ init.assessment <- function(dependencies)
 
 # INTERPRET ################### interpret takes a vector and makes a data.frame out of it (to be used in e.g. make.ovariable).
 ### It also changes abbreviations into probability samples.
-interpret <- function(data) {
-	sample <- NULL
-	if(is.vector(data)) {data <- data.frame(Result = data)}
-	if("Iter" %in% colnames(data)) {
-		out <- data}
-	else {
-		if(!"Result" %in% colnames(data)) {cat("There MUST be an observation column named 'Result'.\n")}
-		test <- !is.na(as.numeric(as.character(data$Result)))
-	
-		for(i in 1:nrow(data)) {
-			if(test[i]) {
-				sample <- c(sample, rep(as.numeric(as.character(data[i, "Result"])), n))
+# Lognormal distribution parametrization functions
+lmean <- function(parmean, parsd) {return(log(parmean)-log(1+(parsd^2)/(parmean^2))/2)}
+lsd <- function(parmean, parsd) {return(log(1+(parsd^2)/(parmean^2)))}
+
+# Actual interpretation function. Takes already pre-processed information and returns a distribution.
+interpf <- function(
+	n, 
+	res.char, 
+	brackets.pos, 
+	brackets.length, 
+	minus, 
+	minus.length, 
+	minus.exists, 
+	plusminus, 
+	plusminus.length, 
+	plusminus.exists,
+	doublePoint
+	) {
+
+	if(doublePoint[1] > 0) {
+		tempArgs <- sort(as.numeric(unlist(strsplit(res.char, "\\:"))))
+		return(rtriangle(n,tempArgs[1],tempArgs[3],tempArgs[2]))
+	}
+	if(brackets.pos >= 0) {
+		minus.relevant <- unlist(minus)[(cumsum(c(0, minus.length)) + 1):cumsum(minus.length)]
+		n.minus.inside.brackets <- sum(minus.relevant > brackets.pos & minus.relevant < brackets.pos + brackets.length)
+		imean <- as.numeric(substr(res.char, 1, brackets.pos - 1))
+		if(n.minus.inside.brackets == 1) {
+			ici <- c(as.numeric(substr(res.char, brackets.pos + 1, minus.relevant[minus.relevant > brackets.pos] - 1)), as.numeric(substr(res.char, 
+				minus.relevant[minus.relevant > brackets.pos] + 1, brackets.pos + brackets.length - 2)))
+			isd <- sum(abs(ici - imean) / 2) / qnorm(0.975)
+			if((ici[2] - imean) / (ici[1] - imean) < 1.5) {
+				return(rnorm(n, imean, isd))
 			} else {
-				samplingguide <- as.numeric(strsplit(gsub(" ", "", data[i, "Result"]), "-")[[1]])
-				if(is.na(samplingguide[1]) | is.na(samplingguide[2])) {
-					sample <- c(sample, rep(data[i, "Result"], n))
-				} else {
-					sample <- c(sample, runif(n, samplingguide[1], samplingguide[2]))
-				}
+				return(out[[i]] <- rlnorm(n, lmean(imean, isd), lsd(imean, isd))) # menee vaarin koska isd on laskettu normaalijakaumalle
+			}
+		} else 
+		if(n.minus.inside.brackets %in% c(2,3)) {
+			ici <- c(as.numeric(substr(res.char, brackets.pos + 1, minus.relevant[minus.relevant > brackets.pos][2] - 1)), as.numeric(substr(res.char, 
+				minus.relevant[minus.relevant > brackets.pos][2] + 1, brackets.pos + brackets.length - 2)))
+			isd <- sum(abs(ici - imean) / 2) / qnorm(0.975)
+			return(rnorm(n, imean, isd))
+		}
+		warning(paste("Unable to interpret \"", res.char, "\"", sep = ""))
+		return(NA)
+	}
+	if(minus.exists) {
+		minus.relevant <- unlist(minus)[(cumsum(c(0, minus.length)) + 1):cumsum(minus.length)]
+		if(length(minus.relevant) == 1) {
+			if(as.numeric(substr(res.char, 1, minus.relevant - 1)) / as.numeric(substr(res.char, minus.relevant + 1, nchar(res.char))) >= 1/100) {
+				return(runif(n, as.numeric(substr(res.char, 1, minus.relevant - 1)), as.numeric(substr(res.char, minus.relevant + 1, nchar(res.char[i])))))
+			} else {
+				return(exp(runif(n, log(as.numeric(substr(res.char, 1, minus.relevant - 1))), log(as.numeric(substr(res.char, minus.relevant + 1, nchar(res.char)))))))
 			}
 		}
-	
-		out <- as.data.frame(array(1:(n*nrow(data)*(ncol(data)+1)), dim = c(n*nrow(data), ncol(data) + 1)))
-		colnames(out) <- c("Iter", colnames(data))
-	
-		for(i in colnames(data)) {
-			out[i] <- rep(data[, i], each = n)
+		if(length(minus.relevant) %in% c(2,3)) {
+			return(runif(n, as.numeric(substr(res.char, 1, minus.relevant[2] - 1)), as.numeric(substr(res.char, minus.relevant[2] + 1, nchar(res.char)))))
 		}
-		out$Iter <- 1:n
-		out$Result <- sample
-		
 	}
-	return(out)
+	if(plusminus.exists) {
+		return(rnorm(n, as.numeric(substr(res.char, 1, plusminus[1] - 1)), as.numeric(substr(res.char, plusminus[1] + 1, nchar(res.char)))))
+	}
+	if(sum(unlist(strsplit(res.char, ""))==";") > 0) {
+		return(sample(sapply(strsplit(res.char, ";"), as.numeric), N, replace = TRUE))
+	}
+	warning(paste("Unable to interpret \"", res.char, "\"", sep = ""))
+	return(NA)
 }
+
+# The next function processes character strings and loops the interpretation function.
+input.interp <- function(res.char, n = 1000) {
+	res.char <- gsub(" ", "", res.char)
+	res.char <- gsub(",", ".", res.char)
+	plusminus <- gregexpr(paste("\\+-|", rawToChar(as.raw(177)), sep = ""), res.char) # saattaa osoittautua ongelmaksi enkoodauksen vuoksi
+	plusminus.length <- sapply(plusminus, length)
+	plusminus.exists <- unlist(plusminus)[cumsum(c(0, plusminus.length[-length(plusminus.length)])) + 1] > 0
+	minus <- gregexpr("-", res.char)
+	minus.length <- sapply(minus, length)
+	minus.exists <- unlist(minus)[cumsum(c(0, minus.length[-length(minus.length)])) + 1] > 0
+	brackets <- gregexpr("\\(.*\\)", res.char) # matches for brackets "(...)"
+	brackets.length <- as.numeric(unlist(sapply(brackets, attributes)[1,]))
+	brackets.pos <- unlist(brackets)
+	doublePoint <- gregexpr(":", res.char)
+	out <- list()
+	for(i in 1:length(res.char)) {
+		out[[i]] <- interpf(n, res.char[i], brackets.pos[i], brackets.length[i], minus[i], minus.length[i], minus.exists[i], plusminus[[i]], 
+	plusminus.length[i], plusminus.exists[i],doublePoint[[i]])
+	}
+	out
+}
+
+# Assisting function for data.frame wrapper.
+iter.f <- function(x) {
+	1:x
+}
+
+# Data.frame wrapper for the functions.
+interpret <- function(idata, rescol = "Result", N = 1000) {
+
+	temp <- input.interp(idata[, rescol], N)
+	temp.lengths <- sapply(temp, length)
+	out <- idata[rep(1:nrow(idata), times = temp.lengths),]
+	out$Interp.Result <- unlist(temp)
+	dim(temp.lengths) <- length(temp.lengths)
+	out$Iter<- c(apply(temp.lengths, 1, iter.f))
+	out
+}
+
+setGeneric("interpret")
+
+setMethod(
+	f = "interpret",
+	signature = signature(idata = "character"),
+	definition = function(idata) {
+		if(!is.data.frame){
+			callGeneric(data.frame(Result = idata))
+			}
+			callGeneric(idata)
+	}
+)
 
 # MAKE.OASSESSMENT ########## make.oassessment creates S4 assessment from dependencies data.frame, including decisions, stakeholders, probabilities, and variables. 
 ########### NOTE! You must include the formula code from each variable page, otherwise formulas and dependencies are not updated. 
@@ -762,29 +848,57 @@ setMethod(f = "tapply",
 
 # TIDY ########### tidy: a function that cleans the tables from Opasnet Base
 # data is a table from op_baseGetData function
-tidy <- function (data, idvar = "obs", direction = "wide") {
-
-	data$Result <- ifelse(!is.na(data$Result.Text), as.character(data$Result.Text), data$Result)
-	if("Observation" %in% colnames(data)){test <- data$Observation != "Description"} else {test <- TRUE}
-	data <- data[test, !colnames(data) %in% c("id", "Result.Text")]
-	if("obs.1" %in% colnames(data)) {data[, "obs"] <- data[, "obs.1"]} # this line is temporarily needed until the obs.1 bug is fixed.
-	data <- data[colnames(data) != "obs.1"]
+# TIDY ########### tidy: a function that cleans the tables from Opasnet Base
+# data is a table from op_baseGetData function
+tidy <- function (data, objname = "", idvar = "obs", direction = "wide") {
+	data$Result <- ifelse(data$Result.Text == "", data$Result, as.character(data$Result.Text))
+	#data <- data[
+	#	ifelse("Observation" %in% colnames(data), 
+	#		data$Observation != "Description",
+	#		TRUE
+	#	), 
+	#	!colnames(data) %in% c("id", "Result.Text")
+	#]
+	data <- data[, !colnames(data) %in% c("id", "Result.Text")]
+	if("obs.1" %in% colnames(data)) { # this line is temporarily needed until the obs.1 bug is fixed.
+		data[, "obs"] <- data[, "obs.1"]
+		data <- data[, colnames(data) != "obs.1"]
+	}
 	if("Row" %in% colnames(data)) { # If user has given Row, it is used instead of automatic obs.
 		data <- data[, colnames(data) != "obs"]
 		colnames(data)[colnames(data) == "Row"] <- "obs"
 	}
-	if(direction == "wide" & "Observation" %in% colnames(data)) 
-	{
-		data <- reshape(data, idvar = idvar, timevar = "Observation", v.names = "Result", direction = "wide")
-		data <- data[colnames(data) != "obs"]
-		colnames(data) <- gsub("^Result.", "", colnames(data))
-		colnames(data)[colnames(data) == "result"] <- "Result"
-		colnames(data)[colnames(data) == "Amount"] <- "Result"
+	if (objname != "") objname <- paste(objname, ":", sep = "")
+	if (direction == "wide") { 
+		if("Observation" %in% colnames(data)) {
+			cols <- levels(data$Observation)
+			data <- reshape(data, idvar = idvar, timevar = "Observation", v.names = "Result", direction = "wide")
+			data <- data[colnames(data) != "obs"]
+			colnames(data) <- gsub("^Result.", objname, colnames(data))
+			for (i in paste(objname, cols, sep = "")) {
+				a <- suppressWarnings(as.numeric(data[, i]))
+				if (sum(is.na(a)) == 0) data[, i] <- a else data[, i] <- factor(data[, i])
+			}
+			colnames(data)[grepl(paste("^", objname, "result", sep = ""), colnames(data))] <- paste(objname, "Result", sep = "")
+			colnames(data)[grepl(paste("^", objname, "Amount", sep = ""), colnames(data))] <- paste(objname, "Result", sep = "")
+			return(data)
+		}
+		if("Parameter" %in% colnames(data)) {
+			cols <- levels(data$Parameter)
+			data <- reshape(data, idvar = idvar, timevar = "Parameter", v.names = "Result", direction = "wide")
+			data <- data[colnames(data) != "obs"]
+			colnames(data) <- gsub("^Result.", objname, colnames(data))
+			for (i in paste(objname, cols, sep = "")) {
+				a <- suppressWarnings(as.numeric(data[, i]))
+				if (sum(is.na(a)) == 0) data[, i] <- a else data[, i] <- factor(data[, i])
+			}
+			colnames(data)[grepl(paste("^", objname, "result", sep = ""), colnames(data))] <- paste(objname, "Result", sep = "")
+			colnames(data)[grepl(paste("^", objname, "Amount", sep = ""), colnames(data))] <- paste(objname, "Result", sep = "")
+			return(data)
+		}
 	}
-	else
-	{
-		data <- data[colnames(data) != "obs"]
-	}
+	data <- data[,colnames(data) != "obs"]
+	colnames(data)[colnames(data)=="Result"] <- paste(objname, "Result", sep = "")
 	return(data)
 }
 
@@ -806,43 +920,61 @@ fetch <- function(x, direction = "wide") { # Could think of a version where depe
 Fetch2 <- function(dependencies, evaluate = FALSE) {
 	for (i in 1:nrow(dependencies)) {
 		if(!exists(dependencies$Name[i])) {
-			objects.get(dependencies$Key[i]) # Key is the R-tools session identifier (seen at the end of the url)
+			objects.get(dependencies$Key[i]) # Key is the R-tools session identifier (shown at the end of the url)
 			if (evaluate) get(dependencies$Name[i])@output <- EvalOutput(get(dependencies$Name[i])) 
 			# Eval not necessarily needed at this point
+			cat()
 		}
 	}
-}
+} # no need to return anything since variables are already written in global memory
+
+#library(reshape2)
+#library(reshape) # for older version
 
 # EvalOutput #################### evaluates the output slot of ovariables
 ##### Marginals should be also checked and updated here or elsewhere
 
 EvalOutput <- function(variable, ...) { # ... for e.g na.rm 
 	#if (nrow(variable@data) > 0) { # if interpret can handle zero rows, no problem
-	a <- interpret(variable@data, ...)
+	#if (!exists("rescol")) # doesn't work when rescol given in '...' arguments; rescol is used in interpreting data
+	rescol <- ifelse(
+		"Result" %in% colnames(variable@data), 
+		"Result", 
+		paste(variable@name, "Result", sep = ":")
+	)
+	a <- interpret(variable@data, rescol = rescol, N = NIterations, ...)
 	#}
 	b <- variable@formula(variable@dependencies)
 	if (b == 0 & nrow(variable@data) == 0) {
 		stop(paste("No proper data nor formula defined for ", variable@name, "!\n", sep = ""))
 	}
 	if (b == 0) {
-		a[,paste(variable@name, "Source", sep = "_")] <- "Data"
+		a[,paste(variable@name, "Source", sep = ":")] <- "Data"
 		return(a)
 	}
 	if (nrow(variable@data) == 0) {
-		b[,paste(variable@name, "Source", sep = "_")] <- "Formula"
+		b[,paste(variable@name, "Source", sep = ":")] <- "Formula"
 		return(b)
 	}
-	colnames(a)[colnames(a) == "Result"] <- "Data"
-	colnames(b)[colnames(b) == "Result"] <- "Formula"
-	return(
-		melt(
-			merge(a, b, all = TRUE, ...), 
-			measure.vars = c("Data", "Formula"),
-			variable.name = paste(variable@name, "Source", sep = "_"),
-			value.name = "Result",
-			...
+	colnames(a)[colnames(a) == rescol] <- "FromData"
+	colnames(b)[colnames(b) %in% c(paste(variable@name, "Result", sep = ":"), "Result")] <- "FromFormula" # *
+	# <variablename>: prefix not necessitated for "Result" column of formula output
+	temp <- melt(
+		merge(a, b, all = TRUE, ...), # Will cause problems if dependencies contain non-marginal indices that match with -
+		# marginal indeces in data. Or maybe not.
+		measure.vars = c("FromData", "FromFormula"),
+		variable.name = paste(variable@name, "Source", sep = ":"),
+		value.name = paste(variable@name, "Result", sep = ":"),
+		...
+	)
+	levels(
+		temp[[paste(variable@name, "Source", sep = ":")]]
+	) <- gsub("^From", "", 
+		levels(
+			temp[[paste(variable@name, "Source", sep = ":")]]
 		)
 	)
+	return(temp)
 }
 
 # CheckMarginals ############# Assumes that all depended upon variables are in memory, as should be the case.
@@ -851,7 +983,11 @@ EvalOutput <- function(variable, ...) { # ... for e.g na.rm
 # Marginal values for data should be stored into the database somehow
 
 CheckMarginals <- function(variable) {
-	varmar <- colnames(variable@data)[,!colnames(variable@data) %in% c("Result", "Unit")]
+	varmar <- colnames(variable@data)[
+		,
+		!grepl(paste("^", variable@name, ":", sep=""), colnames(variable@data))&
+		!colnames(variable@data) %in% c("Result", "Unit")
+	]
 	# all locs under observation/parameter index should be excluded
 	varmar <- c(varmar, paste(variable@name, "Source", sep = "_")) # Source is usually added 
 	# by EvalOutput so it should be in the initial list by default. 
@@ -870,48 +1006,53 @@ CheckMarginals <- function(variable) {
 # takes an ovariable as argument, output 
 # returns an ovariable
 
-CheckInput <- function(variable, substitute = FALSE, ...) { # e.g for na.rm
+CheckInput <- function(variable, substitute = FALSE, ...) { # ... e.g for na.rm
 	if (nrow(variable@output) == 0) stop(paste(variable@name, "output not evaluated yet!"))
 	if (exists(paste("Inp", variable@name, sep = ""))) {
 		inputvar <- get(paste("Inp", variable@name, sep = ""))
 		if (substitute) {
-			colnames(inputvar@output)[colnames(inputvar@output) == "Result"] <- "InpVarRes" # Should probably be changed to something
-			colnames(variable@output)[colnames(variable@output) == "Result"] <- "VarRes" # that would never be used in any data.
+			colnames(inputvar@output)[colnames(inputvar@output) == paste(inputvar@name, "Result", sep = ":")] <- "InpVarRes"
+			colnames(variable@output)[colnames(variable@output) == paste(variable@name, "Result", sep = ":")] <- "VarRes"
 			finalvar <- merge(variable, inputvar)
-			finalvar@output$Result <- ifelse(
+			finalvar@output[[paste(variable@name, "Result", sep = ":")]] <- ifelse(
 				is.na(finalvar@output$InpVarRes), 
 				finalvar@output$VarRes, 
 				finalvar@output$InpVarRes
 			)
-			finalvar@output[,paste(variable@name, "Source", sep = "_")] <- ifelse(
+			finalvar@output[[paste(variable@name, "Source", sep = ":")]] <- ifelse(
 				is.na(finalvar@output$InpVarRes), 
-				finalvar@output[,paste(variable@name, "Source", sep = "_")], 
+				finalvar@output[[paste(variable@name, "Source", sep = ":")]], 
 				"Input"
 			)
 			return(finalvar[!colnames(finalvar) %in% c("InpVarRes", "VarRes")])
 		}
 		#variable@output[variable@output$Source,]
-		j <- levels(variable@output[,paste(variable@name, "Source", sep = "_")])
-		temp <- j[1]
+		j <- levels(variable@output[[paste(variable@name, "Source", sep = ":")]])
+		temp <- variable@output[
+			variable@output[,paste(variable@name, "Source", sep = ":")] == j[1], 
+			!colnames(variable@output) %in% paste(variable@name, "Source", sep = ":")
+		]
+		colnames(temp)[colnames(temp) %in% "Result"] <- j[1]
 		for (i in j[!j == j[1]]) {
 			temp <- merge(
 				temp, 
 				variable@output[
-					variable@output[,paste(variable@name, "Source", sep = "_")] == i, 
-					!colnames(variable@output) %in% paste(variable@name, "Source", sep = "_")
+					variable@output[,paste(variable@name, "Source", sep = ":")] == i, 
+					!colnames(variable@output) %in% paste(variable@name, "Source", sep = ":")
 				]
 			)
+			colnames(temp)[colnames(temp) %in% "Result"] <- i
 		}
-		colnames(temp)[colnames(temp) %in% "Result"] <- i
 		return(
 			melt(
 				temp, 
-				measure.vars = levels(variable@output[,paste(variable@name, "Source", sep = "_")]), 
-				variable.name = paste(variable@name, "Source", sep = "_"), 
-				value.name = "Result", 
+				measure.vars = levels(variable@output[,paste(variable@name, "Source", sep = ":")]), 
+				variable.name = paste(variable@name, "Source", sep = ":"), 
+				value.name = paste(variable@name, "Result", sep = ":"), 
 				...
 			)
 		)
 	}
+	#cat("No input found for ", variable@name, ". Continuing...\n")
 	return(variable@output)
 }
