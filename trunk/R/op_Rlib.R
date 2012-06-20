@@ -851,7 +851,7 @@ setMethod(f = "tapply",
 # TIDY ########### tidy: a function that cleans the tables from Opasnet Base
 # data is a table from op_baseGetData function
 tidy <- function (data, objname = "", idvar = "obs", direction = "wide") {
-	data$Result <- ifelse(data$Result.Text == "", data$Result, as.character(data$Result.Text))
+	data$Result <- ifelse(!is.na(data$Result.Text), data$Result, as.character(data$Result.Text))
 	#data <- data[
 	#	ifelse("Observation" %in% colnames(data), 
 	#		data$Observation != "Description",
