@@ -1,4 +1,4 @@
-import(RODBC, rjson, RCurl, rbugs, rjags, RgoogleMaps, xtable, reshape)
+import(RODBC, rjson, RCurl, rbugs, rjags, RgoogleMaps, xtable, reshape2, triangle)
 export(
 	op_baseGetData,
 	op_baseGetLocs,
