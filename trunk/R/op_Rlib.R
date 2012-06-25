@@ -935,17 +935,16 @@ Fetch2 <- function(dependencies, evaluate = FALSE) {
 ##### Marginals should be also checked and updated here or elsewhere
 
 EvalOutput <- function(variable, ...) { # ... for e.g na.rm 
-	#if (nrow(variable@data) > 0) { # if interpret can handle zero rows, no problem
-	#if (!exists("rescol")) # doesn't work when rescol given in '...' arguments; rescol is used in interpreting data
-	rescol <- ifelse(
-		"Result" %in% colnames(variable@data), 
-		"Result", 
-		paste(variable@name, "Result", sep = ":")
-	)
-	if (!is.numeric(variable@data[[rescol]])) {
-		a <- interpret(variable@data, rescol = rescol, N = NIterations, ...) 
+	if (nrow(variable@data) > 0) {
+		rescol <- ifelse(
+			"Result" %in% colnames(variable@data), 
+			"Result", 
+			paste(variable@name, "Result", sep = ":")
+		)
+		if (!is.numeric(variable@data[[rescol]])) {
+			a <- interpret(variable@data, rescol = rescol, ...) 
+		} else a <- variable@data
 	} else a <- variable@data
-	#}
 	b <- variable@formula(variable@dependencies)
 	if (b == 0 & nrow(variable@data) == 0) {
 		stop(paste("No proper data nor formula defined for ", variable@name, "!\n", sep = ""))
@@ -1062,10 +1061,10 @@ CheckInput <- function(variable, substitute = FALSE, ...) { # ... e.g for na.rm
 # ComputeDependencies ############ uses Fetch2, EvalOutput, CheckMarginals and CheckInput to load and pre-process
 # upstream variables. Typically seen on the first line of ovariable formula code. 
 
-ComputeDependencies <- function(dependencies) {
+ComputeDependencies <- function(dependencies, ...) {
 	Fetch2(dependencies)
 	for (i in dependencies$Name) {
-		get(i)@output <- EvalOutput(get(i))
+		get(i)@output <- EvalOutput(get(i), ...)
 		get(i)@marginals <- CheckMarginals(get(i))
 		get(i)@output <- CheckInput(get(i))
 	}
