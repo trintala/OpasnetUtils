@@ -918,12 +918,14 @@ fetch <- function(x, direction = "wide") { # Could think of a version where depe
 # Fetch2 #################### loads all given dependencies to global memory
 
 Fetch2 <- function(dependencies, evaluate = FALSE) {
-	for (i in 1:nrow(dependencies)) {
-		if(!exists(dependencies$Name[i])) {
-			objects.get(dependencies$Key[i]) # Key is the R-tools session identifier (shown at the end of the url)
-			if (evaluate) get(dependencies$Name[i])@output <- EvalOutput(get(dependencies$Name[i])) 
-			# Eval not necessarily needed at this point
-			cat()
+	if (nrow(dependencies) > 0) {
+		for (i in 1:nrow(dependencies)) {
+			if(!exists(dependencies$Name[i])) {
+				objects.get(dependencies$Key[i]) # Key is the R-tools session identifier (shown at the end of the url)
+				if (evaluate) get(dependencies$Name[i])@output <- EvalOutput(get(dependencies$Name[i])) 
+				# Eval not necessarily needed at this point
+				cat(dependencies$Name, "fetched successfully!\n")
+			}
 		}
 	}
 } # no need to return anything since variables are already written in global memory
