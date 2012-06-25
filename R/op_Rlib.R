@@ -922,9 +922,9 @@ Fetch2 <- function(dependencies, evaluate = FALSE) {
 		for (i in 1:nrow(dependencies)) {
 			if(!exists(as.character(dependencies$Name[i]))) {
 				objects.get(dependencies$Key[i]) # Key is the R-tools session identifier (shown at the end of the url)
-				if (evaluate) get(dependencies$Name[i])@output <- EvalOutput(get(dependencies$Name[i])) 
+				if (evaluate) get(as.character(dependencies$Name[i]))@output <- EvalOutput(get(as.character(dependencies$Name[i]))) 
 				# Eval not necessarily needed at this point
-				cat(dependencies$Name, "fetched successfully!\n")
+				cat(as.character(dependencies$Name[i]), "fetched successfully!\n")
 			}
 		}
 	}
@@ -995,7 +995,7 @@ CheckMarginals <- function(variable) {
 	varmar <- c(varmar, paste(variable@name, "Source", sep = "_")) # Source is usually added 
 	# by EvalOutput so it should be in the initial list by default. 
 	norvarpmar <- colnames(variable@data)[!colnames(variable@data) %in% varmar]
-	for (i in variable@dependencies$Name){
+	for (i in as.character(variable@dependencies$Name)){
 		varmar <- unique(varmar, colnames(get(i)@output)[get(i)@marginal])
 		novarmar <- unique(novarmar, colnames(get(i)@output)[!get(i)@marginal])
 	}
@@ -1065,7 +1065,7 @@ CheckInput <- function(variable, substitute = FALSE, ...) { # ... e.g for na.rm
 
 ComputeDependencies <- function(dependencies, ...) {
 	Fetch2(dependencies)
-	for (i in dependencies$Name) {
+	for (i in as.character(dependencies$Name)) {
 		get(i)@output <- EvalOutput(get(i), ...)
 		get(i)@marginals <- CheckMarginals(get(i))
 		get(i)@output <- CheckInput(get(i))
