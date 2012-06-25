@@ -920,7 +920,7 @@ fetch <- function(x, direction = "wide") { # Could think of a version where depe
 Fetch2 <- function(dependencies, evaluate = FALSE) {
 	if (nrow(dependencies) > 0) {
 		for (i in 1:nrow(dependencies)) {
-			if(!exists(dependencies$Name[i])) {
+			if(!exists(as.character(dependencies$Name[i]))) {
 				objects.get(dependencies$Key[i]) # Key is the R-tools session identifier (shown at the end of the url)
 				if (evaluate) get(dependencies$Name[i])@output <- EvalOutput(get(dependencies$Name[i])) 
 				# Eval not necessarily needed at this point
