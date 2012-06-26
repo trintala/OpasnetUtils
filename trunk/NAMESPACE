@@ -29,5 +29,6 @@ export(
 	EvalOutput,
 	CheckMarginals,
 	CheckInput,
-	ComputeDependencies
-	)
+	ComputeDependencies,
+	merge
+)
