@@ -953,11 +953,13 @@ EvalOutput <- function(variable, ...) { # ... for e.g na.rm
 	}
 	if (b == 0) {
 		a[,paste(variable@name, "Source", sep = ":")] <- "Data"
-		return(a)
+		variable@output <- a
+		return(variable)
 	}
 	if (nrow(variable@data) == 0) {
 		b[,paste(variable@name, "Source", sep = ":")] <- "Formula"
-		return(b)
+		variable@output <- b
+		return(variable)
 	}
 	colnames(a)[colnames(a) == rescol] <- "FromData"
 	colnames(b)[colnames(b) %in% c(paste(variable@name, "Result", sep = ":"), "Result")] <- "FromFormula" # *
@@ -977,12 +979,13 @@ EvalOutput <- function(variable, ...) { # ... for e.g na.rm
 			temp[[paste(variable@name, "Source", sep = ":")]]
 		)
 	)
-	return(temp)
+	variable@output <- temp
+	return(variable)
 }
 
 # CheckMarginals ############# Assumes that all depended upon variables are in memory, as should be the case.
 ##################
-# Returns a marginal devised from the data and upstream variable marginals. 
+# Returns an avariable with a marginal devised from the data and upstream variable marginals. 
 # Marginal values for data should be stored into the database somehow
 
 CheckMarginals <- function(variable) {
@@ -1000,13 +1003,14 @@ CheckMarginals <- function(variable) {
 		novarmar <- unique(novarmar, colnames(get(i)@output)[!get(i)@marginal])
 	}
 	varmar <- varmar[!varmar %in% novarmar]
-	return(colnames(variable@output) %in% varmar)
+	variable@marginal <- colnames(variable@output) %in% varmar
+	return(variable)
 }
 
 #marginal <- ifelse(colnames(output) %in% c("Result", "Unit"), FALSE, TRUE)
 
 # CheckInput ################# checks and uses outside input (user inputs in models or decision variables)
-# takes an ovariable as argument, output 
+# takes an ovariable as argument
 # returns an ovariable
 
 CheckInput <- function(variable, substitute = FALSE, ...) { # ... e.g for na.rm
@@ -1027,7 +1031,8 @@ CheckInput <- function(variable, substitute = FALSE, ...) { # ... e.g for na.rm
 				finalvar@output[[paste(variable@name, "Source", sep = ":")]], 
 				"Input"
 			)
-			return(finalvar[!colnames(finalvar) %in% c("InpVarRes", "VarRes")])
+			finalvar@output <- finalvar@output[!colnames(finalvar) %in% c("InpVarRes", "VarRes")]
+			return(finalvar)
 		}
 		#variable@output[variable@output$Source,]
 		j <- levels(variable@output[[paste(variable@name, "Source", sep = ":")]])
@@ -1046,18 +1051,17 @@ CheckInput <- function(variable, substitute = FALSE, ...) { # ... e.g for na.rm
 			)
 			colnames(temp)[colnames(temp) %in% "Result"] <- i
 		}
-		return(
-			melt(
-				temp, 
-				measure.vars = levels(variable@output[,paste(variable@name, "Source", sep = ":")]), 
-				variable.name = paste(variable@name, "Source", sep = ":"), 
-				value.name = paste(variable@name, "Result", sep = ":"), 
-				...
-			)
+		variable@output <- melt(
+			temp, 
+			measure.vars = levels(variable@output[,paste(variable@name, "Source", sep = ":")]), 
+			variable.name = paste(variable@name, "Source", sep = ":"), 
+			value.name = paste(variable@name, "Result", sep = ":"), 
+			...
 		)
+		return(variable)
 	}
 	#cat("No input found for ", variable@name, ". Continuing...\n")
-	return(variable@output)
+	return(variable)
 }
 
 # ComputeDependencies ############ uses Fetch2, EvalOutput, CheckMarginals and CheckInput to load and pre-process
@@ -1066,8 +1070,8 @@ CheckInput <- function(variable, substitute = FALSE, ...) { # ... e.g for na.rm
 ComputeDependencies <- function(dependencies, ...) {
 	Fetch2(dependencies)
 	for (i in as.character(dependencies$Name)) {
-		get(i)@output <- EvalOutput(get(i), ...)
-		get(i)@marginals <- CheckMarginals(get(i))
-		get(i)@output <- CheckInput(get(i))
+		get(i) <- EvalOutput(get(i), ...)
+		get(i) <- CheckMarginals(get(i))
+		get(i) <- CheckInput(get(i), ...)
 	}
 }
