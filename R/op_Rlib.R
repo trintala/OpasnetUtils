@@ -1066,12 +1066,13 @@ CheckInput <- function(variable, substitute = FALSE, ...) { # ... e.g for na.rm
 
 # ComputeDependencies ############ uses Fetch2, EvalOutput, CheckMarginals and CheckInput to load and pre-process
 # upstream variables. Typically seen on the first line of ovariable formula code. 
+# '...' can be used for input substitution, na.rm, number of iterations (N) and others
 
-ComputeDependencies <- function(dependencies, ...) {
+ComputeDependencies <- function(dependencies, ...) { 
 	Fetch2(dependencies)
 	for (i in as.character(dependencies$Name)) {
-		get(i) <- EvalOutput(get(i), ...)
-		get(i) <- CheckMarginals(get(i))
-		get(i) <- CheckInput(get(i), ...)
+		assign(i, EvalOutput(get(i), ...), envir = .GlobalEnv)
+		assign(i, CheckMarginals(get(i), ...), envir = .GlobalEnv)
+		assign(i, CheckInput(get(i), ...), envir = .GlobalEnv)
 	}
 }
