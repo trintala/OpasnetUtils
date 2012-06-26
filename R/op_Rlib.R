@@ -989,7 +989,6 @@ EvalOutput <- function(variable, ...) { # ... for e.g na.rm
 # Marginal values for data should be stored into the database somehow
 
 CheckMarginals <- function(variable) {
-	
 	varmar <- colnames(variable@data)[
 		!grepl(paste("^", variable@name, ":", sep=""), colnames(variable@data))&
 		!colnames(variable@data) %in% c("Result", "Unit")
@@ -997,7 +996,7 @@ CheckMarginals <- function(variable) {
 	# all locs under observation/parameter index should be excluded
 	varmar <- c(varmar, paste(variable@name, "Source", sep = "_")) # Source is usually added 
 	# by EvalOutput so it should be in the initial list by default. 
-	norvarpmar <- colnames(variable@data)[!colnames(variable@data) %in% varmar]
+	novarmar <- colnames(variable@data)[!colnames(variable@data) %in% varmar]
 	for (i in as.character(variable@dependencies$Name)){
 		varmar <- unique(varmar, colnames(get(i)@output)[get(i)@marginal])
 		novarmar <- unique(novarmar, colnames(get(i)@output)[!get(i)@marginal])
