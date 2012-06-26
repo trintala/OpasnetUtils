@@ -948,10 +948,10 @@ EvalOutput <- function(variable, ...) { # ... for e.g na.rm
 		} else a <- variable@data
 	} else a <- variable@data
 	b <- variable@formula(variable@dependencies)
-	if (b == 0 & nrow(variable@data) == 0) {
+	if (is.numeric(b) & nrow(variable@data) == 0) {
 		stop(paste("No proper data nor formula defined for ", variable@name, "!\n", sep = ""))
 	}
-	if (b == 0) {
+	if (is.numeric(b)) {
 		a[,paste(variable@name, "Source", sep = ":")] <- "Data"
 		variable@output <- a
 		return(variable)
