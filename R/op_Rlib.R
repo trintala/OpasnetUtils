@@ -989,8 +989,8 @@ EvalOutput <- function(variable, ...) { # ... for e.g na.rm
 # Marginal values for data should be stored into the database somehow
 
 CheckMarginals <- function(variable) {
+	
 	varmar <- colnames(variable@data)[
-		,
 		!grepl(paste("^", variable@name, ":", sep=""), colnames(variable@data))&
 		!colnames(variable@data) %in% c("Result", "Unit")
 	]
