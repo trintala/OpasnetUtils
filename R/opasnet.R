@@ -74,5 +74,5 @@ opasnet.csv <- function(filename, wiki='', ...) {
 	
 	csv <- getURL(file)
 	
-	return(read.table(file = textConnection(csv), ...)
+	return(read.table(file = textConnection(csv), ...))
 }
