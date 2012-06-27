@@ -41,7 +41,7 @@ opasnet.data <- function(filename,wiki='') {
 	return(getURL(file))
 }
 
-opasnet.csv <- function(filename, header = TRUE, sep = ",", quote = "\"",dec = ".", row.names, col.names,as.is = !stringsAsFactors,na.strings = "NA", colClasses = NA, nrows = -1,skip = 0, check.names = TRUE, fill = TRUE,strip.white = FALSE, blank.lines.skip = TRUE,comment.char = "",allowEscapes = FALSE, flush = FALSE,stringsAsFactors = default.stringsAsFactors(),fileEncoding = "", encoding = "unknown",wiki='') {
+opasnet.csv <- function(filename, wiki='', ...) {
 
 	# Parse arguments
 	targs <- strsplit(commandArgs(trailingOnly = TRUE),",")
@@ -74,14 +74,5 @@ opasnet.csv <- function(filename, header = TRUE, sep = ",", quote = "\"",dec = "
 	
 	csv <- getURL(file)
 	
-	return(read.table(file = textConnection(csv), header = header, sep = sep, quote = quote,
-           dec = dec, row.names = row.names, col.names = col.names,
-           as.is = as.is,
-           na.strings = na.strings, colClasses = colClasses, nrows = nrows,
-           skip = skip, check.names = check.names, fill = fill,
-           strip.white = strip.white, blank.lines.skip = blank.lines.skip,
-           comment.char = comment.char,
-           allowEscapes = allowEscapes, flush = flush,
-           stringsAsFactors = stringsAsFactors,
-           fileEncoding = fileEncoding, encoding = encoding))
+	return(read.table(file = textConnection(csv), ...)
 }
