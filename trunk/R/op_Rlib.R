@@ -985,7 +985,7 @@ EvalOutput <- function(variable, ...) { # ... for e.g na.rm
 
 # CheckMarginals ############# Assumes that all depended upon variables are in memory, as should be the case.
 ##################
-# Returns an avariable with a marginal devised from the data and upstream variable marginals. 
+# Returns an ovariable with a marginal devised from the data and upstream variable marginals. 
 # Marginal values for data should be stored into the database somehow
 
 CheckMarginals <- function(variable) {
