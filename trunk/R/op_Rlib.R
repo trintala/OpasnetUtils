@@ -66,7 +66,7 @@ decisions.apply <- function(dec, assessment = NULL) {
 			if(exists(as.character(dec.var$Variable[1]))) 
 				{var <- get(as.character(dec.var$Variable[1]))
 			} else {
-				stop()
+				stop(as.character(dec.var$Variable[1]), " not defined!")
 			}
 		}
 		var <- merge(scenarios[colnames(scenarios) != "temp"], var)
@@ -846,8 +846,7 @@ setMethod(f = "tapply",
 	}
 )
 
-# TIDY ########### tidy: a function that cleans the tables from Opasnet Base
-# data is a table from op_baseGetData function
+
 # TIDY ########### tidy: a function that cleans the tables from Opasnet Base
 # data is a table from op_baseGetData function
 tidy <- function (data, objname = "", idvar = "obs", direction = "wide") {
@@ -994,7 +993,7 @@ CheckMarginals <- function(variable) {
 		!colnames(variable@data) %in% c("Result", "Unit")
 	]
 	# all locs under observation/parameter index should be excluded
-	varmar <- c(varmar, paste(variable@name, "Source", sep = "_")) # Source is usually added 
+	varmar <- c(varmar, paste(variable@name, "Source", sep = ":")) # Source is usually added 
 	# by EvalOutput so it should be in the initial list by default. 
 	novarmar <- colnames(variable@data)[!colnames(variable@data) %in% varmar]
 	for (i in as.character(variable@dependencies$Name)){
