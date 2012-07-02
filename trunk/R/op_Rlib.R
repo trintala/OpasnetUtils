@@ -253,7 +253,7 @@ input.interp <- function(res.char, n = 1000) {
 }
 
 # Assisting function for data.frame wrapper.
-iter.f <- function(x) {
+f.iter <- function(x) {
 	1:x
 }
 
@@ -265,7 +265,7 @@ interpret <- function(idata, rescol = "Result", N = 1000) {
 	out <- idata[rep(1:nrow(idata), times = temp.lengths),]
 	out$Interp.Result <- unlist(temp)
 	dim(temp.lengths) <- length(temp.lengths)
-	out$Iter<- c(apply(temp.lengths, 1, iter.f))
+	out$Iter<- c(apply(temp.lengths, 1, f.iter))
 	out
 }
 
@@ -621,7 +621,9 @@ setMethod(
 	f = "Math", 
 	signature = signature(x = "ovariable"), 
 	definition = function(x) {
-		x@output$Result <- callGeneric(x@output$Result)
+		test <- paste(x@name, "Result", sep = ":") %in% colnames(out)
+		rescol <- ifelse(test, paste(e1@name, "Result", sep = ":"), "Result")
+		x@output[[rescol]] <- callGeneric(x@output[[rescol]])
 		return(x)
 	}
 )
@@ -660,11 +662,25 @@ setMethod(
 	signature = signature(e1 = "ovariable", e2 = "ovariable"), 
 	definition = function(e1, e2) {
 		out <- merge(e1, e2)@output
-		colnames(out) <- gsub(".x", "", colnames(out))
-		out$Result <- callGeneric(out$Result, out$Result.y)
-		if(!is.null(out$Unit.y)) {out$Unit <- paste(out$Unit, "|(", out$Unit.y, ")", sep= "")}
-		e1@output <- out[, !colnames(out) %in% c("Result.y", "Unit.y")]
-		return(e1)
+		
+		test1 <- paste(e1@name, "Result", sep = ":") %in% colnames(out)
+		test2 <- paste(e2@name, "Result", sep = ":") %in% colnames(out)
+		
+		rescol1 <- ifelse(test1, paste(e1@name, "Result", sep = ":"), "Result")
+		rescol2 <- ifelse(test2, paste(e2@name, "Result", sep = ":"), "Result")
+		
+		if (!(test1 & test2)) {
+			rescol1 <- "Result.x"
+			rescol2 <- "Result.y"
+		}
+		
+		out$Result <- callGeneric(out[[rescol1]], out[[rescol2]])
+		
+		out <- new(
+			"ovariable"
+			output = out[, !colnames(out) %in% c(rescol1, rescol2)]
+		)
+		return(out)
 	}
 )
 
@@ -673,8 +689,8 @@ setMethod(
 	signature = signature(e1 = "ovariable", e2 = "numeric"), 
 	definition = function(e1, e2) {
 		e2 <- make.ovariable(e2)
-		e1 <- callGeneric(e1, e2)
-		return(e1)
+		out <- callGeneric(e1, e2)
+		return(out)
 	}
 )
 
@@ -683,8 +699,8 @@ setMethod(
 	signature = signature(e1 = "numeric", e2 = "ovariable"), 
 	definition = function(e1, e2) {
 		e1 <- make.ovariable(e1)
-		e1 <- callGeneric(e2, e1)
-		return(e1)
+		out <- callGeneric(e2, e1)
+		return(out)
 	}
 )
 
@@ -993,7 +1009,7 @@ CheckMarginals <- function(variable) {
 		!colnames(variable@data) %in% c("Result", "Unit")
 	]
 	# all locs under observation/parameter index should be excluded
-	varmar <- c(varmar, paste(variable@name, "Source", sep = ":")) # Source is usually added 
+	varmar <- c(varmar, paste(variable@name, "Source", sep = ":")) # Source is added 
 	# by EvalOutput so it should be in the initial list by default. 
 	novarmar <- colnames(variable@data)[!colnames(variable@data) %in% varmar]
 	for (i in as.character(variable@dependencies$Name)){
