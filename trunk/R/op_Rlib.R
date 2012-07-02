@@ -677,7 +677,7 @@ setMethod(
 		out$Result <- callGeneric(out[[rescol1]], out[[rescol2]])
 		
 		out <- new(
-			"ovariable"
+			"ovariable",
 			output = out[, !colnames(out) %in% c(rescol1, rescol2)]
 		)
 		return(out)
