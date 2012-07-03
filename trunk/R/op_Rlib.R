@@ -978,7 +978,7 @@ EvalOutput <- function(variable, ...) { # ... for e.g na.rm
 	}
 	colnames(a)[colnames(a) == rescol] <- "FromData"
 	colnames(b)[colnames(b) %in% c(paste(variable@name, "Result", sep = ""), "Result")] <- "FromFormula" # *
-	# <variablename>: prefix not necessitated for "Result" column of formula output
+	# <variablename> prefix not necessitated for "Result" column of formula output
 	temp <- melt(
 		merge(a, b, all = TRUE, ...), # Will cause problems if dependencies contain non-marginal indices that match with -
 		# marginal indeces in data. Or maybe not.
@@ -1005,7 +1005,7 @@ EvalOutput <- function(variable, ...) { # ... for e.g na.rm
 
 CheckMarginals <- function(variable) {
 	varmar <- colnames(variable@data)[
-		!grepl(paste("^", variable@name, ":", sep=""), colnames(variable@data))&
+		!grepl(paste("^", variable@name, "", sep=""), colnames(variable@data))&
 		!colnames(variable@data) %in% c("Result", "Unit")
 	]
 	# all locs under observation/parameter index should be excluded
