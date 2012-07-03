@@ -621,8 +621,8 @@ setMethod(
 	f = "Math", 
 	signature = signature(x = "ovariable"), 
 	definition = function(x) {
-		test <- paste(x@name, "Result", sep = ":") %in% colnames(out)
-		rescol <- ifelse(test, paste(e1@name, "Result", sep = ":"), "Result")
+		test <- paste(x@name, "Result", sep = "") %in% colnames(out)
+		rescol <- ifelse(test, paste(e1@name, "Result", sep = ""), "Result")
 		x@output[[rescol]] <- callGeneric(x@output[[rescol]])
 		return(x)
 	}
@@ -663,11 +663,11 @@ setMethod(
 	definition = function(e1, e2) {
 		out <- merge(e1, e2)@output
 		
-		test1 <- paste(e1@name, "Result", sep = ":") %in% colnames(out)
-		test2 <- paste(e2@name, "Result", sep = ":") %in% colnames(out)
+		test1 <- paste(e1@name, "Result", sep = "") %in% colnames(out)
+		test2 <- paste(e2@name, "Result", sep = "") %in% colnames(out)
 		
-		rescol1 <- ifelse(test1, paste(e1@name, "Result", sep = ":"), "Result")
-		rescol2 <- ifelse(test2, paste(e2@name, "Result", sep = ":"), "Result")
+		rescol1 <- ifelse(test1, paste(e1@name, "Result", sep = ""), "Result")
+		rescol2 <- ifelse(test2, paste(e2@name, "Result", sep = ""), "Result")
 		
 		if (!(test1 & test2)) {
 			rescol1 <- "Result.x"
@@ -711,10 +711,10 @@ setMethod(
 	signature = signature(x = "ovariable"),
 	definition = function(x) {
 		plot(
-			x    = x@output[, paste("Source", x@name, sep = ".")], 
+			x    = x@output[, paste("Source", x@name, sep = "")], 
 			y    = x@output$Result, 
-			xlab = paste("Source", x@name, sep = "."), 
-			ylab = x@output[x@output[, paste("Source", x@name, sep = ".")] == "Data", "Unit"][1], 
+			xlab = paste("Source", x@name, sep = ""), 
+			ylab = x@output[x@output[, paste("Source", x@name, sep = "")] == "Data", "Unit"][1], 
 			main = x@name
 		)
 	}
@@ -783,7 +783,7 @@ setMethod(
 			form <- data.frame(Source = "Formula", form)
 			object@output <- orbind(dat, form)
 		}
-		colnames(object@output)[colnames(object@output) == "Source"] <- paste("Source", object@name, sep = ".")
+		colnames(object@output)[colnames(object@output) == "Source"] <- paste("Source", object@name, sep = "")
 		object@marginal <- c(TRUE, object@marginal) # This alone is not enough; orbind must operate with marginals as well.
 		return(object)
 	}
@@ -883,7 +883,7 @@ tidy <- function (data, objname = "", idvar = "obs", direction = "wide") {
 		data <- data[, colnames(data) != "obs"]
 		colnames(data)[colnames(data) == "Row"] <- "obs"
 	}
-	if (objname != "") objname <- paste(objname, ":", sep = "")
+	if (objname != "") objname <- paste(objname, "", sep = "")
 	if (direction == "wide") { 
 		if("Observation" %in% colnames(data)) {
 			cols <- levels(data$Observation)
@@ -956,7 +956,7 @@ EvalOutput <- function(variable, ...) { # ... for e.g na.rm
 		rescol <- ifelse(
 			"Result" %in% colnames(variable@data), 
 			"Result", 
-			paste(variable@name, "Result", sep = ":")
+			paste(variable@name, "Result", sep = "")
 		)
 		if (!is.numeric(variable@data[[rescol]])) {
 			a <- interpret(variable@data, rescol = rescol, ...) 
@@ -967,31 +967,31 @@ EvalOutput <- function(variable, ...) { # ... for e.g na.rm
 		stop(paste("No proper data nor formula defined for ", variable@name, "!\n", sep = ""))
 	}
 	if (is.numeric(b)) {
-		a[,paste(variable@name, "Source", sep = ":")] <- "Data"
+		a[,paste(variable@name, "Source", sep = "")] <- "Data"
 		variable@output <- a
 		return(variable)
 	}
 	if (nrow(variable@data) == 0) {
-		b[,paste(variable@name, "Source", sep = ":")] <- "Formula"
+		b[,paste(variable@name, "Source", sep = "")] <- "Formula"
 		variable@output <- b
 		return(variable)
 	}
 	colnames(a)[colnames(a) == rescol] <- "FromData"
-	colnames(b)[colnames(b) %in% c(paste(variable@name, "Result", sep = ":"), "Result")] <- "FromFormula" # *
+	colnames(b)[colnames(b) %in% c(paste(variable@name, "Result", sep = ""), "Result")] <- "FromFormula" # *
 	# <variablename>: prefix not necessitated for "Result" column of formula output
 	temp <- melt(
 		merge(a, b, all = TRUE, ...), # Will cause problems if dependencies contain non-marginal indices that match with -
 		# marginal indeces in data. Or maybe not.
 		measure.vars = c("FromData", "FromFormula"),
-		variable.name = paste(variable@name, "Source", sep = ":"),
-		value.name = paste(variable@name, "Result", sep = ":"),
+		variable.name = paste(variable@name, "Source", sep = ""),
+		value.name = paste(variable@name, "Result", sep = ""),
 		...
 	)
 	levels(
-		temp[[paste(variable@name, "Source", sep = ":")]]
+		temp[[paste(variable@name, "Source", sep = "")]]
 	) <- gsub("^From", "", 
 		levels(
-			temp[[paste(variable@name, "Source", sep = ":")]]
+			temp[[paste(variable@name, "Source", sep = "")]]
 		)
 	)
 	variable@output <- temp
@@ -1009,7 +1009,7 @@ CheckMarginals <- function(variable) {
 		!colnames(variable@data) %in% c("Result", "Unit")
 	]
 	# all locs under observation/parameter index should be excluded
-	varmar <- c(varmar, paste(variable@name, "Source", sep = ":")) # Source is added 
+	varmar <- c(varmar, paste(variable@name, "Source", sep = "")) # Source is added 
 	# by EvalOutput so it should be in the initial list by default. 
 	novarmar <- colnames(variable@data)[!colnames(variable@data) %in% varmar]
 	for (i in as.character(variable@dependencies$Name)){
@@ -1032,44 +1032,44 @@ CheckInput <- function(variable, substitute = FALSE, ...) { # ... e.g for na.rm
 	if (exists(paste("Inp", variable@name, sep = ""))) {
 		inputvar <- get(paste("Inp", variable@name, sep = ""))
 		if (substitute) {
-			colnames(inputvar@output)[colnames(inputvar@output) == paste(inputvar@name, "Result", sep = ":")] <- "InpVarRes"
-			colnames(variable@output)[colnames(variable@output) == paste(variable@name, "Result", sep = ":")] <- "VarRes"
+			colnames(inputvar@output)[colnames(inputvar@output) == paste(inputvar@name, "Result", sep = "")] <- "InpVarRes"
+			colnames(variable@output)[colnames(variable@output) == paste(variable@name, "Result", sep = "")] <- "VarRes"
 			finalvar <- merge(variable, inputvar)
-			finalvar@output[[paste(variable@name, "Result", sep = ":")]] <- ifelse(
+			finalvar@output[[paste(variable@name, "Result", sep = "")]] <- ifelse(
 				is.na(finalvar@output$InpVarRes), 
 				finalvar@output$VarRes, 
 				finalvar@output$InpVarRes
 			)
-			finalvar@output[[paste(variable@name, "Source", sep = ":")]] <- ifelse(
+			finalvar@output[[paste(variable@name, "Source", sep = "")]] <- ifelse(
 				is.na(finalvar@output$InpVarRes), 
-				finalvar@output[[paste(variable@name, "Source", sep = ":")]], 
+				finalvar@output[[paste(variable@name, "Source", sep = "")]], 
 				"Input"
 			)
 			finalvar@output <- finalvar@output[!colnames(finalvar) %in% c("InpVarRes", "VarRes")]
 			return(finalvar)
 		}
 		#variable@output[variable@output$Source,]
-		j <- levels(variable@output[[paste(variable@name, "Source", sep = ":")]])
+		j <- levels(variable@output[[paste(variable@name, "Source", sep = "")]])
 		temp <- variable@output[
-			variable@output[,paste(variable@name, "Source", sep = ":")] == j[1], 
-			!colnames(variable@output) %in% paste(variable@name, "Source", sep = ":")
+			variable@output[,paste(variable@name, "Source", sep = "")] == j[1], 
+			!colnames(variable@output) %in% paste(variable@name, "Source", sep = "")
 		]
 		colnames(temp)[colnames(temp) %in% "Result"] <- j[1]
 		for (i in j[!j == j[1]]) {
 			temp <- merge(
 				temp, 
 				variable@output[
-					variable@output[,paste(variable@name, "Source", sep = ":")] == i, 
-					!colnames(variable@output) %in% paste(variable@name, "Source", sep = ":")
+					variable@output[,paste(variable@name, "Source", sep = "")] == i, 
+					!colnames(variable@output) %in% paste(variable@name, "Source", sep = "")
 				]
 			)
 			colnames(temp)[colnames(temp) %in% "Result"] <- i
 		}
 		variable@output <- melt(
 			temp, 
-			measure.vars = levels(variable@output[,paste(variable@name, "Source", sep = ":")]), 
-			variable.name = paste(variable@name, "Source", sep = ":"), 
-			value.name = paste(variable@name, "Result", sep = ":"), 
+			measure.vars = levels(variable@output[,paste(variable@name, "Source", sep = "")]), 
+			variable.name = paste(variable@name, "Source", sep = ""), 
+			value.name = paste(variable@name, "Result", sep = ""), 
 			...
 		)
 		return(variable)
