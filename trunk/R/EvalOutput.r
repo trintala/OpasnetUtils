@@ -8,11 +8,11 @@ EvalOutput <- function(variable, ...) { # ... for e.g na.rm
 			"Result", 
 			paste(variable@name, "Result", sep = "")
 		)
-		if (!is.numeric(variable@data[[rescol]])) {
+		if (!is.numeric(variable@data[[rescol]]) & !is.na(variable@data[[rescol]])) {
 			a <- interpret(variable@data, rescol = rescol, ...) 
 		} else a <- variable@data
 	} else a <- variable@data
-	b <- variable@formula(variable@dependencies)
+	b <- variable@formula(variable@dependencies, ...)
 	if (is.numeric(b) & nrow(variable@data) == 0) {
 		stop(paste("No proper data nor formula defined for ", variable@name, "!\n", sep = ""))
 	}
