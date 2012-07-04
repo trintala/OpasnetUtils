@@ -8,7 +8,7 @@ EvalOutput <- function(variable, ...) { # ... for e.g na.rm
 			"Result", 
 			paste(variable@name, "Result", sep = "")
 		)
-		if (!is.numeric(variable@data[[rescol]]) & !is.na(variable@data[[rescol]])) {
+		if (!is.numeric(variable@data[[rescol]]) & !is.null(variable@data[[rescol]])) {
 			a <- interpret(variable@data, rescol = rescol, ...) 
 		} else a <- variable@data
 	} else a <- variable@data
