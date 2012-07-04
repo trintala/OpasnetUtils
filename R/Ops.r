@@ -23,7 +23,6 @@ setMethod(
 		out <- new(
 			"ovariable",
 			dependencies = data.frame(Name = c(e1@name, e2@name)),
-			formula = 
 			output = out[, !colnames(out) %in% c(rescol1, rescol2)]
 		)
 		CheckMarginals(out)
