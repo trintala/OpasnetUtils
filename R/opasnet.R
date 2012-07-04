@@ -76,3 +76,36 @@ opasnet.csv <- function(filename, wiki='', ...) {
 	
 	return(read.table(file = textConnection(csv), ...))
 }
+
+# OPASNET.DATA #####################################
+## opasnet.data downloads a file from Finnish Opasnet wiki, English Opasnet wiki, or Opasnet File.
+## Parameters: filename is the URL without the first part (see below), wiki is "opasnet_en", "opasnet_fi", or "M-files".
+## If table is TRUE then a table file for read.table function is assumed; all other parameters are for this read.table function.
+#
+#opasnet.data <- function(filename, wiki = "opasnet_en", table = FALSE, ...)
+#{
+#if (wiki == "opasnet_en") {
+#file <- paste("http://en.opasnet.org/en-opwiki/images/", filename, sep = "")
+#}
+#if (wiki == "opasnet_fi") {
+#file <- paste("http://fi.opasnet.org/fi_wiki/images/", filename, sep = "")
+#}
+#if (wiki == "M-files") {
+#file <- paste("http://http://fi.opasnet.org/fi_wiki/extensions/mfiles/", filename, sep = "")
+#}
+#
+#if(table == TRUE) {
+#file <- re#ad.table(file, header = FALSE, sep = "", quote = "\"'",
+#           dec = ".", row.names, col.names,
+#           as.is = !stringsAsFactors,
+#           na.strings = "NA", colClasses = NA, nrows = -1,
+#           skip = 0, check.names = TRUE, fill = !blank.lines.skip,
+#           strip.white = FALSE, blank.lines.skip = TRUE,
+#           comment.char = "#",
+#           allowEscapes = FALSE, flush = FALSE,
+#           stringsAsFactors = default.stringsAsFactors(),
+#           fileEncoding = "", encoding = "unknown")
+#return(file)
+#}
+#else {return(ge#tURL(file))}
+#}
