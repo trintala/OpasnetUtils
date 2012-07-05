@@ -22,10 +22,10 @@ setMethod(
 		
 		out <- new(
 			"ovariable",
-			dependencies = data.frame(Name = c(e1@name, e2@name)),
+		#	dependencies = data.frame(Name = c(e1@name, e2@name)),
 			output = out[, !colnames(out) %in% c(rescol1, rescol2)]
 		)
-		out <- CheckMarginals(out)
+		out <- CheckMarginals(out, deps = list(e1, e2))
 		return(out)
 	}
 )
@@ -34,7 +34,7 @@ setMethod(
 	f = "Ops", 
 	signature = signature(e1 = "ovariable", e2 = "numeric"), 
 	definition = function(e1, e2) {
-		e2 <- make.ovariable(e2)
+		e2 <- new("ovariable", output = data.frame(Result = e2))
 		out <- callGeneric(e1, e2)
 		return(out)
 	}
@@ -44,8 +44,8 @@ setMethod(
 	f = "Ops", 
 	signature = signature(e1 = "numeric", e2 = "ovariable"), 
 	definition = function(e1, e2) {
-		e1 <- make.ovariable(e1)
-		out <- callGeneric(e2, e1)
+		e1 <- new("ovariable", output = data.frame(Result = e1))
+		out <- callGeneric(e1, e12)
 		return(out)
 	}
 )
