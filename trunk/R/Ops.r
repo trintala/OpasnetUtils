@@ -23,7 +23,7 @@ setMethod(
 		out <- new(
 			"ovariable",
 		#	dependencies = data.frame(Name = c(e1@name, e2@name)),
-			output = out[, !colnames(out) %in% c(rescol1, rescol2)]
+			output = out[, (!colnames(out) %in% c(rescol1, rescol2)) | colnames(out) == "Result"]
 		)
 		out <- CheckMarginals(out, deps = list(e1, e2))
 		return(out)
