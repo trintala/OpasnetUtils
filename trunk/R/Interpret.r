@@ -15,7 +15,7 @@ interpf <- function(
 	minus.exists, 
 	plusminus, 
 	plusminus.length, 
-	plusminus.exists,
+	plusminus.pos,
 	doublePoint, 
 	minus.relevant,
 	dbug = FALSE
@@ -26,7 +26,7 @@ interpf <- function(
 		if(dbug) cat("Triangular distribution. \n")
 		return(rtriangle(n,tempArgs[1],tempArgs[3],tempArgs[2]))
 	}
-	if(brackets.pos >= 0) {
+	if(brackets.pos > 0) {
 		n.minus.inside.brackets <- sum(minus.relevant > brackets.pos & minus.relevant < brackets.pos + brackets.length)
 		imean <- as.numeric(substr(res.char, 1, brackets.pos - 1))
 		if(n.minus.inside.brackets == 1) {
@@ -51,6 +51,10 @@ interpf <- function(
 		warning(paste("Unable to interpret \"", res.char, "\"", sep = ""))
 		return(rep(NA, n))
 	}
+	if(plusminus.pos > 0) {
+		if(dbug) cat("Normal distribution. \n")
+		return(rnorm(n, as.numeric(substr(res.char, 1, plusminus.pos - 1)), as.numeric(substr(res.char, plusminus.pos + plusminus.length, nchar(res.char)))))
+	}
 	if(minus.exists) {
 		if(length(minus.relevant) == 1) {
 			if(as.numeric(substr(res.char, 1, minus.relevant - 1)) / as.numeric(substr(res.char, minus.relevant + 1, nchar(res.char))) >= 1/100) {
@@ -66,10 +70,6 @@ interpf <- function(
 			return(runif(n, as.numeric(substr(res.char, 1, minus.relevant[2] - 1)), as.numeric(substr(res.char, minus.relevant[2] + 1, nchar(res.char)))))
 		}
 	}
-	if(plusminus.exists) {
-		if(dbug) cat("Normal distribution. \n")
-		return(rnorm(n, as.numeric(substr(res.char, 1, plusminus[1] - 1)), as.numeric(substr(res.char, plusminus[1] + 1, nchar(res.char)))))
-	}
 	if(sum(unlist(strsplit(res.char, ""))==";") > 0) {
 		if(dbug) cat("Discrete random samples. \n")
 		return(sample(unlist(strsplit(res.char, ";"), as.numeric), n, replace = TRUE))
@@ -83,20 +83,20 @@ input.interp <- function(res.char, n = 1000, dbug = FALSE) {
 	res.char <- gsub(" ", "", res.char)
 	res.char <- gsub(",", ".", res.char)
 	plusminus <- gregexpr(paste("\\+-|", rawToChar(as.raw(177)), sep = ""), res.char) # saattaa osoittautua ongelmaksi enkoodauksen vuoksi
-	plusminus.length <- sapply(plusminus, length)
-	plusminus.exists <- unlist(plusminus)[cumsum(c(0, plusminus.length[-length(plusminus.length)])) + 1] > 0
+	plusminus.length <- as.numeric(unlist(sapply(plusminus, attributes)[1]))
+	plusminus.pos <- unlist(plusminus)
 	minus <- gregexpr("-", res.char)
 	minus.length <- sapply(minus, length)
 	minus.exists <- unlist(minus)[cumsum(c(0, minus.length[-length(minus.length)])) + 1] > 0
 	brackets <- gregexpr("\\(.*\\)", res.char) # matches for brackets "(...)"
-	brackets.length <- as.numeric(unlist(sapply(brackets, attributes)[1,]))
+	brackets.length <- as.numeric(unlist(sapply(brackets, attributes)[1]))
 	brackets.pos <- unlist(brackets)
 	doublePoint <- gregexpr(":", res.char)
 	out <- list()
 	for(i in 1:length(res.char)) {
 		minus.relevant <- unlist(minus)[(cumsum(c(0, minus.length)) + 1)[i]:cumsum(minus.length)[i]]
 		out[[i]] <- interpf(n, res.char[i], brackets.pos[i], brackets.length[i], minus[i], minus.length[i], minus.exists[i], plusminus[[i]], 
-	plusminus.length[i], plusminus.exists[i], doublePoint[[i]], minus.relevant, dbug)
+	plusminus.length[i], plusminus.pos[i], doublePoint[[i]], minus.relevant, dbug)
 	}
 	out
 }
