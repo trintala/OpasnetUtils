@@ -18,7 +18,11 @@ Fetch2 <- function(dependencies, evaluate = FALSE, ...) {
 		for (i in 1:nrow(dependencies)) {
 			if(!exists(as.character(dependencies$Name[i]))) {
 				objects.get(dependencies$Key[i]) # Key is the R-tools session identifier (shown at the end of the url)
-				if (evaluate) assign(as.character(dependencies$Name[i])) <- EvalOutput(get(as.character(dependencies$Name[i]))) 
+				if (evaluate) assign(
+					as.character(dependencies$Name[i]), 
+					EvalOutput(get(as.character(dependencies$Name[i])), ...), 
+					envir = .GlobalEnv
+				) 
 				# Eval not necessarily needed at this point
 				cat(as.character(dependencies$Name[i]), "fetched successfully!\n")
 			}
