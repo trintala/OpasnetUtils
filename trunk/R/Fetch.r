@@ -13,12 +13,12 @@ fetch <- function(x, direction = "wide") { # Could think of a version where depe
 
 # Fetch2 #################### loads all given dependencies to global memory
 
-Fetch2 <- function(dependencies, evaluate = FALSE) {
+Fetch2 <- function(dependencies, evaluate = FALSE, ...) {
 	if (nrow(dependencies) > 0) {
 		for (i in 1:nrow(dependencies)) {
 			if(!exists(as.character(dependencies$Name[i]))) {
 				objects.get(dependencies$Key[i]) # Key is the R-tools session identifier (shown at the end of the url)
-				if (evaluate) get(as.character(dependencies$Name[i]))@output <- EvalOutput(get(as.character(dependencies$Name[i]))) 
+				if (evaluate) assign(as.character(dependencies$Name[i])) <- EvalOutput(get(as.character(dependencies$Name[i]))) 
 				# Eval not necessarily needed at this point
 				cat(as.character(dependencies$Name[i]), "fetched successfully!\n")
 			}
