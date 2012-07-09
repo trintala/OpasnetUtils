@@ -18,7 +18,7 @@ tidy <- function (data, objname = "", idvar = "obs", direction = "wide") {
 		data <- data[, colnames(data) != "obs"]
 		colnames(data)[colnames(data) == "Row"] <- "obs"
 	}
-	if (objname != "") objname <- paste(objname, "", sep = "")
+	#if (objname != "") objname <- paste(objname, "", sep = "")
 	if (direction == "wide") { 
 		if("Observation" %in% colnames(data)) {
 			cols <- levels(data$Observation)
