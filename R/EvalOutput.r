@@ -13,7 +13,7 @@ EvalOutput <- function(variable, ...) { # ... for e.g na.rm
 		} else a <- variable@data
 	} else a <- variable@data
 	b <- variable@formula(variable@dependencies, ...)
-	if (is.numeric(b) & nrow(variable@data) == 0) {
+	if (is.numeric(b) & nrow(a) == 0) {
 		stop(paste("No proper data nor formula defined for ", variable@name, "!\n", sep = ""))
 	}
 	if (is.numeric(b)) {
@@ -22,7 +22,7 @@ EvalOutput <- function(variable, ...) { # ... for e.g na.rm
 		variable@output <- a
 		return(variable)
 	}
-	if (nrow(variable@data) == 0) {
+	if (nrow(a) == 0) {
 		colnames(b)[
 			colnames(b) %in% paste(c("", variable@name), "Result", sep = "")
 		] <- paste(variable@name, "Result", sep = "")
