@@ -94,9 +94,13 @@ input.interp <- function(res.char, n = 1000, dbug = FALSE) {
 	doublePoint <- gregexpr(":", res.char)
 	out <- list()
 	for(i in 1:length(res.char)) {
-		minus.relevant <- unlist(minus)[(cumsum(c(0, minus.length)) + 1)[i]:cumsum(minus.length)[i]]
-		out[[i]] <- interpf(n, res.char[i], brackets.pos[i], brackets.length[i], minus[i], minus.length[i], minus.exists[i], plusminus[[i]], 
-			plusminus.length[i], plusminus.pos[i], doublePoint[[i]], minus.relevant, dbug)
+		val <- suppressWarnings(as.numeric(res.char[i]))
+		if(is.na(val)) {
+			minus.relevant <- unlist(minus)[(cumsum(c(0, minus.length)) + 1)[i]:cumsum(minus.length)[i]]
+			out[[i]] <- interpf(n, res.char[i], brackets.pos[i], brackets.length[i], minus[i], minus.length[i], minus.exists[i], plusminus[[i]], 
+				plusminus.length[i], plusminus.pos[i], doublePoint[[i]], minus.relevant, dbug
+			)
+		} else out[[i]] <- val
 	}
 	out
 }
