@@ -100,7 +100,7 @@ input.interp <- function(res.char, n = 1000, dbug = FALSE) {
 			out[[i]] <- interpf(n, res.char[i], brackets.pos[i], brackets.length[i], minus[i], minus.length[i], minus.exists[i], plusminus[[i]], 
 				plusminus.length[i], plusminus.pos[i], doublePoint[[i]], minus.relevant, dbug
 			)
-		} else out[[i]] <- val
+		} else out[[i]] <- rep(val, n)
 	}
 	out
 }
