@@ -8,7 +8,7 @@ setMethod(f = "merge",
 		temp <- merge(x@output, y@output, all = TRUE)#, by = test)
 		temp <- new("ovariable", output = temp)
 		#temp <- CheckMarginals(temp, deps = list(x,y))
-		return(x)
+		return(temp)
 	}
 )
 
