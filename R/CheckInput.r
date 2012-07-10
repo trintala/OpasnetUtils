@@ -53,6 +53,6 @@ CheckInput <- function(variable, substitute = FALSE, ...) { # ... e.g for na.rm
 		return(variable)
 	}
 	#cat("No input found for ", variable@name, ". Continuing...\n")
-	cat("done!...\n")
+	cat("done!\n")
 	return(variable)
 }
