@@ -3,6 +3,7 @@
 # returns an ovariable
 
 CheckInput <- function(variable, substitute = FALSE, ...) { # ... e.g for na.rm
+	cat("Checking", variable@name, "inputs...")
 	if (nrow(variable@output) == 0) stop(paste(variable@name, "output not evaluated yet!"))
 	if (exists(paste("Inp", variable@name, sep = ""))) {
 		inputvar <- get(paste("Inp", variable@name, sep = ""))
@@ -21,6 +22,7 @@ CheckInput <- function(variable, substitute = FALSE, ...) { # ... e.g for na.rm
 				"Input"
 			)
 			finalvar@output <- finalvar@output[!colnames(finalvar) %in% c("InpVarRes", "VarRes")]
+			cat("done!...\n")
 			return(finalvar)
 		}
 		#variable@output[variable@output$Source,]
@@ -47,8 +49,10 @@ CheckInput <- function(variable, substitute = FALSE, ...) { # ... e.g for na.rm
 			value.name = paste(variable@name, "Result", sep = ""), 
 			...
 		)
+		cat("done!...\n")
 		return(variable)
 	}
 	#cat("No input found for ", variable@name, ". Continuing...\n")
+	cat("done!...\n")
 	return(variable)
 }
