@@ -3,7 +3,7 @@
 # returns an ovariable
 
 CheckInput <- function(variable, substitute = FALSE, ...) { # ... e.g for na.rm
-	cat("Checking", variable@name, "inputs...")
+	cat("Checking", variable@name, "inputs", "...")
 	if (nrow(variable@output) == 0) stop(paste(variable@name, "output not evaluated yet!"))
 	if (exists(paste("Inp", variable@name, sep = ""))) {
 		inputvar <- get(paste("Inp", variable@name, sep = ""))
