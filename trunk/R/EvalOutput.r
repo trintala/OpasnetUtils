@@ -2,6 +2,7 @@
 ##### Marginals should be also checked and updated here or elsewhere
 
 EvalOutput <- function(variable, ...) { # ... for e.g na.rm 
+	cat("Evaluating", variable@name, "...")
 	if (nrow(variable@data) > 0) {
 		rescol <- ifelse(
 			"Result" %in% colnames(variable@data), 
@@ -14,12 +15,14 @@ EvalOutput <- function(variable, ...) { # ... for e.g na.rm
 	} else a <- variable@data
 	b <- variable@formula(variable@dependencies, ...)
 	if (is.numeric(b) & nrow(a) == 0) {
+		cat("\n")
 		stop(paste("No proper data nor formula defined for ", variable@name, "!\n", sep = ""))
 	}
 	if (is.numeric(b)) {
 		colnames(a)[colnames(a) == rescol] <- paste(variable@name, "Result", sep = "")
 		a[,paste(variable@name, "Source", sep = "")] <- "Data"
 		variable@output <- a
+		cat("done!\n")
 		return(variable)
 	}
 	if (nrow(a) == 0) {
@@ -28,6 +31,7 @@ EvalOutput <- function(variable, ...) { # ... for e.g na.rm
 		] <- paste(variable@name, "Result", sep = "")
 		b[,paste(variable@name, "Source", sep = "")] <- "Formula"
 		variable@output <- b
+		cat("done!\n")
 		return(variable)
 	}
 	colnames(a)[colnames(a) == rescol] <- "FromData"
@@ -49,5 +53,6 @@ EvalOutput <- function(variable, ...) { # ... for e.g na.rm
 		)
 	)
 	variable@output <- temp
+	cat("done!\n")
 	return(variable)
 }
