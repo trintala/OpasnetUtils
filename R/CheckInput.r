@@ -22,23 +22,24 @@ CheckInput <- function(variable, substitute = FALSE, ...) { # ... e.g for na.rm
 				"Input"
 			)
 			finalvar@output <- finalvar@output[!colnames(finalvar) %in% c("InpVarRes", "VarRes")]
-			cat("done!...\n")
+			cat("done!\n")
 			return(finalvar)
 		}
 		#variable@output[variable@output$Source,]
 		j <- levels(variable@output[[paste(variable@name, "Source", sep = "")]])
 		temp <- variable@output[
 			variable@output[,paste(variable@name, "Source", sep = "")] == j[1], 
-			!colnames(variable@output) %in% paste(variable@name, "Source", sep = "")
 		]
-		colnames(temp)[colnames(temp) %in% "Result"] <- j[1]
+		temp <- temp[!colnames(variable@output) %in% paste(variable@name, "Source", sep = "")]
+		colnames(temp)[colnames(temp) %in% paste(c(variable@name, ""), "Result", sep = "")] <- j[1]
 		for (i in j[!j == j[1]]) {
+			temp2 <- variable@output[
+				variable@output[,paste(variable@name, "Source", sep = "")] == i, 
+			]
+			temp2 <- temp2[!colnames(variable@output) %in% paste(variable@name, "Source", sep = "")]
 			temp <- merge(
 				temp, 
-				variable@output[
-					variable@output[,paste(variable@name, "Source", sep = "")] == i, 
-					!colnames(variable@output) %in% paste(variable@name, "Source", sep = "")
-				]
+				temp2
 			)
 			colnames(temp)[colnames(temp) %in% "Result"] <- i
 		}
@@ -49,7 +50,7 @@ CheckInput <- function(variable, substitute = FALSE, ...) { # ... e.g for na.rm
 			value.name = paste(variable@name, "Result", sep = ""), 
 			...
 		)
-		cat("done!...\n")
+		cat("done!\n")
 		return(variable)
 	}
 	#cat("No input found for ", variable@name, ". Continuing...\n")
