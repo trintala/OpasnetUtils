@@ -47,7 +47,7 @@ CheckInput <- function(variable, substitute = FALSE, ...) { # ... e.g for na.rm
 		temp <- merge(temp, inputvar@output)
 		variable@output <- melt(
 			temp, 
-			measure.vars = c(levels(variable@output[,paste(variable@name, "Source", sep = "")]), "Input"), 
+			measure.vars = c(j, "Input"), 
 			variable.name = paste(variable@name, "Source", sep = ""), 
 			value.name = paste(variable@name, "Result", sep = ""), 
 			...
