@@ -8,7 +8,7 @@ CheckInput <- function(variable, substitute = FALSE, ...) { # ... e.g for na.rm
 	if (exists(paste("Inp", variable@name, sep = ""))) {
 		inputvar <- get(paste("Inp", variable@name, sep = ""))
 		if (substitute) {
-			colnames(inputvar@output)[colnames(inputvar@output) == paste(inputvar@name, "Result", sep = "")] <- "InpVarRes"
+			colnames(inputvar@output)[colnames(inputvar@output) == paste(variable@name, "Result", sep = "")] <- "InpVarRes"
 			colnames(variable@output)[colnames(variable@output) == paste(variable@name, "Result", sep = "")] <- "VarRes"
 			finalvar <- merge(variable, inputvar)
 			finalvar@output[[paste(variable@name, "Result", sep = "")]] <- ifelse(
@@ -26,7 +26,7 @@ CheckInput <- function(variable, substitute = FALSE, ...) { # ... e.g for na.rm
 			return(finalvar)
 		}
 		#variable@output[variable@output$Source,]
-		j <- levels(variable@output[[paste(variable@name, "Source", sep = "")]])
+		j <- unique(as.character(variable@output[[paste(variable@name, "Source", sep = "")]]))
 		temp <- variable@output[
 			variable@output[,paste(variable@name, "Source", sep = "")] == j[1], 
 		]
@@ -43,8 +43,8 @@ CheckInput <- function(variable, substitute = FALSE, ...) { # ... e.g for na.rm
 			)
 			colnames(temp)[colnames(temp) %in% "Result"] <- i
 		}
-		colnames(inputvar@output)[colnames(inputvar@output) == paste(inputvar@name, "Result", sep = "")] <- "Input"
-		temp <- merge(temp, inputvar)
+		colnames(inputvar@output)[colnames(inputvar@output) == paste(variable@name, "Result", sep = "")] <- "Input"
+		temp <- merge(temp, inputvar@output)
 		variable@output <- melt(
 			temp, 
 			measure.vars = c(levels(variable@output[,paste(variable@name, "Source", sep = "")]), "Input"), 
