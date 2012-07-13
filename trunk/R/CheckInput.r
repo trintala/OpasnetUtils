@@ -8,22 +8,23 @@ CheckInput <- function(variable, substitute = FALSE, ...) { # ... e.g for na.rm
 	if (exists(paste("Inp", variable@name, sep = ""))) {
 		inputvar <- get(paste("Inp", variable@name, sep = ""))
 		if (substitute) {
-			colnames(inputvar@output)[colnames(inputvar@output) == paste(variable@name, "Result", sep = "")] <- "InpVarRes"
-			colnames(variable@output)[colnames(variable@output) == paste(variable@name, "Result", sep = "")] <- "VarRes"
-			finalvar <- merge(variable, inputvar)
-			finalvar@output[[paste(variable@name, "Result", sep = "")]] <- ifelse(
-				is.na(finalvar@output$InpVarRes), 
-				finalvar@output$VarRes, 
-				finalvar@output$InpVarRes
-			)
-			finalvar@output[[paste(variable@name, "Source", sep = "")]] <- ifelse(
-				is.na(finalvar@output$InpVarRes), 
-				finalvar@output[[paste(variable@name, "Source", sep = "")]], 
-				"Input"
-			)
-			finalvar@output <- finalvar@output[!colnames(finalvar) %in% c("InpVarRes", "VarRes")]
-			cat("done!\n")
-			return(finalvar)
+		#	colnames(inputvar@output)[colnames(inputvar@output) == paste(variable@name, "Result", sep = "")] <- "InpVarRes"
+		#	colnames(variable@output)[colnames(variable@output) == paste(variable@name, "Result", sep = "")] <- "VarRes"
+		#	finalvar <- merge(variable, inputvar)
+		#	finalvar@output[[paste(variable@name, "Result", sep = "")]] <- ifelse(
+		#		is.na(finalvar@output$InpVarRes), 
+		#		finalvar@output$VarRes, 
+		#		finalvar@output$InpVarRes
+		#	)
+		#	finalvar@output[[paste(variable@name, "Source", sep = "")]] <- ifelse(
+		#		is.na(finalvar@output$InpVarRes), 
+		#		finalvar@output[[paste(variable@name, "Source", sep = "")]], 
+		#		"Input"
+		#	)
+		#	finalvar@output <- finalvar@output[!colnames(finalvar) %in% c("InpVarRes", "VarRes")]
+		#	cat("done!\n")
+		#	return(finalvar)
+			return(inputvar)
 		}
 		#variable@output[variable@output$Source,]
 		j <- unique(as.character(variable@output[[paste(variable@name, "Source", sep = "")]]))
