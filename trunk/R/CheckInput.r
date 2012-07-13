@@ -24,7 +24,7 @@ CheckInput <- function(variable, substitute = FALSE, ...) { # ... e.g for na.rm
 		#	finalvar@output <- finalvar@output[!colnames(finalvar) %in% c("InpVarRes", "VarRes")]
 		#	cat("done!\n")
 		#	return(finalvar)
-			inputvar[[paste(variable@name, "Source", sep = "")]] <- "Input"
+			inputvar@output[[paste(variable@name, "Source", sep = "")]] <- "Input"
 			return(inputvar)
 		}
 		#variable@output[variable@output$Source,]
