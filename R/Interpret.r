@@ -59,7 +59,7 @@ interpf <- function(
 		if(length(minus.relevant) == 1) {
 			if(as.numeric(substr(res.char, 1, minus.relevant - 1)) / as.numeric(substr(res.char, minus.relevant + 1, nchar(res.char))) >= 1/100) {
 				if(dbug) cat("Uniform distribution. \n")
-				return(runif(n, as.numeric(substr(res.char, 1, minus.relevant - 1)), as.numeric(substr(res.char, minus.relevant + 1, nchar(res.char[i])))))
+				return(runif(n, as.numeric(substr(res.char, 1, minus.relevant - 1)), as.numeric(substr(res.char, minus.relevant + 1, nchar(res.char)))))
 			} else {
 				if(dbug) cat("Loguniform distribution. \n")
 				return(exp(runif(n, log(as.numeric(substr(res.char, 1, minus.relevant - 1))), log(as.numeric(substr(res.char, minus.relevant + 1, nchar(res.char)))))))
