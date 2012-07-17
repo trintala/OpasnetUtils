@@ -13,14 +13,11 @@ EvalOutput <- function(variable, ...) { # ... for e.g na.rm
 			a <- interpret(variable@data, rescol = rescol, ...) 
 		} else a <- variable@data
 	} else a <- variable@data
-	if (nrow(variable@output) > 0 & length(variable@marginal)) {
-		tempmarginals <- colnames(variable@output)[variable@marginal] 
-	} else {
-		tempmarginals <- character()
-	}
 	b <- variable@formula(variable@dependencies, ...)
 	if (class(b)[1]=="ovariable") {
-		tempmarginals <- c(tempmarginals, colnames(b@output)[b@marginal])
+		if (length(b@marginal) > 0) {
+			tempmarginals <- colnames(variable@output)[variable@marginal] 
+		}
 		b <- b@output
 	}
 	if (is.numeric(b) & nrow(a) == 0) {
