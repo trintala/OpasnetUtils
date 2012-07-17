@@ -14,6 +14,7 @@ EvalOutput <- function(variable, ...) { # ... for e.g na.rm
 		} else a <- variable@data
 	} else a <- variable@data
 	b <- variable@formula(variable@dependencies, ...)
+	tempmarginals <- character()
 	if (class(b)[1]=="ovariable") {
 		if (length(b@marginal) > 0) {
 			tempmarginals <- colnames(variable@output)[variable@marginal] 
