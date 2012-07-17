@@ -32,13 +32,15 @@ interpf <- function(
 		if(n.minus.inside.brackets == 1) {
 			ici <- c(as.numeric(substr(res.char, brackets.pos + 1, minus.relevant[minus.relevant > brackets.pos] - 1)), as.numeric(substr(res.char, 
 				minus.relevant[minus.relevant > brackets.pos] + 1, brackets.pos + brackets.length - 2)))
-			isd <- sum(abs(ici - imean) / 2) / qnorm(0.975)
 			if((ici[2] - imean) / (imean - ici[1]) < 1.5) {
 				if(dbug) cat("Normal distribution. \n")
+				isd <- sum(abs(ici - imean) / 2) / qnorm(0.975)
 				return(rnorm(n, imean, isd))
 			} else {
 				if(dbug) cat("Lognormal distribution. \n")
-				return(rlnorm(n, lmean(imean, isd), lsd(imean, isd))) # menee vaarin koska isd on laskettu normaalijakaumalle
+				isd <- sum(abs(log(ici) - log(imean)) / 2) / qnorm(0.975)
+				return(exp(rnorm(n, log(imean), isd)))
+				#return(rlnorm(n, lmean(imean, isd), lsd(imean, isd))) # menee vaarin koska isd on laskettu normaalijakaumalle
 			}
 		} else 
 		if(n.minus.inside.brackets %in% c(2,3)) {

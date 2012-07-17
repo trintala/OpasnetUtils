@@ -13,7 +13,16 @@ EvalOutput <- function(variable, ...) { # ... for e.g na.rm
 			a <- interpret(variable@data, rescol = rescol, ...) 
 		} else a <- variable@data
 	} else a <- variable@data
+	if (nrow(variable@output) > 0 & length(variable@marginal)) {
+		tempmarginals <- colnames(variable@output)[variable@marginal] 
+	} else {
+		tempmarginals <- character()
+	}
 	b <- variable@formula(variable@dependencies, ...)
+	if (class(b)[1]=="ovariable") {
+		tempmarginals <- c(tempmarginals, colnames(b@output)[b@marginal])
+		b <- b@output
+	}
 	if (is.numeric(b) & nrow(a) == 0) {
 		cat("\n")
 		stop(paste("No proper data nor formula defined for ", variable@name, "!\n", sep = ""))
@@ -31,6 +40,7 @@ EvalOutput <- function(variable, ...) { # ... for e.g na.rm
 		] <- paste(variable@name, "Result", sep = "")
 		b[,paste(variable@name, "Source", sep = "")] <- "Formula"
 		variable@output <- b
+		variable@marginal <- colnames(variable@output) %in% tempmarginals
 		cat("done!\n")
 		return(variable)
 	}
@@ -53,6 +63,7 @@ EvalOutput <- function(variable, ...) { # ... for e.g na.rm
 		)
 	)
 	variable@output <- temp
+	variable@marginal <- colnames(variable@output) %in% tempmarginals
 	cat("done!\n")
 	return(variable)
 }

@@ -3,7 +3,7 @@
 # Returns an ovariable with a marginal devised from the data and upstream variable marginals. 
 # Marginal values for data should be stored into the database somehow
 
-CheckMarginals <- function(variable, deps = NULL, ...) { # extra inputs necessary for ops functionality
+CheckMarginals <- function(variable, deps = NULL, priormarg = TRUE, ...) { # extra inputs necessary for ops functionality
 	cat("Checking", variable@name, "marginals", "...")
 	varmar <- colnames(variable@data)[
 		!grepl(paste("^", variable@name, "", sep=""), colnames(variable@data))&
@@ -13,6 +13,7 @@ CheckMarginals <- function(variable, deps = NULL, ...) { # extra inputs necessar
 	varmar <- c(varmar, paste(variable@name, "Source", sep = "")) # Source is added 
 	# by EvalOutput so it should be in the initial list by default. 
 	novarmar <- colnames(variable@data)[!colnames(variable@data) %in% varmar]
+	if (length(variable@marginal) > 0) varmar <- unique(varmar, colnames(variable@output)[variable@marginal])
 	if (length(deps) > 0) {
 		for (i in deps) {
 			varmar <- unique(c(varmar, colnames(i@output)[i@marginal]))
