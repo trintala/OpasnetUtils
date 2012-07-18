@@ -14,7 +14,7 @@ CheckMarginals <- function(variable, deps = NULL, priormarg = TRUE, ...) { # ext
 	# by EvalOutput so it should be in the initial list by default. 
 	novarmar <- colnames(variable@data)[!colnames(variable@data) %in% varmar]
 	if (priormarg & length(variable@marginal) > 0) {
-		varmar <- unique(varmar, colnames(variable@output)[variable@marginal])
+		varmar <- unique(c(varmar, colnames(variable@output)[variable@marginal]))
 		novarmar <- unique(c(novarmar, colnames(variable@output)[!colnames(variable@output) %in% varmar]))
 	}
 	if (length(deps) > 0) {

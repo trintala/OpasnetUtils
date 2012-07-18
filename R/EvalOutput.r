@@ -20,7 +20,7 @@ EvalOutput <- function(variable, ...) { # ... for e.g na.rm
 			tempmarginals <- c(
 				tempmarginals, 
 				colnames(b@output)[b@marginal], 
-				paste(variable@name, "Source", sep = "")
+				paste(variable@name, "Source", sep = "") # CheckMarginal expects complete a marginal if it exists at all
 			) 
 		}
 		b <- b@output
