@@ -4,11 +4,8 @@
 EvalOutput <- function(variable, ...) { # ... for e.g na.rm 
 	cat("Evaluating", variable@name, "...")
 	if (nrow(variable@data) > 0) {
-		rescol <- ifelse(
-			"Result" %in% colnames(variable@data), 
-			"Result", 
-			paste(variable@name, "Result", sep = "")
-		)
+		colnames(variable@data)[colnames(variable@data) %in% "Result"] <- paste(variable@name, "Result", sep = "")
+		rescol <- paste(variable@name, "Result", sep = "")
 		if (!is.numeric(variable@data[[rescol]]) & !is.null(variable@data[[rescol]])) {
 			a <- interpret(variable@data, rescol = rescol, ...) 
 		} else a <- variable@data
