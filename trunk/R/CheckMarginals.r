@@ -3,7 +3,7 @@
 # Returns an ovariable with a marginal devised from the data and upstream variable marginals. 
 # Marginal values for data should be stored into the database somehow
 
-CheckMarginals <- function(variable, deps = NULL, priormarg = TRUE, ...) { # deps necessary for ops functionality
+CheckMarginals <- function(variable, deps = list(), priormarg = TRUE, ...) { # deps necessary for ops functionality
 	cat("Checking", variable@name, "marginals", "...")
 	varmar <- colnames(variable@data)[
 		!grepl(paste("^", variable@name, "", sep=""), colnames(variable@data))&
@@ -30,7 +30,9 @@ CheckMarginals <- function(variable, deps = NULL, priormarg = TRUE, ...) { # dep
 	}
 	varmar <- varmar[!varmar %in% novarmar]
 	variable@marginal <- colnames(variable@output) %in% varmar
-	cat(paste(colnames(variable@output)[variable@marginal], collapse = ", "), "recognized as marginals.")
+	if (sum(variable@marginal) > 0) {
+		cat(paste(colnames(variable@output)[variable@marginal], collapse = ", "), "recognized as marginal(s).\n")
+	} else {cat("none recognized.\n")}
 	#cat("done!\n")
 	return(variable)
 }
