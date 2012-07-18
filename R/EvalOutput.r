@@ -17,7 +17,11 @@ EvalOutput <- function(variable, ...) { # ... for e.g na.rm
 	tempmarginals <- character()
 	if (class(b)[1]=="ovariable") {
 		if (length(b@marginal) > 0) {
-			tempmarginals <- colnames(variable@output)[variable@marginal] 
+			tempmarginals <- c(
+				tempmarginals, 
+				colnames(b@output)[b@marginal], 
+				paste(variable@name, "Source", sep = "")
+			) 
 		}
 		b <- b@output
 	}
@@ -34,11 +38,11 @@ EvalOutput <- function(variable, ...) { # ... for e.g na.rm
 	}
 	if (nrow(a) == 0) {
 		colnames(b)[
-			colnames(b) %in% paste(c("", variable@name), "Result", sep = "")
+			colnames(b) %in% "Result"
 		] <- paste(variable@name, "Result", sep = "")
 		b[,paste(variable@name, "Source", sep = "")] <- "Formula"
 		variable@output <- b
-		variable@marginal <- colnames(variable@output) %in% tempmarginals
+		if (length(tempmarginals) > 1) variable@marginal <- colnames(variable@output) %in% tempmarginals
 		cat("done!\n")
 		return(variable)
 	}
@@ -61,7 +65,7 @@ EvalOutput <- function(variable, ...) { # ... for e.g na.rm
 		)
 	)
 	variable@output <- temp
-	variable@marginal <- colnames(variable@output) %in% tempmarginals
+	if (length(tempmarginals) > 1) variable@marginal <- colnames(variable@output) %in% tempmarginals
 	cat("done!\n")
 	return(variable)
 }
