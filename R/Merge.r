@@ -1,11 +1,11 @@
 # SETMETHOD MERGE ########### merge of ovariables merges the 'output' slot by index columns except 'Unit'.
 setMethod(f = "merge", 
 	signature = signature(x = "ovariable", y = "ovariable"),
-	definition = function(x, y) {
+	definition = function(x, y, all = TRUE, ...) {
 		if (nrow(x@output) == 0) stop("X output missing!")
 		if (nrow(y@output) == 0) stop("Y output missing!")
 		#test <- intersect(c(colnames(x@output[x@marginal]), colnames(y@output[y@marginal])))
-		temp <- merge(x@output, y@output, all = TRUE)#, by = test)
+		temp <- merge(x@output, y@output, all = all, ...)#, by = test)
 		temp <- new("ovariable", output = temp)
 		#temp <- CheckMarginals(temp, deps = list(x,y))
 		return(temp)
