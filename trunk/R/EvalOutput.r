@@ -30,7 +30,7 @@ EvalOutput <- function(variable, indent = 0, ...) { # ... for e.g na.rm
 		colnames(a)[colnames(a) == rescol] <- paste(variable@name, "Result", sep = "")
 		a[,paste(variable@name, "Source", sep = "")] <- "Data"
 		variable@output <- a
-		cat("done!\n")
+		cat(rep("-", indent), "done!\n")
 		return(variable)
 	}
 	if (nrow(a) == 0) {
@@ -40,7 +40,7 @@ EvalOutput <- function(variable, indent = 0, ...) { # ... for e.g na.rm
 		b[,paste(variable@name, "Source", sep = "")] <- "Formula"
 		variable@output <- b
 		if (length(tempmarginals) > 1) variable@marginal <- colnames(variable@output) %in% tempmarginals
-		cat("done!\n")
+		cat(rep("-", indent), "done!\n")
 		return(variable)
 	}
 	colnames(a)[colnames(a) == rescol] <- "FromData"
@@ -63,6 +63,6 @@ EvalOutput <- function(variable, indent = 0, ...) { # ... for e.g na.rm
 	)
 	variable@output <- temp
 	if (length(tempmarginals) > 1) variable@marginal <- colnames(variable@output) %in% tempmarginals
-	cat("done!\n")
+	cat(rep("-", indent), "done!\n")
 	return(variable)
 }
