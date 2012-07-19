@@ -24,7 +24,7 @@ Fetch2 <- function(dependencies, evaluate = FALSE, indent = 0, ...) {
 					envir = .GlobalEnv
 				) 
 				# Eval not necessarily needed at this point
-				cat("\n", rep("\t", indent), as.character(dependencies$Name[i]), "fetched successfully!\n")
+				cat("\n", rep("-", indent), as.character(dependencies$Name[i]), "fetched successfully!\n")
 			}
 		}
 	}

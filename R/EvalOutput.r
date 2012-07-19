@@ -2,7 +2,7 @@
 ##### Marginals should be also checked and updated here or elsewhere
 
 EvalOutput <- function(variable, indent = 0, ...) { # ... for e.g na.rm 
-	cat(rep("\t", indent), "Evaluating", variable@name, "...")
+	cat(rep("-", indent), "Evaluating", variable@name, "...")
 	if (nrow(variable@data) > 0) {
 		colnames(variable@data)[colnames(variable@data) %in% "Result"] <- paste(variable@name, "Result", sep = "")
 		rescol <- paste(variable@name, "Result", sep = "")

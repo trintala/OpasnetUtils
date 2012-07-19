@@ -4,7 +4,7 @@
 # Marginal values for data should be stored into the database somehow
 
 CheckMarginals <- function(variable, deps = list(), priormarg = TRUE, indent = 0, ...) { # deps necessary for ops functionality
-	cat(rep("\t", indent), "Checking", variable@name, "marginals", "...")
+	cat(rep("-", indent), "Checking", variable@name, "marginals", "...")
 	varmar <- colnames(variable@data)[
 		!grepl(paste("^", variable@name, "", sep=""), colnames(variable@data))&
 		!colnames(variable@data) %in% c("Result", "Unit")
