@@ -2,8 +2,8 @@
 # takes an ovariable as argument
 # returns an ovariable
 
-CheckInput <- function(variable, substitute = FALSE, ...) { # ... e.g for na.rm
-	cat("Checking", variable@name, "inputs", "...")
+CheckInput <- function(variable, substitute = FALSE, indent = 0, ...) { # ... e.g for na.rm
+	cat(rep("\t", indent), "Checking", variable@name, "inputs", "...")
 	if (nrow(variable@output) == 0) stop(paste(variable@name, "output not evaluated yet!"))
 	if (exists(paste("Inp", variable@name, sep = ""))) {
 		inputvar <- get(paste("Inp", variable@name, sep = ""))
