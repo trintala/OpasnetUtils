@@ -13,7 +13,7 @@ fetch <- function(x, direction = "wide") { # Could think of a version where depe
 
 # Fetch2 #################### loads all given dependencies to global memory
 
-Fetch2 <- function(dependencies, evaluate = FALSE, ...) {
+Fetch2 <- function(dependencies, evaluate = FALSE, indent = 0, ...) {
 	if (nrow(dependencies) > 0) {
 		for (i in 1:nrow(dependencies)) {
 			if(!exists(as.character(dependencies$Name[i]))) {
@@ -24,7 +24,7 @@ Fetch2 <- function(dependencies, evaluate = FALSE, ...) {
 					envir = .GlobalEnv
 				) 
 				# Eval not necessarily needed at this point
-				cat("\n", as.character(dependencies$Name[i]), "fetched successfully!\n")
+				cat("\n", rep("\t", indent), as.character(dependencies$Name[i]), "fetched successfully!\n")
 			}
 		}
 	}

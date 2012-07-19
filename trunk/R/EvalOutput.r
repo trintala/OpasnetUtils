@@ -1,8 +1,8 @@
 # EvalOutput #################### evaluates the output slot of ovariables
 ##### Marginals should be also checked and updated here or elsewhere
 
-EvalOutput <- function(variable, ...) { # ... for e.g na.rm 
-	cat("Evaluating", variable@name, "...")
+EvalOutput <- function(variable, indent = 0, ...) { # ... for e.g na.rm 
+	cat(rep("\t", indent), "Evaluating", variable@name, "...")
 	if (nrow(variable@data) > 0) {
 		colnames(variable@data)[colnames(variable@data) %in% "Result"] <- paste(variable@name, "Result", sep = "")
 		rescol <- paste(variable@name, "Result", sep = "")
@@ -10,7 +10,7 @@ EvalOutput <- function(variable, ...) { # ... for e.g na.rm
 			a <- interpret(variable@data, rescol = rescol, ...) 
 		} else a <- variable@data
 	} else a <- variable@data
-	b <- variable@formula(variable@dependencies, ...)
+	b <- variable@formula(variable@dependencies, indent = indent + 1, ...)
 	tempmarginals <- character()
 	if (class(b)[1]=="ovariable") {
 		if (length(b@marginal) > 0) {
