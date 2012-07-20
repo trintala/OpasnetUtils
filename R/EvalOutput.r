@@ -30,7 +30,7 @@ EvalOutput <- function(variable, indent = 0, ...) { # ... for e.g na.rm
 		colnames(a)[colnames(a) == rescol] <- paste(variable@name, "Result", sep = "")
 		a[,paste(variable@name, "Source", sep = "")] <- "Data"
 		variable@output <- a
-		cat(rep("-", indent), "done!\n")
+		cat("done!\n")
 		return(variable)
 	}
 	if (nrow(a) == 0) {
