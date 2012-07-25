@@ -17,6 +17,7 @@ Fetch2 <- function(dependencies, evaluate = FALSE, indent = 0, ...) {
 	if (nrow(dependencies) > 0) {
 		for (i in 1:nrow(dependencies)) {
 			if(!exists(as.character(dependencies$Name[i]))) {
+				if (is.na(dependencies$Key[i]) | dependencies$Key[i] == "") stop(paste("No key given for dependent variable", dependencies$Name))
 				objects.get(dependencies$Key[i]) # Key is the R-tools session identifier (shown at the end of the url)
 				if (evaluate) assign(
 					as.character(dependencies$Name[i]), 
