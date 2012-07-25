@@ -6,9 +6,11 @@ ComputeDependencies <- function(dependencies, forceEval = FALSE, indent = 0, ...
 	cat("\n")
 	Fetch2(dependencies, indent = indent, ...)
 	for (i in as.character(dependencies$Name)) {
-		if (nrow(get(i)@output) == 0 | forceEval) assign(i, EvalOutput(get(i), indent = indent, ...), envir = .GlobalEnv)
-		assign(i, CheckMarginals(get(i), indent = indent, ...), envir = .GlobalEnv)
-		assign(i, CheckInput(get(i), indent = indent, ...), envir = .GlobalEnv)
+		if (class(get(i)) == "ovariable") {
+			if (nrow(get(i)@output) == 0 | forceEval) assign(i, EvalOutput(get(i), indent = indent, ...), envir = .GlobalEnv)
+			assign(i, CheckMarginals(get(i), indent = indent, ...), envir = .GlobalEnv)
+			assign(i, CheckInput(get(i), indent = indent, ...), envir = .GlobalEnv)
+		}
 	}
 	cat("\n")
 }
