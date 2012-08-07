@@ -37,5 +37,6 @@ export(
 	Ops,
 	Math,
 	GetData,
-	CheckDecisions
+	CheckDecisions,
+	DecisionTableParser
 )
