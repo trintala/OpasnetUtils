@@ -122,7 +122,7 @@ CheckDecisions <- function(variable) {
 	return(variable)
 }
 
-EffectPreset(name) {
+EffectPreset <- function(name) {
 	if (name == "Add") return(function(x, y) {x + y})
 	if (name == "Multiply") return(function(x, y) {x * y})
 	if (name == "Replace") return(function(x, y) {y})
