@@ -33,7 +33,7 @@ CheckDecisions <- function(variable) {
 		
 		# Initialization
 		
-		dec <- get(paste("Dec", variable@name, sep = "")
+		dec <- get(paste("Dec", variable@name, sep = ""))
 		temp <- dec@dectable
 		temp2 <- data.frame(ignoremeiamadummy = NA)
 		for (i in unique(as.character(temp$Decision))) {
