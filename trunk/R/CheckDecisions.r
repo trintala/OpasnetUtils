@@ -9,6 +9,7 @@ setClass(
 		dectable	= data.frame(),
 		condition	= list(function(variable){0}),
 		effect		= list(function(variable){0})
+	)
 )
 
 
