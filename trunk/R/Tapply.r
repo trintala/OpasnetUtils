@@ -6,7 +6,7 @@
 
 setMethod(
 	f = "tapply",
-	signature = signature(X = "ovariable")
+	signature = signature(X = "ovariable"),
 	definition = function(X, INDEX = NULL, FUN = NULL, cols = NULL, ..., simplify = TRUE) {
 		out <- X@output
 		marginals <- colnames(out)[X@marginal]
