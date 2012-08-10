@@ -13,7 +13,7 @@ op_baseGetData <- function(dsn, ident, include = NULL, exclude = NULL, series_id
 	
 	if (dsn == 'heande_base' && args$user != 'heande')
 	{
-		return("Heande base is accessible only for the Heande Wiki!")
+		stop("Heande base is accessible only for the Heande Wiki!")
 	}
 		
 	if (use.utf8) db <- odbcConnect(dsn, DBMSencoding = "UTF-8") else db <- odbcConnect(dsn)
