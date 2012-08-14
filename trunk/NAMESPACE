@@ -38,5 +38,9 @@ export(
 	Math,
 	GetData,
 	CheckDecisions,
-	DecisionTableParser
+	DecisionTableParser,
+	tapply,
+	CollapseMarginal,
+	CheckCollapse,
+	CollapseTableParser
 )
