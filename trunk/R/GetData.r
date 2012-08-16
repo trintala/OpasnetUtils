@@ -59,23 +59,18 @@ GetData <- function(ident, act = NULL) {
 			)
 		)
 		
-		#gregexpr("^\\[|\\]$", temp$data)
-		temp <- gsub("^\\[|\\]$", "", temp$data)
-		#gregexpr("\\},\\{", temp)
-		temp <- gsub("^\\{|\\}$", "", temp)
-		temp <- strsplit(temp, split = "\\},\\{")
-		#gregexpr("\\(.*\\)",temp[[1]][1]) # check for iterated cells
-		temp <- lapply(temp, strsplit, split = ",")
-		temp <- temp[[1]]
-		temp <- lapply(temp, strsplit, split = ":")
-		#for (i in temp) {
-		#	a <- as.data.frame(i)
-		#	colnames(a) <- unlist(a[1,])
-		#}
-		#temp <- lapply(temp, as.data.frame)
-		#temp <- lapply(temp, as.matrix)
-		temp <- lapply(temp, dataframefier)
+		temp <- fromJSON(temp$data)
+		
+		temp <- lapply(temp, list.to.data.frame)
+		
+		lengths <- lapply(temp, nrow)
+		
 		temp <- do.call("rbind", temp)
+		
+		if (sum(unlist(lengths) > 1) > 0) {
+			iterations <- lapply(lengths, f.iter)
+			temp$Iter <- unlist(iterations)
+		}
 		
 		out <- rbind(out, temp)
 	}
@@ -102,21 +97,24 @@ GetData <- function(ident, act = NULL) {
 	return(out)
 }
 
-dataframefier <- function(x) {
-	x <- as.data.frame(x)
-	colnames(x) <- unlist(x[1,])
-	x <- x[-1,]
+list.to.data.frame <- function(x) { # As.data.frame equivalent, but allows one list as longer than others. 
+	do.call("data.frame", x) # Which is the case with opb2's probabilistic results. 
 }
 
-#objlist <- fromJSON(
-#	paste(
-#		readLines(
-#			paste(
-#				"http://cl1.opasnet.org/opasnet_base_2/index.php", 
-#				#ident, 
-#				sep = ""
-#			)
-#		), 
-#		collapse = ""
-#	)
-#)
+f.iter <- function(x) {
+	1:x
+}
+
+objlist <- fromJSON(
+	paste(
+		readLines(
+			paste(
+				"http://cl1.opasnet.org/opasnet_base_2/index.php", 
+				#ident, 
+				sep = ""
+			)
+		), 
+		collapse = ""
+	)
+)
+
