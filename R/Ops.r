@@ -25,7 +25,7 @@ setMethod(
 		#	dependencies = data.frame(Name = c(e1@name, e2@name)),
 			output = out[, (!colnames(out) %in% c(rescol1, rescol2)) | colnames(out) == "Result"]
 		)
-		out <- CheckMarginals(out, deps = list(e1, e2))
+		out <- CheckMarginals(out, deps = list(e1, e2), verbose = FALSE)
 		return(out)
 	}
 )
