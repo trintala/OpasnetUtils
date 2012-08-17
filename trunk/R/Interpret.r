@@ -80,7 +80,7 @@ interpf <- function(
 	return(rep(NA, n))
 }
 
-# The next function processes character strings and loops the interpretation function.
+# The following function processes character strings and loops the interpretation function.
 input.interp <- function(res.char, n = 1000, dbug = FALSE) {
 	res.char <- gsub(" ", "", res.char)
 	res.char <- gsub(",", ".", res.char)
@@ -113,7 +113,7 @@ f.iter <- function(x) {
 }
 
 # Data.frame wrapper for the functions.
-interpret <- function(idata, N = 1000, rescol = "Result", dbug = FALSE) {
+interpret <- function(idata, N = 1000, rescol = "Result", dbug = FALSE, ...) {
 	if (!is.data.frame(idata)) idata <- as.data.frame(idata)
 	if (ncol(idata) == 0) stop("Empty data.frame!")
 	if (!rescol %in% colnames(idata)) stop(paste("No \"", rescol, "\" column found", sep = ""))
