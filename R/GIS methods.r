@@ -1,7 +1,20 @@
+# Earth radius: quadratic mean or root mean square approximation of the average great-circle  
+# circumference derives a radius of about 6372.8 km (Wikipedia).
+
+earth.radius <- 6372.8
+
+central.angle <- function(theta1, phi1, theta2, phi2) {
+	2 * asin((sin((theta1 - theta2) / 2)^2 + cos(theta1) * cos(theta2) * sin((phi1 - phi2) / 2)^2)^0.5)
+}
+
+dtheta.dy <- function(r) 1 / r # spherical coordinate theta derived with respect to y as projected on the spherical surface
+
+dphi.dx <- function(theta, r) 1 / (cos(theta) * r) # spherical coordinate phi derived with respect to x as projected on the spehrical surface
+
+LaPerKm <- dtheta.dy(earth.radius)
+LoPerKm <- dphi.dx(LA, earth.radius)
+
 GIS.Exposure <- function(Concentration, LO, LA, distx = 10.5, disty = 10.5) {
-	LaPerKm <- dtheta.dy(earth.radius)
-	LoPerKm <- dphi.dx(LA, earth.radius)
-	
 	# Population
 	Population <- function(LO, LA, distx = distx, disty = disty, LaPerKm = LaPerKm, LoPerKm = LoPerKm) {
 		GetPopLocs <- function(series_id = NULL) {

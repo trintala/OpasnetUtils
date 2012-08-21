@@ -25,6 +25,7 @@ CheckInput <- function(variable, substitute = FALSE, indent = 0, ...) { # ... e.
 		#	cat("done!\n")
 		#	return(finalvar)
 			inputvar@output[[paste(variable@name, "Source", sep = "")]] <- "Input"
+			cat("done!\n")
 			return(inputvar)
 		}
 		#variable@output[variable@output$Source,]

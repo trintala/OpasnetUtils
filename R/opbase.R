@@ -320,7 +320,7 @@ opbase.old.write <- function(
 	
 	# Add page to database (if it doesn't already exist)
 	if (is.null(ident)) if (interactive()) ident <- readline(paste("What is the identifier of this object?", 
-		"\n", sep = "")) else stop("indentifier of object no given")
+		"\n", sep = "")) else stop("Identifier of object not given!\n")
 	obj_id <- sqlQuery(db, paste('SELECT id FROM obj WHERE ident = "', ident, '"', sep = ''))[1,1]
 	if (is.na(obj_id)) {
 		
@@ -329,9 +329,9 @@ opbase.old.write <- function(
 		if (substr(ident, 1,5)=="Op_fi") {wiki_id <- 2; page <- substr(ident, 6, nchar(ident))} else {
 		if (substr(ident, 1,6)=="Heande") {wiki_id <- 6; page <- substr(ident, 7, nchar(ident))} else {
 		if (substr(ident, 1,4)=="Erac") {wiki_id <- 6; page <- substr(ident, 5, nchar(ident))} else {
-		wiki_id <- 0; page <- 0; warning("No wiki id found in ident, writing zero.")}}}}
+		wiki_id <- 0; page <- 0; warning("No wiki id found in ident, writing zero.\n")}}}}
 		page <- as.numeric(page)
-		if (is.na(page)) stop("could not convert characters following the wiki ident into a page number")
+		if (is.na(page)) stop("Could not convert characters following the wiki ident into a page number!\n")
 		
 		# Name etc.
 		if (is.null(name)) if (interactive()) name <- readline(paste("What is the name of this object?", 
@@ -350,12 +350,12 @@ opbase.old.write <- function(
 		} else stop("uploader name not given")
 	series_id <- sqlQuery(db, paste("SELECT series_id FROM actobj WHERE obj_id = ", obj_id, " ORDER BY series_id DESC LIMIT 1", 
 		sep = ""))[1,1]
-	if (is.na(series_id)==FALSE) {if (is.null(acttype)==TRUE) {if (interactive()) {acttype <- readline(paste("What type of upload", 
+	if (nrow(series_id)) {if (is.null(acttype)==TRUE) {if (interactive()) {acttype <- readline(paste("What type of upload", 
 		" is this? 4 - new data to replace any existing, 5 - new data to be appended to existing data (must have the same", 
 		" indices).", "\n", sep = "")) 
 		} else acttype <- 4 
 		}} else acttype <- 4
-	if (!(acttype%in%c(4,5))) stop ("proper acttype not given")
+	if (!(acttype%in%c(4,5))) stop ("Proper acttype not given!\n")
 	
 	sqlQuery(db, paste('INSERT INTO act (acttype_id, who, comments) VALUES (', acttype, ',"', who, '","R upload")', sep = ''))
 	act_id <- sqlQuery(db, paste('SELECT id FROM act WHERE who = "', who,'" AND comments = "R upload" ORDER BY id DESC LIMIT 1', 
