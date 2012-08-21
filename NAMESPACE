@@ -43,5 +43,6 @@ export(
 	tapply,
 	CollapseMarginal,
 	CheckCollapse,
-	CollapseTableParser
+	CollapseTableParser,
+	GIS.Exposure
 )
