@@ -45,7 +45,7 @@ setMethod(
 	signature = signature(e1 = "numeric", e2 = "ovariable"), 
 	definition = function(e1, e2) {
 		e1 <- new("ovariable", output = data.frame(Result = e1))
-		out <- callGeneric(e1, e12)
+		out <- callGeneric(e1, e2)
 		return(out)
 	}
 )
