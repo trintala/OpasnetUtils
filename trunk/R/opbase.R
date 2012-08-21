@@ -139,7 +139,7 @@ opbase.old.data <- function(dsn, ident, ...) {
 		stop("Heande base is accessible only for the Heande Wiki!")
 	}
 	
-	return(opbase.old.read(dsn, ident, include, exclude, series_id, iterations))
+	return(opbase.old.read(dsn, ident, ...))
 }
 
 # Write data to the old opasnet database
