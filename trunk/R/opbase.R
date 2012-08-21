@@ -285,8 +285,8 @@ opbase.old.write <- function(
 	n.obs.const = FALSE, 
 	maxrows = 50000, # limits number of rows passed in a single query
 	use.utf8 = TRUE, 
-	use.utf8.read = TRUE, l
-	atin1.2.utf8.conv.write = TRUE, 
+	use.utf8.read = TRUE,
+	latin1.2.utf8.conv.write = TRUE, 
 	utf8.2.latin1.conv.read = TRUE
 ) {
 	# Coerce input into a data frame if it isn't one already; get rid of empty cells
