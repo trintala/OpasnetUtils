@@ -1,11 +1,12 @@
-import(methods, RODBC, rjson, RCurl, rbugs, rjags, RgoogleMaps, xtable, reshape2, triangle)
+import(methods, RODBC, rjson, RCurl, rbugs, rjags, RgoogleMaps, xtable, reshape2, triangle, httpRequest)
 export(
 	op_baseGetData,
 	op_baseGetLocs,
 	op_baseWrite,
 	opbase.data,
-	opbase.upload,
-	opbase.locations,
+	opbase.old.data,
+	opbase.old.upload,
+	opbase.old.locations,
 	opasnet.data,
 	opasnet.csv,
 	objects.get,
