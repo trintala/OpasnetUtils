@@ -27,7 +27,7 @@ tidy <- function (data, objname = "", idvar = "obs", direction = "wide") {
 		} else if("Havainto" %in% colnames(data)) {
 			widecol <- "Havainto"
 		} else widecol <- NA
-		if(widecol != NA) {
+		if(!is.na(widecol)) {
 			cols <- levels(data$Observation)
 			data <- reshape(data, idvar = idvar, timevar = widecol, v.names = "Result", direction = "wide")
 			data <- data[colnames(data) != "obs"]
