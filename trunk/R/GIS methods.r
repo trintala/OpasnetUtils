@@ -1,3 +1,5 @@
+# General GIS related functions
+
 # Earth radius: quadratic mean or root mean square approximation of the average great-circle  
 # circumference derives a radius of about 6372.8 km (Wikipedia).
 
@@ -9,13 +11,20 @@ central.angle <- function(theta1, phi1, theta2, phi2) {
 
 dtheta.dy <- function(r) 1 / r # spherical coordinate theta derived with respect to y as projected on the spherical surface
 
-dphi.dx <- function(theta, r) 1 / (cos(theta) * r) # spherical coordinate phi derived with respect to x as projected on the spehrical surface
+dphi.dx <- function(r, theta) 1 / (cos(theta) * r) # spherical coordinate phi derived with respect to x as projected on the spehrical surface
 
-LaPerKm <- dtheta.dy(earth.radius)
-LoPerKm <- dphi.dx(LA, earth.radius)
+##############################
+# GIS.Exposure
+##########################
+# Exposure computes using a given concentration matrix and protected population data from Heande
+#########################################
 
-GIS.Exposure <- function(Concentration, LO, LA, distx = 10.5, disty = 10.5) {
+GIS.Exposure <- function(Concentration.matrix, LO, LA, distx = 10.5, disty = 10.5, resolution = 1) {
+	LaPerKm <- dtheta.dy(earth.radius)
+	LoPerKm <- dphi.dx(earth.radius, LA)
+	
 	# Population
+	
 	Population <- function(LO, LA, distx = distx, disty = disty, LaPerKm = LaPerKm, LoPerKm = LoPerKm) {
 		GetPopLocs <- function(series_id = NULL) {
 			dsn <- "heande_base"
@@ -67,8 +76,8 @@ GIS.Exposure <- function(Concentration, LO, LA, distx = 10.5, disty = 10.5) {
 	
 	Population <- Population(LO, LA)
 	
-	Population$LObin <- cut(Population$Longitude, breaks = LO + (-distx:distx) * LoPerKm)
-	Population$LAbin <- cut(Population$Latitude, breaks = LA + (-disty:disty) * LaPerKm)
+	Population$LObin <- cut(Population$Longitude, breaks = LO + seq(-distx, distx, resolution) * LoPerKm)
+	Population$LAbin <- cut(Population$Latitude, breaks = LA + seq(-disty, disty, resolution) * LaPerKm)
 	
 	Population <- new(
 		"ovariable",
@@ -77,13 +86,52 @@ GIS.Exposure <- function(Concentration, LO, LA, distx = 10.5, disty = 10.5) {
 	
 	Population@marginal <- colnames(temp@output) %in% c("Iter", "LObin", "LAbin")
 	
-	# Assume dx dy given in meters
-	Concentration@output$LObin <- cut(Concentration$dx / 1000 * LoPerKm + LO, breaks = LO + (-distx:distx) * LoPerKm)
-	Concentration@output$LAbin <- cut(Concentration$dy / 1000 * LaPerKm + LA, breaks = LA + (-disty:disty) * LaPerKm)
-	
 	temp <- Population * Concentration
 	
 	temp <- tapply(temp, cols = c("LObin", "LAbin"), sum)
 	
 	return(temp)
+}
+
+######################################################
+# GIS.Concentration.matrix 
+##############################################
+# Computes a concentration matrix from given emission and coordinates, based on random sampling PILTTI source-receptor-matrices.
+##################################
+
+GIS.Concentration.matrix <- function(Emission, LO, LA, distx = 10.5, disty = 10.5, resolution = 1, N = 1000, ...) { # Emission unit should be Mga^-1
+	LaPerKm <- dtheta.dy(earth.radius)
+	LoPerKm <- dphi.dx(earth.radius, LA)
+	
+	# PILTTI source-receptor-matrices
+	
+	PILTTI.matrix <- tidy(op_baseGetData("opasnet_base", "Op_en5797")) # unit: ugm^-3/Mga^-1
+	
+	PILTTI.matrix$dy <- as.numeric(as.character(PILTTI.matrix$dy))
+	PILTTI.matrix$dx <- as.numeric(as.character(PILTTI.matrix$dx))
+	
+	colnames(PILTTI.matrix)[colnames(PILTTI.matrix)=="Result"] <- "PILTTI.matrixResult"
+	
+	# Sampling
+	
+	ID.list <- tapply(1:nrow(PILTTI.matrix), PILTTI.matrix[,c("Kaupunki", "Vuosi", "Tyyppi")], list)
+	ID.list.samples <- sample(ID.list, N, replace = TRUE)
+	ID.sample.lengths <- sapply(ID.list.samples, length)
+	ID.vec <- unlist(ID.list.samples)
+	PILTTI.matrix <- PILTTI.matrix[ID.vec,]
+	PILTTI.matrix$Iter <- rep(1:N, each = ID.sample.lengths)
+	
+	# Assume dx dy given in meters
+	PILTTI.matrix$LObin <- cut(PILTTI.matrix$dx / 1000 * LoPerKm + LO, breaks = LO + seq(-distx, distx, resolution) * LoPerKm)
+	PILTTI.matrix$LAbin <- cut(PILTTI.matrix$dy / 1000 * LaPerKm + LA, breaks = LA + seq(-disty, disty, resolution) * LaPerKm)
+	
+	PILTTI.matrix <- new(
+		"ovariable",
+		name = "PILTTI.matrix",
+		output = PILTTI.matrix,
+		marginal = colnames(PILTTI.matrix) %in% c("LObin", "LAbin", "Iter")
+	)
+	
+	out <- PILTTI.matrix * Emission
+	return(out)
 }
