@@ -9,9 +9,11 @@ central.angle <- function(theta1, phi1, theta2, phi2) {
 	2 * asin((sin((theta1 - theta2) / 2)^2 + cos(theta1) * cos(theta2) * sin((phi1 - phi2) / 2)^2)^0.5)
 }
 
-dtheta.dy <- function(r) 1 / r # spherical coordinate theta derived with respect to y as projected on the spherical surface
+# difference in theta per difference of surface projected y on a spherical surface in degrees / km
+dtheta.dy <- function(r) 1 / (2 * pi * r) * 180 / pi
 
-dphi.dx <- function(r, theta) 1 / (cos(theta) * r) # spherical coordinate phi derived with respect to x as projected on the spehrical surface
+# difference in phi per difference of surface projected x on a spherical surface in degrees / km
+dphi.dx <- function(r, theta) 1 / (cos(theta) * 2 * pi * r) * 180 / pi
 
 ##############################
 # GIS.Exposure
@@ -26,46 +28,28 @@ GIS.Exposure <- function(Concentration.matrix, LO, LA, distx = 10.5, disty = 10.
 	# Population
 	
 	Population <- function(LO, LA, distx = distx, disty = disty, LaPerKm = LaPerKm, LoPerKm = LoPerKm) {
-		GetPopLocs <- function(series_id = NULL) {
-			dsn <- "heande_base"
-			ident = "Heande3182"
-			use.utf8 = TRUE
-			apply.utf8 = FALSE
-			return(opbase.old.locations.read(dsn, ident, use.utf8, apply.utf8))
+		GetPopLocs <- function(...) {
+			return(opbase.old.locations.read("heande_base", "Heande3182", use.utf8 = TRUE, apply.utf8 = FALSE, ...))
 		}
 		
-		GetPopData <- function(include = NULL, exclude = NULL, series_id = NULL, iterations = NULL) {
-			dsn <- "heande_base"
-			ident = "Heande3182"
-			use.utf8 = TRUE
-			apply.utf8 = FALSE
-			return(opbase.old.read(dsn, ident))
+		GetPopData <- function(...) {
+			return(opbase.old.read("heande_base", "Heande3182", use.utf8 = TRUE, apply.utf8 = FALSE, ...))
 		}
 		
 		pop.locs <- GetPopLocs()
 		
 		# selection where latitude falls within disty km of given coordinates
-		pop.slice.la <- pop.locs[
-			pop.locs$ind == "Latitude", "loc_id"
-		][
-			pop.locs[
-				pop.locs$ind == "Latitude", "loc"
-			] < LA + disty * LaPerKm & 
-			pop.locs[
-				pop.locs$ind == "Latitude", "loc"
-			] > LA - disty * LaPerKm
-		] 
+		pop.slice.la <- pop.locs$loc_id[
+			pop.locs$ind == "Latitude" & 
+			pop.locs$loc < LA + disty * LaPerKm & 
+			pop.locs$loc > LA - disty * LaPerKm
+		]
 		# selection where longitude is beyond distx, inverse selection is required by the current database structure
-		pop.slice.lo.inverse <- pop.locs[
-			pop.locs$ind == "Longitude", "loc_id"
-		][
-			pop.locs[
-				pop.locs$ind == "Longitude", "loc"
-			] > LO + distx * LoPerKm | 
-			pop.locs[
-				pop.locs$ind == "Longitude", "loc"
-			] < LO - distx * LoPerKm
-		] 
+		pop.slice.lo.inverse <- pop.locs$loc_id[
+			pop.locs$ind == "Longitude" & 
+			pop.locs$loc > LO + distx * LoPerKm & 
+			pop.locs$loc < LO - distx * LoPerKm
+		]
 		
 		Population <- tidy(GetPopData(include = pop.slice.la, exclude = pop.slice.lo.inverse)) 
 		
