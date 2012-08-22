@@ -39,7 +39,7 @@ GIS.Exposure <- function(Concentration.matrix, LO, LA, distx = 10.5, disty = 10.
 			ident = "Heande3182"
 			use.utf8 = TRUE
 			apply.utf8 = FALSE
-			return(opbase.old.data.read(dsn, ident))
+			return(opbase.old.read(dsn, ident))
 		}
 		
 		pop.locs <- GetPopLocs()
