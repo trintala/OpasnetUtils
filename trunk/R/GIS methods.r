@@ -119,7 +119,7 @@ GIS.Concentration.matrix <- function(Emission, LO, LA, distx = 10.5, disty = 10.
 	ID.sample.lengths <- sapply(ID.list.samples, length)
 	ID.vec <- unlist(ID.list.samples)
 	PILTTI.matrix <- PILTTI.matrix[ID.vec,]
-	PILTTI.matrix$Iter <- rep(1:N, each = ID.sample.lengths)
+	PILTTI.matrix$Iter <- rep(1:N, times = ID.sample.lengths)
 	
 	# Assume dx dy given in meters
 	PILTTI.matrix$LObin <- cut(PILTTI.matrix$dx / 1000 * LoPerKm + LO, breaks = LO + seq(-distx, distx, resolution) * LoPerKm)
