@@ -20,7 +20,7 @@ CheckMarginals <- function(variable, deps = list(), priormarg = TRUE, indent = 0
 	}
 	if (length(deps) > 0) {
 		for (i in deps) {
-			if (class(get(i)) == "ovariable") {
+			if (i == "ovariable") {
 				varmar <- unique(c(varmar, colnames(i@output)[i@marginal]))
 				novarmar <- unique(c(novarmar, colnames(i@output)[!i@marginal]))
 			}
