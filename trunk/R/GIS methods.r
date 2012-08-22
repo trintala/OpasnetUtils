@@ -27,7 +27,7 @@ GIS.Exposure <- function(Concentration.matrix, LO, LA, distx = 10.5, disty = 10.
 	
 	# Population
 	
-	Population <- function(LO, LA, distx = distx, disty = disty, LaPerKm = LaPerKm, LoPerKm = LoPerKm) {
+	Population <- function(LO, LA, distx = 10.5, disty = 10.5, LaPerKm = LaPerKm, LoPerKm = LoPerKm) {
 		GetPopLocs <- function(...) {
 			return(opbase.old.locations.read("heande_base", "Heande3182", use.utf8 = TRUE, apply.utf8 = FALSE, ...))
 		}
