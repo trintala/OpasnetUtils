@@ -43,11 +43,12 @@ export(
 	CollapseMarginal,
 	CheckCollapse,
 	CollapseTableParser,
-	GIS.Exposure#,
+	GIS.Exposure,
 	#earth.radius,
 	#central.angle,
 	#dtheta.dy,
 	#dphi.dx,
 	#LaPerKm,
-	#LoPerKm
+	#LoPerKm,
+	GIS.Concentration.matrix
 )
