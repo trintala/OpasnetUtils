@@ -10,10 +10,10 @@ central.angle <- function(theta1, phi1, theta2, phi2) {
 }
 
 # difference in theta per difference of surface projected y on a spherical surface in degrees / km
-dtheta.dy <- function(r) 1 / (2 * pi * r) * 180 / pi
+dtheta.dy <- function(r) 1 / r * 180 / pi
 
 # difference in phi per difference of surface projected x on a spherical surface in degrees / km
-dphi.dx <- function(r, theta) 1 / (cos(theta) * 2 * pi * r) * 180 / pi
+dphi.dx <- function(r, theta) 1 / (cos(theta) * r) * 180 / pi
 
 ##############################
 # GIS.Exposure
@@ -46,8 +46,9 @@ GIS.Exposure <- function(Concentration.matrix, LO, LA, distx = 10.5, disty = 10.
 		]
 		# selection where longitude is beyond distx, inverse selection is required by the current database structure
 		pop.slice.lo.inverse <- pop.locs$loc_id[
-			pop.locs$ind == "Longitude" & 
-			pop.locs$loc > LO + distx * LoPerKm & 
+			pop.locs$ind == "Longitude"
+		][
+			pop.locs$loc > LO + distx * LoPerKm |
 			pop.locs$loc < LO - distx * LoPerKm
 		]
 		
@@ -68,7 +69,7 @@ GIS.Exposure <- function(Concentration.matrix, LO, LA, distx = 10.5, disty = 10.
 		output = Population
 	)
 	
-	Population@marginal <- colnames(temp@output) %in% c("Iter", "LObin", "LAbin")
+	Population@marginal <- colnames(Population@output) %in% c("Iter", "LObin", "LAbin")
 	
 	temp <- Population * Concentration
 	
