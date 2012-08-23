@@ -45,11 +45,15 @@ GIS.Exposure <- function(Concentration.matrix, LO, LA, distx = 10.5, disty = 10.
 			pop.locs$loc > LA - disty * LaPerKm
 		]
 		# selection where longitude is beyond distx, inverse selection is required by the current database structure
+		pop.slice.lo <- pop.locs$loc_id[
+			pop.locs$ind == "Longitude" &
+			pop.locs$loc < LO + distx * LoPerKm &
+			pop.locs$loc > LO - distx * LoPerKm
+		]
+		
 		pop.slice.lo.inverse <- pop.locs$loc_id[
-			pop.locs$ind == "Longitude"
-		][
-			pop.locs$loc > LO + distx * LoPerKm |
-			pop.locs$loc < LO - distx * LoPerKm
+			pop.locs$ind == "Longitude" &
+			!pop.locs$loc_id %in% pop.slice.lo
 		]
 		
 		Population <- tidy(GetPopData(include = pop.slice.la, exclude = pop.slice.lo.inverse)) 
