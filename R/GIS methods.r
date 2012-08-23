@@ -88,7 +88,17 @@ GIS.Exposure <- function(Concentration.matrix, LO, LA, distx = 10.5, disty = 10.
 # Computes a concentration matrix from given emission and coordinates, based on random sampling PILTTI source-receptor-matrices.
 ##################################
 
-GIS.Concentration.matrix <- function(Emission, LO, LA, distx = 10.5, disty = 10.5, resolution = 1, N = 1000, ...) { # Emission unit should be Mga^-1
+GIS.Concentration.matrix <- function(
+	Emission, # Emission unit should be Mga^-1
+	LO, 
+	LA, 
+	distx = 10.5, 
+	disty = 10.5, 
+	resolution = 1, 
+	N = 1000, 
+	dbug = FALSE, 
+	...
+) {
 	LaPerKm <- dtheta.dy(earth.radius)
 	LoPerKm <- dphi.dx(earth.radius, LA)
 	
@@ -120,6 +130,11 @@ GIS.Concentration.matrix <- function(Emission, LO, LA, distx = 10.5, disty = 10.
 		output = PILTTI.matrix,
 		marginal = colnames(PILTTI.matrix) %in% c("LObin", "LAbin", "Iter")
 	)
+	
+	if(dbug) {
+		cat(colnames(PILTTI.matrix@output), "\n")
+		cat(colnames(Emission@output), "\n")
+	}
 	
 	out <- PILTTI.matrix * Emission
 	return(out)
