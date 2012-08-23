@@ -98,7 +98,8 @@ GIS.Exposure <- function(
 	out <- tapply(
 		temp@output$Result, 
 		temp@output[,colnames(temp@output)[temp@marginal & !colnames(temp@output) %in% c("LObin", "LAbin")]], 
-		sum
+		sum,
+		na.rm = TRUE
 	)
 	
 	out <- as.data.frame(as.table(out))
