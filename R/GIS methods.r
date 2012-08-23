@@ -75,7 +75,7 @@ GIS.Exposure <- function(Concentration.matrix, LO, LA, distx = 10.5, disty = 10.
 	
 	Population@marginal <- colnames(Population@output) %in% c("Iter", "LObin", "LAbin")
 	
-	temp <- Population * Concentration
+	temp <- Population * Concentration.matrix
 	
 	temp <- tapply(temp, cols = c("LObin", "LAbin"), sum)
 	
