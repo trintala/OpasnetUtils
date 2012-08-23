@@ -21,7 +21,16 @@ dphi.dx <- function(r, theta) 1 / (cos(theta) * r) * 180 / pi
 # Exposure computes using a given concentration matrix and protected population data from Heande
 #########################################
 
-GIS.Exposure <- function(Concentration.matrix, LO, LA, distx = 10.5, disty = 10.5, resolution = 1) {
+GIS.Exposure <- function(
+	Concentration.matrix, 
+	LO, 
+	LA, 
+	distx = 10.5, 
+	disty = 10.5, 
+	resolution = 1,
+	dbug = FALSE,
+	...
+) {
 	LaPerKm <- dtheta.dy(earth.radius)
 	LoPerKm <- dphi.dx(earth.radius, LA)
 	
@@ -74,6 +83,11 @@ GIS.Exposure <- function(Concentration.matrix, LO, LA, distx = 10.5, disty = 10.
 	)
 	
 	Population@marginal <- colnames(Population@output) %in% c("Iter", "LObin", "LAbin")
+	
+	if(dbug) {
+		cat(colnames(Concentration.matrix@output), "\n")
+		cat(colnames(Population@output), "\n")
+	}
 	
 	temp <- Population * Concentration.matrix
 	
