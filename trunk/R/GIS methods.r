@@ -91,6 +91,8 @@ GIS.Exposure <- function(
 	
 	temp <- Population * Concentration.matrix
 	
+	if(dbug) cat(colnames(temp@output), "\n")
+	
 	temp <- oapply(temp, cols = c("LObin", "LAbin"), sum)
 	
 	return(temp)
