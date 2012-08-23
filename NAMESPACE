@@ -39,7 +39,7 @@ export(
 	Math,
 	CheckDecisions,
 	DecisionTableParser,
-	tapply,
+	oapply,
 	CollapseMarginal,
 	CheckCollapse,
 	CollapseTableParser,
