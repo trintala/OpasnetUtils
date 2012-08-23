@@ -95,7 +95,11 @@ GIS.Exposure <- function(
 	
 	#temp <- oapply(temp, cols = c("LObin", "LAbin"), sum)
 	
-	out <- tapply(temp@output$Result, temp@output[,colnames(temp@output)[!colnames(temp@output) %in% c("LObin", "LAbin")]], sum)
+	out <- tapply(
+		temp@output$Result, 
+		temp@output[,colnames(temp@output)[temp@marginal & !colnames(temp@output) %in% c("LObin", "LAbin")]], 
+		sum
+	)
 	
 	temp@marginal <- colnames(out) %in% colnames(temp@output)[temp@marginal] & !colnames(out) %in% c("LObin", "LAbin")
 	
