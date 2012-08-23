@@ -77,7 +77,7 @@ GIS.Exposure <- function(Concentration.matrix, LO, LA, distx = 10.5, disty = 10.
 	
 	temp <- Population * Concentration.matrix
 	
-	temp <- tapply(temp, cols = c("LObin", "LAbin"), sum)
+	temp <- oapply(temp, cols = c("LObin", "LAbin"), sum)
 	
 	return(temp)
 }
