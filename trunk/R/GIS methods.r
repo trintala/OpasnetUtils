@@ -101,6 +101,10 @@ GIS.Exposure <- function(
 		sum
 	)
 	
+	out <- as.data.frame(as.table(out))
+	
+	colnames(out)[colnames(out) == "Freq"] <- "Result"
+	
 	temp@marginal <- colnames(out) %in% colnames(temp@output)[temp@marginal] & !colnames(out) %in% c("LObin", "LAbin")
 	
 	temp@output <- out
