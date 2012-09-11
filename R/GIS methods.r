@@ -65,6 +65,11 @@ GIS.Exposure <- function(
 			!pop.locs$loc_id %in% pop.slice.lo
 		]
 		
+		if(dbug) {
+			cat(colnames(pop.slice.la), "\n")
+			cat(colnames(pop.slice.lo), "\n")
+		}
+		
 		Population <- tidy(GetPopData(include = pop.slice.la, exclude = pop.slice.lo.inverse)) 
 		
 		Population$Longitude <- as.numeric(as.character(Population$Longitude))
