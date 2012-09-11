@@ -71,8 +71,8 @@ GIS.Exposure <- function(
 		]
 		
 		if(dbug) {
-			cat("Matching LA locations in population data: ", paste(colnames(pop.slice.la), collapse = ", "), ".\n")
-			cat("Matching LO locations in population data: ", paste(colnames(pop.slice.lo), collapse = ", "), ".\n")
+			cat("Matching LA locations in population data: ", paste(pop.slice.la, collapse = ", "), ".\n")
+			cat("Matching LO locations in population data: ", paste(pop.slice.lo, collapse = ", "), ".\n")
 		}
 		
 		Population <- tidy(GetPopData(include = pop.slice.la, exclude = pop.slice.lo.inverse)) 
