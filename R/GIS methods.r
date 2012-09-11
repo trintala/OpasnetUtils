@@ -36,7 +36,7 @@ GIS.Exposure <- function(
 	
 	# Population
 	
-	Population <- function(LO, LA, LaPerKm, LoPerKm, distx = 10.5, disty = 10.5) {
+	Population <- function(LO, LA, LaPerKm, LoPerKm, distx = 10.5, disty = 10.5, dbug = FALSE) {
 		GetPopLocs <- function(...) {
 			return(opbase.old.locations.read("heande_base", "Heande3182", use.utf8 = TRUE, apply.utf8 = FALSE, ...))
 		}
@@ -66,8 +66,8 @@ GIS.Exposure <- function(
 		]
 		
 		if(dbug) {
-			cat(colnames(pop.slice.la), "\n")
-			cat(colnames(pop.slice.lo), "\n")
+			cat("Matching LA locations in population data: ", paste(colnames(pop.slice.la), collapse = ", "), ".\n")
+			cat("Matching LO locations in population data: ", paste(colnames(pop.slice.lo), collapse = ", "), ".\n")
 		}
 		
 		Population <- tidy(GetPopData(include = pop.slice.la, exclude = pop.slice.lo.inverse)) 
@@ -77,7 +77,7 @@ GIS.Exposure <- function(
 		return(Population)
 	}
 	
-	Population <- Population(LO, LA, LaPerKm, LoPerKm)
+	Population <- Population(LO, LA, LaPerKm, LoPerKm, dbug = dbug)
 	
 	Population$LObin <- cut(Population$Longitude, breaks = LO + seq(-distx, distx, resolution) * LoPerKm)
 	Population$LAbin <- cut(Population$Latitude, breaks = LA + seq(-disty, disty, resolution) * LaPerKm)
