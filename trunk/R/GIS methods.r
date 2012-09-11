@@ -13,7 +13,7 @@ central.angle <- function(theta1, phi1, theta2, phi2) {
 dtheta.dy <- function(r) 1 / r * 180 / pi
 
 # difference in phi per difference of surface projected x on a spherical surface in degrees / km
-dphi.dx <- function(r, theta) 1 / (cos(theta) * r) * 180 / pi
+dphi.dx <- function(r, theta) 1 / (cos(theta * pi / 180) * r) * 180 / pi
 
 ##############################
 # GIS.Exposure
