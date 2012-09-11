@@ -34,6 +34,11 @@ GIS.Exposure <- function(
 	LaPerKm <- dtheta.dy(earth.radius)
 	LoPerKm <- dphi.dx(earth.radius, LA)
 	
+	if(dbug) {
+		cat("LaPerKm = ", LaPerKm, "\n")
+		cat("LoPerKm = ", LoPerKm, "\n")
+	}
+	
 	# Population
 	
 	Population <- function(LO, LA, LaPerKm, LoPerKm, distx = 10.5, disty = 10.5, dbug = FALSE) {
