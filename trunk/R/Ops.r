@@ -11,8 +11,8 @@ setMethod(
 	definition = function(e1, e2) {
 		# First check presence of name specific Result-columns
 		
-		test1 <- paste(e1@name, "Result", sep = "") %in% colnames(out)
-		test2 <- paste(e2@name, "Result", sep = "") %in% colnames(out)
+		test1 <- paste(e1@name, "Result", sep = "") %in% colnames(e1@output)
+		test2 <- paste(e2@name, "Result", sep = "") %in% colnames(e2@output)
 		
 		# If found take note
 		
