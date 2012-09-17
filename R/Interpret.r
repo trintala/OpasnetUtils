@@ -59,16 +59,19 @@ interpf <- function(
 	}
 	if(minus.exists) {
 		if(length(minus.relevant) == 1) {
-			if(as.numeric(substr(res.char, 1, minus.relevant - 1)) / as.numeric(substr(res.char, minus.relevant + 1, nchar(res.char))) >= 1/100) {
+			a <- as.numeric(substr(res.char, 1, minus.relevant - 1))
+			b <- as.numeric(substr(res.char, minus.relevant + 1, nchar(res.char)))
+			if(a / b >= 1/100 | a == 0) {
 				if(dbug) cat("Uniform distribution. \n")
-				return(runif(n, as.numeric(substr(res.char, 1, minus.relevant - 1)), as.numeric(substr(res.char, minus.relevant + 1, nchar(res.char)))))
+				return(runif(n, b, b))
 			} else {
 				if(dbug) cat("Loguniform distribution. \n")
-				return(exp(runif(n, log(as.numeric(substr(res.char, 1, minus.relevant - 1))), log(as.numeric(substr(res.char, minus.relevant + 1, nchar(res.char)))))))
+				return(exp(runif(n, log(b), log(b))))
 			}
 		}
-		if(length(minus.relevant) %in% c(2,3)) {
+		if(length(minus.relevant) %in% c(2,3)) { # If there is more than one '-' we're porbably dealing with negative boundaries. (More than 3 will produce NAs.)
 			if(dbug) cat("Uniform distribution. \n")
+			# Assume that negative number is always first.
 			return(runif(n, as.numeric(substr(res.char, 1, minus.relevant[2] - 1)), as.numeric(substr(res.char, minus.relevant[2] + 1, nchar(res.char)))))
 		}
 	}
