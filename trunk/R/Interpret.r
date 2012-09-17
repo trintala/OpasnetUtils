@@ -63,10 +63,10 @@ interpf <- function(
 			b <- as.numeric(substr(res.char, minus.relevant + 1, nchar(res.char)))
 			if(a / b >= 1/100 | a == 0) {
 				if(dbug) cat("Uniform distribution. \n")
-				return(runif(n, b, b))
+				return(runif(n, a, b))
 			} else {
 				if(dbug) cat("Loguniform distribution. \n")
-				return(exp(runif(n, log(b), log(b))))
+				return(exp(runif(n, log(a), log(b))))
 			}
 		}
 		if(length(minus.relevant) %in% c(2,3)) { # If there is more than one '-' we're porbably dealing with negative boundaries. (More than 3 will produce NAs.)
