@@ -10,6 +10,8 @@ UseMethod("opasnet")
 
 opasnet.data <- function(filename,wiki='', unzip='') {
 
+	now <- Sys.time()
+	
 	# Parse arguments
 	targs <- strsplit(commandArgs(trailingOnly = TRUE),",")
 	args = list()
@@ -40,7 +42,7 @@ opasnet.data <- function(filename,wiki='', unzip='') {
 	
 	if (unzip != '')
 	{
-		f <- tempfile()
+		f <- paste('/tmp/rtools_',as.numeric(now),'.zip',sep='')
 		bin <- getBinaryURL(file)
 		con <- file(f, open = "wb")
 		writeBin(bin, con)
@@ -55,6 +57,8 @@ opasnet.data <- function(filename,wiki='', unzip='') {
 
 opasnet.csv <- function(filename, wiki='', unzip = '', ...) {
 
+	now <- Sys.time()
+	
 	# Parse arguments
 	targs <- strsplit(commandArgs(trailingOnly = TRUE),",")
 	args = list()
@@ -86,7 +90,7 @@ opasnet.csv <- function(filename, wiki='', unzip = '', ...) {
 
 	if (unzip != '')
 	{
-		f <- tempfile()
+		f <- paste('/tmp/rtools_',as.numeric(now),'.zip',sep='')
 		bin <- getBinaryURL(file)
 		con <- file(f, open = "wb")
 		writeBin(bin, con)
