@@ -41,7 +41,7 @@ opasnet.data <- function(filename,wiki='', unzip='') {
 	if (unzip != '')
 	{
 		f <- tempfile()
-		bin <- getURL(file)
+		bin <- getURL(file, binary = TRUE)
 		con <- file(f, open = "wb")
 		writeBin(data, con)
 		close(con)
@@ -88,7 +88,7 @@ opasnet.csv <- function(filename, wiki='', unzip = '', ...) {
 	if (unzip != '')
 	{
 		f <- tempfile()
-		bin <- getURL(file)
+		bin <- getURL(file, binary = TRUE)
 		con <- file(f, open = "wb")
 		writeBin(data, con)
 		close(con)
