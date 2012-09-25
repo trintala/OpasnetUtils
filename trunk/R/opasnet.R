@@ -93,14 +93,15 @@ opasnet.csv <- function(filename, wiki='', unzip = '', ...) {
 		writeBin(bin, con)
 		close(con)
 		fname <- paste(tempdir(),'/',unzip)
-		csv <- unz(f, fname)
+		return(read.table(unz(f, fname), ...))
 	}
 	else
 	{	
 		csv <- getURL(file)
+		return(read.table(file = textConnection(csv), ...))
 	}
 	
-	return(read.table(file = textConnection(csv), ...))
+	
 }
 
 # OPASNET.DATA #####################################
