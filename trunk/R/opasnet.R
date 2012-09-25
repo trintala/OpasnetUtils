@@ -45,8 +45,7 @@ opasnet.data <- function(filename,wiki='', unzip='') {
 		con <- file(f, open = "wb")
 		writeBin(bin, con)
 		close(con)
-		fname <- paste(tempdir(),'/',unzip)
-		return(unz(f, fname))
+		return(unz(f, unzip))
 	}
 	else
 	{	
@@ -92,8 +91,7 @@ opasnet.csv <- function(filename, wiki='', unzip = '', ...) {
 		con <- file(f, open = "wb")
 		writeBin(bin, con)
 		close(con)
-		fname <- paste(tempdir(),'/',unzip)
-		return(read.table(unz(f, fname), ...))
+		return(read.table(unz(f, unzip), ...))
 	}
 	else
 	{	
