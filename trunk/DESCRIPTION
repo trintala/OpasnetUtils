@@ -1,7 +1,7 @@
 Package: OpasnetUtils
 Type: Package
 Title: Utility functions for dealing with data in www.opasnet.org databases.
-Version: 0.1.0
+Version: 0.1.1
 Author: Teemu Rintala, Einari Happonen
 Maintainer: Einari Happonen <einari.happonen@thl.fi>
 Description: Opasnet extensions and wrappers.

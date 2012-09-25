@@ -1,3 +1,7 @@
+Version: 0.1.1
+Author: Einari Happonen <einari.happonen@thl.fi>
+Description: Added 'unzip'-paremeter to opasnet.data and opasnet.csv (ability to read file insize .zip)
+
 Version: 0.1.0
 Author: Teemu Rintala <teemu.rintala@thl.fi>
 Description: First version

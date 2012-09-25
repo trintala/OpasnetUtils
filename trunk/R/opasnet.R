@@ -8,7 +8,7 @@ UseMethod("opasnet")
 #
 # Returns file contents (loaded using curl)
 
-opasnet.data <- function(filename,wiki='') {
+opasnet.data <- function(filename,wiki='', unzip='') {
 
 	# Parse arguments
 	targs <- strsplit(commandArgs(trailingOnly = TRUE),",")
@@ -25,7 +25,6 @@ opasnet.data <- function(filename,wiki='') {
 	{
 		wiki = args$user
 	}
-
 	if (wiki == 'opasnet_en' || wiki == 'op_en')
 	{
 		file <- paste("http://en.opasnet.org/en-opwiki/images/",filename,sep='')
@@ -37,11 +36,25 @@ opasnet.data <- function(filename,wiki='') {
 	if (wiki == 'heande')
 	{
 		file <- paste("http://",args$ht_username,":",args$ht_password,"@heande.opasnet.org/heande/images/",filename,sep='')
-	}	
-	return(getURL(file))
+	}
+	
+	if (unzip != '')
+	{
+		f <- tempfile()
+		bin <- getURL(file)
+		con <- file(f, open = "wb")
+		writeBin(data, con)
+		close(con)
+		fname <- paste(tempdir(),'/',unzip)
+		return(unz(f, fname))
+	}
+	else
+	{	
+		return(getURL(file))
+	}
 }
 
-opasnet.csv <- function(filename, wiki='', ...) {
+opasnet.csv <- function(filename, wiki='', unzip = '', ...) {
 
 	# Parse arguments
 	targs <- strsplit(commandArgs(trailingOnly = TRUE),",")
@@ -71,8 +84,21 @@ opasnet.csv <- function(filename, wiki='', ...) {
 	{
 		file <- paste("http://",args$ht_username,":",args$ht_password,"@heande.opasnet.org/heande/images/",filename,sep='')
 	}	
-	
-	csv <- getURL(file)
+
+	if (unzip != '')
+	{
+		f <- tempfile()
+		bin <- getURL(file)
+		con <- file(f, open = "wb")
+		writeBin(data, con)
+		close(con)
+		fname <- paste(tempdir(),'/',unzip)
+		csv <- unz(f, fname)
+	}
+	else
+	{	
+		csv <- getURL(file)
+	}
 	
 	return(read.table(file = textConnection(csv), ...))
 }
