@@ -48,7 +48,7 @@ opasnet.data <- function(filename,wiki='', unzip='') {
 		writeBin(bin, con)
 		close(con)
 		con <- unz(f, unzip, "r")
-		return(readLines(con))
+		return(paste(readLines(con),collapse="\n"))
 	}
 	else
 	{	
