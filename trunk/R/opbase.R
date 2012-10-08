@@ -4,7 +4,7 @@
 # Read data from opasnet base 2
 opbase.data <- function(ident, series_id = NULL) {
 	
-	if (series_id == NULL)
+	if (is.null(series_id))
 	{
 		url <- paste("http://cl1.opasnet.org/opasnet_base_2/index.php?ident=", ident, "&act=0", sep = "")
 	}
