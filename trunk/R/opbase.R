@@ -6,26 +6,14 @@ opbase.data <- function(ident, series_id = NULL) {
 	
 	if (is.null(series_id))
 	{
-		url <- paste("http://cl1.opasnet.org/opasnet_base_2/index.php?ident=", ident, "&act=0", sep = "")
+		url <- paste("ident=", ident, "&act=0", sep = "")
 	}
 	else
 	{
-		url <- paste("http://cl1.opasnet.org/opasnet_base_2/index.php?ident=", ident, "&series=", series_id, sep = "")
+		url <- paste("ident=", ident, "&series=", series_id, sep = "")
 	}
 	
-	key <- fromJSON(
-		paste(
-			readLines(url),  
-			collapse = ""
-		)
-	)
-	
-	if (is.null(key) || ! is.null(key$error))
-	{
-		key$error
-		return(NULL)
-	}
-	
+	key <- opbase.query(url)
 	key <- key$key
 	
 	out <- data.frame()
@@ -34,25 +22,8 @@ opbase.data <- function(ident, series_id = NULL) {
 	while (!is.null(temp) | first) {
 		first <- FALSE
 		
-		temp <- fromJSON(
-			paste(
-				readLines(
-					paste(
-						"http://cl1.opasnet.org/opasnet_base_2/index.php?key=", 
-						key, 
-						sep = ""
-					)
-				), 
-				collapse = ""
-			)
-		)
-		
-		if (is.null(temp) || ! is.null(temp$error))
-		{
-			temp$error
-			return(NULL)
-		}
-		
+		temp <- opbase.query(paste("key=", key, sep = ""))
+				
 		temp <- fromJSON(temp$data)
 		
 		temp <- lapply(temp, list.to.data.frame)
@@ -89,6 +60,28 @@ opbase.data <- function(ident, series_id = NULL) {
 	}
 	colnames(out)[colnames(out) == "res"] <- "Result"
 	return(out)
+}
+
+# Private function to make queries to server
+opbase.query <- function(query) {
+	url <- paste("http://cl1.opasnet.org/opasnet_base_2/index.php?", query, sep = "")
+	
+	response <- fromJSON(
+			paste(
+					readLines(url),  
+					collapse = ""
+			)
+	)
+	
+	if (is.null(response))
+	{
+		stop("Server is not responding! Unable to retrieve data download key!")
+	}
+	
+	if (! is.null(response$error))
+	{
+		stop(key$error)
+	}
 }
 
 list.to.data.frame <- function(x) { # As.data.frame equivalent, but allows one list as longer than others. 
