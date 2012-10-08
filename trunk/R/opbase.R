@@ -15,10 +15,16 @@ opbase.data <- function(ident, series_id = NULL) {
 	
 	key <- fromJSON(
 		paste(
-			readLines(url), 
+			readLines(url),  
 			collapse = ""
 		)
 	)
+	
+	if (is.null(key) || ! is.null(key$error))
+	{
+		key$error
+		return(NULL)
+	}
 	
 	key <- key$key
 	
@@ -40,6 +46,12 @@ opbase.data <- function(ident, series_id = NULL) {
 				collapse = ""
 			)
 		)
+		
+		if (is.null(temp) || ! is.null(temp$error))
+		{
+			temp$error
+			return(NULL)
+		}
 		
 		temp <- fromJSON(temp$data)
 		
