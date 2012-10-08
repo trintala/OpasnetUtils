@@ -80,7 +80,7 @@ opbase.query <- function(query) {
 	
 	if (! is.null(response$error))
 	{
-		stop(response$error)
+		stop(paste("Query: ",query,", Error: ",response$error, sep= ''))
 	}
 }
 
