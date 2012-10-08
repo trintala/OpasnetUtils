@@ -13,8 +13,16 @@ opbase.data <- function(ident, series_id = NULL) {
 		url <- paste("ident=", ident, "&series=", series_id, sep = "")
 	}
 	
-	key <- opbase.query(url)
-	key <- key$key
+	tmp <- opbase.query(url)
+	
+	if(is.null(tmp$key) || tmp$key == '')
+	{
+		stop(paste("Invalid download key retrieved! Query:", url, sep=''))
+	}
+	else
+	{
+		key <- tmp$key
+	}
 	
 	out <- data.frame()
 	temp <- NULL
