@@ -38,7 +38,7 @@ opbase.data <- function(ident, series_id = NULL) {
 		if (!is.null(data))
 		{
 			temp <- fromJSON(data)
-			temp <- lapply(data, list.to.data.frame)		
+			temp <- lapply(temp, list.to.data.frame)		
 			lengths <- lapply(temp, nrow)	
 			temp <- do.call("rbind", temp)
 			
