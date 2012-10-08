@@ -28,14 +28,14 @@ opbase.data <- function(ident, series_id = NULL) {
 	data <- NULL
 	first <- TRUE
 	
-	while (!is.null(data) | first) {
+	while ((!is.null(data) && data != '') | first) {
 		first <- FALSE
 		
 		temp <- opbase.query(paste("key=", key, sep = ""))
 		
 		data <- temp$data
 		
-		if (!is.null(data))
+		if (!is.null(data) && data != '')
 		{
 			temp <- fromJSON(data)
 			temp <- lapply(temp, list.to.data.frame)		
