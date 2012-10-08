@@ -25,27 +25,30 @@ opbase.data <- function(ident, series_id = NULL) {
 	}
 	
 	out <- data.frame()
-	temp <- NULL
+	data <- NULL
 	first <- TRUE
-	while (!is.null(temp) | first) {
+	
+	while (!is.null(data) | first) {
 		first <- FALSE
 		
 		temp <- opbase.query(paste("key=", key, sep = ""))
-				
-		temp <- fromJSON(temp$data)
 		
-		temp <- lapply(temp, list.to.data.frame)
+		data <- temp$data
 		
-		lengths <- lapply(temp, nrow)
-		
-		temp <- do.call("rbind", temp)
-		
-		if (sum(unlist(lengths) > 1) > 0) {
-			iterations <- lapply(lengths, f.iter)
-			temp$Iter <- unlist(iterations)
+		if (!is.null(data))
+		{
+			temp <- fromJSON(data)
+			temp <- lapply(data, list.to.data.frame)		
+			lengths <- lapply(temp, nrow)	
+			temp <- do.call("rbind", temp)
+			
+			if (sum(unlist(lengths) > 1) > 0) {
+				iterations <- lapply(lengths, f.iter)
+				temp$Iter <- unlist(iterations)
+			}	
+			out <- rbind(out, temp)
 		}
 		
-		out <- rbind(out, temp)
 	}
 	
 	indices <- object[[2]][[acts$slot[acts$id == act]]][[2]]
