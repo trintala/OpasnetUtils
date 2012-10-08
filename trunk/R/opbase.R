@@ -2,42 +2,20 @@
 #UseMethod("opbase")
 
 # Read data from opasnet base 2
-opbase.data <- function(ident, act = NULL) {
-	object <- fromJSON(
-		paste(
-			readLines(
-				paste(
-					"http://cl1.opasnet.org/opasnet_base_2/index.php?ident=", 
-					ident, 
-					sep = ""
-				)
-			), 
-			collapse = ""
-		)
-	)
+opbase.data <- function(ident, series_id = NULL) {
 	
-	acts <- data.frame()
-	a <- 0
-	for (i in object[[2]]) {
-		a <- a + 1
-		acts <- rbind(acts, data.frame(id = i[[1]]$id, slot = a))
+	if (series_id == NULL)
+	{
+		url <- paste("http://cl1.opasnet.org/opasnet_base_2/index.php?ident=", ident, "&act=0", sep = "")
 	}
-	
-	if(is.null(act)) {
-		act <- sort(acts$id, decreasing = TRUE)[1] # choose the latest
+	else
+	{
+		url <- paste("http://cl1.opasnet.org/opasnet_base_2/index.php?ident=", ident, "&series=", series_id, sep = "")
 	}
 	
 	key <- fromJSON(
 		paste(
-			readLines(
-				paste(
-					"http://cl1.opasnet.org/opasnet_base_2/index.php?ident=", 
-					ident, 
-					"&act=", 
-					act, 
-					sep = ""
-				)
-			), 
+			readLines(url), 
 			collapse = ""
 		)
 	)
