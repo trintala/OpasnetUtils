@@ -90,6 +90,8 @@ opbase.query <- function(query) {
 	{
 		stop(paste("Query: ",query,", Error: ",response$error, sep= ''))
 	}
+	
+	return(response)
 }
 
 list.to.data.frame <- function(x) { # As.data.frame equivalent, but allows one list as longer than others. 
