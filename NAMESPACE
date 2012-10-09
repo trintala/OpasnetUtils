@@ -1,4 +1,4 @@
-import(methods, RODBC, rjson, RCurl, rbugs, rjags, RgoogleMaps, xtable, reshape2, triangle, httpRequest)
+import(methods, RODBC, rjson, RCurl, xtable, reshape2, triangle, httpRequest)
 export(
 	op_baseGetData,
 	op_baseGetLocs,
