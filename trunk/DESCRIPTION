@@ -5,6 +5,6 @@ Version: 0.1.2
 Author: Teemu Rintala, Einari Happonen
 Maintainer: Einari Happonen <einari.happonen@thl.fi>
 Description: Opasnet extensions and wrappers.
-Imports: methods, RODBC, rjson, RCurl, rbugs, rjags, RgoogleMaps, xtable, reshape2, triangle, httpRequest
+Imports: methods, RODBC, rjson, RCurl, xtable, reshape2, triangle, httpRequest
 License: CC BY-SA 3.0
 LazyLoad: yes

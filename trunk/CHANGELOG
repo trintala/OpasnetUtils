@@ -1,6 +1,6 @@
 Version: 0.1.2
 Author: Einari Happonen <einari.happonen@thl.fi>
-Description: opbase.data function changed to use series_id instead of act + implementation simplified a bit
+Description: opbase.data function changed to use series_id instead of act + implementation simplified a bit, some unnecessary imports removed
 
 Version: 0.1.1
 Author: Einari Happonen <einari.happonen@thl.fi>
