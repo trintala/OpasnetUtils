@@ -4,6 +4,8 @@
 # Read data from opasnet base 2
 opbase.data <- function(ident, series_id = NULL) {
 	
+	# Then aim for the data itself
+	# act == 0 gets the most recent series of data!
 	if (is.null(series_id))
 	{
 		url <- paste("ident=", ident, "&act=0", sep = "")
@@ -13,15 +15,11 @@ opbase.data <- function(ident, series_id = NULL) {
 		url <- paste("ident=", ident, "&series=", series_id, sep = "")
 	}
 	
-	tmp <- opbase.query(url)
+	object <- opbase.query(url)
 	
-	if(is.null(tmp$key) || tmp$key == '')
+	if(is.null(object$key) || object$key == '')
 	{
 		stop(paste("Invalid download key retrieved! Query:", url, sep=''))
-	}
-	else
-	{
-		key <- tmp$key
 	}
 	
 	out <- data.frame()
@@ -31,7 +29,7 @@ opbase.data <- function(ident, series_id = NULL) {
 	while ((!is.null(data) && data != '') | first) {
 		first <- FALSE
 		
-		temp <- opbase.query(paste("key=", key, sep = ""))
+		temp <- opbase.query(paste("key=", object$key, sep = ""))
 		
 		data <- temp$data
 		
@@ -51,10 +49,11 @@ opbase.data <- function(ident, series_id = NULL) {
 		
 	}
 	
-	indices <- object[[2]][[acts$slot[acts$id == act]]][[2]]
+	#indices <- object[[2]][[acts$slot[acts$id == act]]][[2]]
 	#indices <- lapply(indices, as.data.frame)
+	
 	temp <- data.frame()
-	for (i in indices) {
+	for (i in  object$indices) {
 		temp <- rbind(temp, data.frame(Name = i$name, id = i$ident))
 	}
 	indices <- temp
