@@ -72,6 +72,29 @@ opbase.data <- function(ident, series_id = NULL) {
 	return(out)
 }
 
+# Write data to the new opasnet database
+opbase.upload <- function(input, ident = NULL, ...) {
+	
+	# Parse arguments
+	targs <- strsplit(commandArgs(trailingOnly = TRUE),",")
+	args = list()
+	
+	for(i in targs[[1]])
+	{
+		tmp = strsplit(i,"=")
+		key <- tmp[[1]][1]
+		value <- tmp[[1]][2]
+		args[[key]] <- value
+	}
+	
+	if (is.null(ident) == TRUE)
+	{
+		ident <- args$wiki_page_id
+	}
+			
+	return(opbase.write(ident, input, ...))
+}
+
 # Private function to make queries to server
 opbase.query <- function(query) {
 	url <- paste("http://cl1.opasnet.org/opasnet_base_2/index.php?", query, sep = "")
@@ -135,28 +158,6 @@ opbase.old.data <- function(dsn, ident, ...) {
 	}
 	
 	return(opbase.old.read(dsn, ident, ...))
-}
-
-# Write data to the new opasnet database
-opbase.upload <- function(dsn, input, ...) {
-	
-	# Parse arguments
-	targs <- strsplit(commandArgs(trailingOnly = TRUE),",")
-	args = list()
-	for(i in targs[[1]])
-	{
-		tmp = strsplit(i,"=")
-		key <- tmp[[1]][1]
-		value <- tmp[[1]][2]
-		args[[key]] <- value
-	}
-	
-	if (dsn == 'heande_base' && args$user != 'heande')
-	{
-		stop("Heande base is accessible only for the Heande Wiki!")
-	}
-	
-	return(opbase.write(dsn, input, ...))
 }
 
 
@@ -486,9 +487,8 @@ opbase.old.write <- function(
 
 
 opbase.write <- function(
-		dsn, 
+		ident,
 		input, 
-		ident = NULL, 
 		name = NULL, 
 		unit = NULL, 
 		objtype_id = NULL, 
