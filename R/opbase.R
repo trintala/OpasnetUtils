@@ -137,6 +137,29 @@ opbase.old.data <- function(dsn, ident, ...) {
 	return(opbase.old.read(dsn, ident, ...))
 }
 
+# Write data to the new opasnet database
+opbase.upload <- function(dsn, input, ...) {
+	
+	# Parse arguments
+	targs <- strsplit(commandArgs(trailingOnly = TRUE),",")
+	args = list()
+	for(i in targs[[1]])
+	{
+		tmp = strsplit(i,"=")
+		key <- tmp[[1]][1]
+		value <- tmp[[1]][2]
+		args[[key]] <- value
+	}
+	
+	if (dsn == 'heande_base' && args$user != 'heande')
+	{
+		stop("Heande base is accessible only for the Heande Wiki!")
+	}
+	
+	return(opbase.write(dsn, input, ...))
+}
+
+
 # Write data to the old opasnet database
 opbase.old.upload <- function(dsn, input, ...) {
 	
