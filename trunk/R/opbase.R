@@ -156,25 +156,23 @@ opbase.upload <- function(input, ident = NULL, name = NULL, obj_type = 'variable
 			),
 			indices = indices
 	)
-	
-	header
-	
+		
 	if (act_type == 'replace')
 	{
-		method = 'POST';
+		method <- 'POST';
 	}
 	if (act_type == 'append')
 	{
-		method = 'PUT';
+		method <- 'PUT';
 	}
 	
-	data = list('_method' = method, 'json' = toJSON(header))
+	data <- list('_method' = method, 'json' = toJSON(header))
 	
 	response <- postToHost(server, path, data)
 	
 	if (is.null(response)) stop('Server is not responding!!!')
 	
-	response
+	return(response)
 	
 	#if (is.null(response$key) || response$key == '') stop(paste("Invalid upload key retrieved! Query:", url, sep=''))
 	
