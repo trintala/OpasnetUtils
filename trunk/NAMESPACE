@@ -4,6 +4,7 @@ export(
 	op_baseGetLocs,
 	op_baseWrite,
 	opbase.data,
+	opbase.upload,
 	opbase.old.data,
 	opbase.old.upload,
 	opbase.old.locations,
