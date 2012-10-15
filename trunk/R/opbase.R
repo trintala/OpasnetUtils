@@ -591,8 +591,8 @@ opbase.write <- function(
 	
 	if (! is.null(objtype_id))
 	{
-		obj_types <- list(1 = 'variable', 2 = 'study', 3 = 'method', 4 = 'assessment', 5 = 'class', 7 = 'nugget', 8 = 'encyclopedia')
-		obj_type <- obj_types[[objtype_id]]
+		obj_types <- list(o1 = 'variable', o2 = 'study', o3 = 'method', o4 = 'assessment', o5 = 'class', o7 = 'nugget', o8 = 'encyclopedia')
+		obj_type <- obj_types[[paste('o',objtype_id,sep='')]]
 	}
 	else
 	{
@@ -601,8 +601,8 @@ opbase.write <- function(
 	
 	if (! is.null(acttype))
 	{
-		act_types <- list(4 = 'replace', 5 = 'append')
-		act_type <- act_types[[acttype]]
+		act_types <- list(a4 = 'replace', a5 = 'append')
+		act_type <- act_types[[paste('a',acttype,sep='')]]
 	}
 	else
 	{
