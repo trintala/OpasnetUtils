@@ -73,7 +73,7 @@ opbase.data <- function(ident, series_id = NULL) {
 }
 
 # Write data to the new opasnet database
-opbase.upload <- function(input, ident = NULL, name = NULL, obj_type = 'variable', act_type = 'replace', language = 'eng', unit = '', who = NULL) {
+opbase.upload <- function(input, ident = NULL, name = NULL, obj_type = 'variable', act_type = 'replace', language = 'eng', unit = '', who = NULL, rescol = NULL) {
 	
 	# Parse arguments
 	targs <- strsplit(commandArgs(trailingOnly = TRUE),",")
@@ -609,6 +609,6 @@ opbase.write <- function(
 		act_type <- NULL
 	}
 
-	return(opbase.upload(input, ident = ident, name = name, obj_type = obj_type, act_type = act_type, unit = unit, who = who))
+	return(opbase.upload(input, ident = ident, name = name, obj_type = obj_type, act_type = act_type, unit = unit, who = who, rescol = rescol))
 	
 }
