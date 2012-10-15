@@ -73,7 +73,7 @@ opbase.data <- function(ident, series_id = NULL) {
 }
 
 # Write data to the new opasnet database
-opbase.upload <- function(input, ident = NULL, ...) {
+opbase.upload <- function(input, ident = NULL, name = NULL, obj_type = 'variable', act_type = 'replace', language = 'eng', unit = '', who = NULL) {
 	
 	# Parse arguments
 	targs <- strsplit(commandArgs(trailingOnly = TRUE),",")
@@ -91,8 +91,93 @@ opbase.upload <- function(input, ident = NULL, ...) {
 	{
 		ident <- args$wiki_page_id
 	}
-			
-	return(opbase.write(ident, input, ...))
+	
+	
+	server <- 'cl1.opasnet.org'
+	path <- '/index.php'
+	
+	# Coerce input into a data frame if it isn't one already; get rid of empty cells
+	if (is.array(input)) dataframe <- as.data.frame(as.table(input)) else dataframe <- input
+	if (is.null(rescol)) {
+		rescol <- colnames(dataframe) == "Freq"
+		if (sum(rescol) == 1) rescol <- "Freq" else {
+			rescol <- colnames(dataframe) == "Result"
+			if (sum(rescol) == 1) rescol <- "Result" else {
+				rescol <- colnames(dataframe) == "result"
+				if (sum(rescol) == 1) rescol <- "result"
+			}
+		}}
+	dataframe <- dataframe[is.na(dataframe[,rescol]) == FALSE,]
+	ColNames <- colnames(dataframe)[!(colnames(dataframe)%in%c(rescol, "id", "obs"))]
+	for (i in ColNames) {
+		dataframe[,i] <- factor(dataframe[,i])
+		levels(dataframe[,i]) <- gsub(" *$", "",gsub("^ *", "", levels(dataframe[,i])))
+		#if(latin1.2.utf8.conv.write) {
+			if(sum(Encoding(levels(dataframe[,i]))=="latin1")!=0) {
+				levels(dataframe[,i]) <- iconv(levels(dataframe[,i]), "latin1", "UTF-8")
+			}
+		#}
+	}
+	
+	# Wiki id
+	if (substr(ident, 1,5)=="Op_en") {wiki_id <- 1; page <- substr(ident, 6, nchar(ident))} else {
+		if (substr(ident, 1,5)=="Op_fi") {wiki_id <- 2; page <- substr(ident, 6, nchar(ident))} else {
+			if (substr(ident, 1,6)=="Heande") {wiki_id <- 3; page <- substr(ident, 7, nchar(ident))} else {
+				if (substr(ident, 1,4)=="test") {wiki_id <- 4; page <- substr(ident, 5, nchar(ident))} else {
+					stop(paste("No wiki id found in ident ",ident,sep=''))}}}}
+	
+	n <- length(dataframe[2,rescol])
+	page <- as.numeric(page)
+	if (is.na(page)) stop("Could not convert characters following the wiki ident into a page number!\n")
+	if (is.null(who)==TRUE) stop("uploader name not given")
+	if (is.null(name)==TRUE && act_type == 'replace') stop("object name not given")
+	
+	# Build index list
+	indices = list()
+	for (i in 1:length(ColNames)) {
+		indices[[i]] = list(type='entity',name=ColNames[[i]],page=page,wiki_id=wiki_id,order_index=i,hidden=0,unit='') 
+	}
+	
+	header <- list(
+			object = list(
+					name = name,
+					ident = ident,
+					#subset_name = 'Kaavi',
+					type = obj_type,
+					page = page,
+					wiki_id = wiki_id
+			),
+			act = list(
+					unit = unit,
+					who = who,
+					samples = n,
+					comments = "R upload",
+					language = language
+			),
+			indices = indices
+	)
+	
+	header
+	
+	if (act_type == 'replace')
+	{
+		method = 'POST';
+	}
+	if (act_type == 'append')
+	{
+		method = 'PUT';
+	}
+	
+	data = list('_method' = method, 'json' = toJSON(header))
+	
+	reponse <- postToHost(server, path, data)
+	
+	if (is.null(response)) stop('Server is not responding!!!')
+	if (is.null(response$key) || response$key == '') stop(paste("Invalid upload key retrieved! Query:", url, sep=''))
+	
+	response$key
+	
+		
 }
 
 # Private function to make queries to server
@@ -485,10 +570,11 @@ opbase.old.write <- function(
 	return(character())
 }
 
-
+# Wrapper function to create interface between old op_baseWrite and new opbase.upload
 opbase.write <- function(
-		ident,
+		dsn,
 		input, 
+		ident = NULL,
 		name = NULL, 
 		unit = NULL, 
 		objtype_id = NULL, 
@@ -502,78 +588,27 @@ opbase.write <- function(
 		latin1.2.utf8.conv.write = TRUE, 
 		utf8.2.latin1.conv.read = TRUE
 ) { 
+	
+	if (! is.null(objtype_id))
+	{
+		obj_types <- list(1 = 'variable', 2 = 'study', 3 = 'method', 4 = 'assessment', 5 = 'class', 7 = 'nugget', 8 = 'encyclopedia')
+		obj_type <- obj_types[[objtype_id]]
+	}
+	else
+	{
+		obj_type <- NULL
+	}
+	
+	if (! is.null(acttype))
+	{
+		act_types <- list(4 = 'replace', 5 = 'append')
+		act_type <- act_types[[acttype]]
+	}
+	else
+	{
+		act_type <- NULL
+	}
 
-	server <- 'cl1.opasnet.org'
-	path <- '/index.php'
-	
-	# Coerce input into a data frame if it isn't one already; get rid of empty cells
-	if (is.array(input)) dataframe <- as.data.frame(as.table(input)) else dataframe <- input
-	if (is.null(rescol)) {
-		rescol <- colnames(dataframe) == "Freq"
-		if (sum(rescol) == 1) rescol <- "Freq" else {
-			rescol <- colnames(dataframe) == "Result"
-			if (sum(rescol) == 1) rescol <- "Result" else {
-				rescol <- colnames(dataframe) == "result"
-				if (sum(rescol) == 1) rescol <- "result"
-			}
-		}}
-	dataframe <- dataframe[is.na(dataframe[,rescol]) == FALSE,]
-	ColNames <- colnames(dataframe)[!(colnames(dataframe)%in%c(rescol, "id", "obs"))]
-	for (i in ColNames) {
-		dataframe[,i] <- factor(dataframe[,i])
-		levels(dataframe[,i]) <- gsub(" *$", "",gsub("^ *", "", levels(dataframe[,i])))
-		if(latin1.2.utf8.conv.write) {
-			if(sum(Encoding(levels(dataframe[,i]))=="latin1")!=0) {
-				levels(dataframe[,i]) <- iconv(levels(dataframe[,i]), "latin1", "UTF-8")
-			}
-		}
-	}
-	
-	# Wiki id
-	if (substr(ident, 1,5)=="Op_en") {wiki_id <- 1; page <- substr(ident, 6, nchar(ident))} else {
-		if (substr(ident, 1,5)=="Op_fi") {wiki_id <- 2; page <- substr(ident, 6, nchar(ident))} else {
-			if (substr(ident, 1,6)=="Heande") {wiki_id <- 3; page <- substr(ident, 7, nchar(ident))} else {
-				if (substr(ident, 1,4)=="Erac") {wiki_id <- 4; page <- substr(ident, 5, nchar(ident))} else {
-					wiki_id <- 0; page <- 0; warning(paste("No wiki id found in ident ",ident,", writing zero.\n",sep=''))}}}}
-	
-	n <- length(dataframe[2,rescol])
-	page <- as.numeric(page)
-	if (is.na(page)) stop("Could not convert characters following the wiki ident into a page number!\n")
-	if (is.null(who)==TRUE) stop("uploader name not given")
-	
-	# Build index list
-	indices = list()
-	for (i in 1:ColNames) {
-		indices[[i]] = list(type='entity',name=ColNames[[i]],page=0,wiki_id=1,order_index=i,hidden=0,unit='') 
-	}
-	
-	header <- list(
-			object = list(
-				name = name,
-				ident = ident,
-				#subset_name = 'Kaavi',
-				type = "variable",
-				page = page,
-				wiki_id = wiki_id
-			),
-			act = list(
-				unit = unit,
-				who = who,
-				samples = n,
-				comments = "R upload",
-				language = "eng"
-			),
-			indices = indices
-	)
-	
-	header
-	
-	reponse <- postToHost(server, path, header)
-	
-	if (is.null(response)) stop('Server is not responding!!!')
-	if (is.null(response$key) || response$key == '') stop(paste("Invalid upload key retrieved! Query:", url, sep=''))
-	
-	response$key
-	
+	return(opbase.upload(input, ident = ident, name = name, obj_type = obj_type, act_type = act_type, unit = unit, who = who))
 	
 }
