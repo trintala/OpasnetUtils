@@ -534,10 +534,9 @@ opbase.write <- function(
 		if (substr(ident, 1,5)=="Op_fi") {wiki_id <- 2; page <- substr(ident, 6, nchar(ident))} else {
 			if (substr(ident, 1,6)=="Heande") {wiki_id <- 3; page <- substr(ident, 7, nchar(ident))} else {
 				if (substr(ident, 1,4)=="Erac") {wiki_id <- 4; page <- substr(ident, 5, nchar(ident))} else {
-					wiki_id <- 0; page <- 0; warning("No wiki id found in ident, writing zero.\n")}}}}
+					wiki_id <- 0; page <- 0; warning(paste("No wiki id found in ident ",ident,", writing zero.\n",sep=''))}}}}
 	
-	n <- tapply(dataframe[,rescol], dataframe[,ColIds], length)
-	
+	n <- length(dataframe[2,rescol])
 	page <- as.numeric(page)
 	if (is.na(page)) stop("Could not convert characters following the wiki ident into a page number!\n")
 	if (is.null(who)==TRUE) stop("uploader name not given")
