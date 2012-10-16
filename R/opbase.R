@@ -172,7 +172,7 @@ opbase.upload <- function(input, ident = NULL, name = NULL, obj_type = 'variable
 	
 	if (is.null(response)) stop('Server is not responding!!!')
 	# Parse JSON data from the server response
-	response <- fromJSON(regmatches(resp, regexpr('\\{.+\\}',response)))
+	response <- fromJSON(regmatches(response, regexpr('\\{.+\\}',response)))
 	if (! is.null(response$error)) stop(response$error)
 	if (is.null(response$key) || response$key == '') stop(paste("Invalid upload key retrieved! Query:", url, sep=''))
 	
