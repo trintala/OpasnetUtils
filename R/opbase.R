@@ -94,7 +94,7 @@ opbase.upload <- function(input, ident = NULL, name = NULL, obj_type = 'variable
 	
 	
 	server <- 'cl1.opasnet.org'
-	path <- '/index.php'
+	path <- '/rtools_server/index.php'
 	
 	# Coerce input into a data frame if it isn't one already; get rid of empty cells
 	if (is.array(input)) dataframe <- as.data.frame(as.table(input)) else dataframe <- input
@@ -171,12 +171,10 @@ opbase.upload <- function(input, ident = NULL, name = NULL, obj_type = 'variable
 	response <- postToHost(server, path, data)
 	
 	if (is.null(response)) stop('Server is not responding!!!')
+	response <- fromJSON(response)
+	if (is.null(response$key) || response$key == '') stop(paste("Invalid upload key retrieved! Query:", url, sep=''))
 	
-	return(response)
-	
-	#if (is.null(response$key) || response$key == '') stop(paste("Invalid upload key retrieved! Query:", url, sep=''))
-	
-	#response$key
+	response$key
 	
 		
 }
