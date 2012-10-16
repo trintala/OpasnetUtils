@@ -94,7 +94,7 @@ opbase.upload <- function(input, ident = NULL, name = NULL, obj_type = 'variable
 	
 	
 	server <- 'cl1.opasnet.org'
-	path <- '/rtools_server/index.php'
+	path <- '/opasnet_base_2/index.php'
 	
 	# Coerce input into a data frame if it isn't one already; get rid of empty cells
 	if (is.array(input)) dataframe <- as.data.frame(as.table(input)) else dataframe <- input
