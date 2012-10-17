@@ -107,17 +107,9 @@ opbase.upload <- function(input, ident = NULL, name = NULL, obj_type = 'variable
 				if (sum(rescol) == 1) rescol <- "result"
 			}
 		}}
+	
 	dataframe <- dataframe[is.na(dataframe[,rescol]) == FALSE,]
 	ColNames <- colnames(dataframe)[!(colnames(dataframe)%in%c(rescol, "id", "obs"))]
-	for (i in ColNames) {
-		dataframe[,i] <- factor(dataframe[,i])
-		levels(dataframe[,i]) <- gsub(" *$", "",gsub("^ *", "", levels(dataframe[,i])))
-		#if(latin1.2.utf8.conv.write) {
-			if(sum(Encoding(levels(dataframe[,i]))=="latin1")!=0) {
-				levels(dataframe[,i]) <- iconv(levels(dataframe[,i]), "latin1", "UTF-8")
-			}
-		#}
-	}
 	
 	# Wiki id
 	if (substr(ident, 1,5)=="Op_en") {wiki_id <- 1; page <- substr(ident, 6, nchar(ident))} else {
@@ -194,7 +186,7 @@ opbase.upload <- function(input, ident = NULL, name = NULL, obj_type = 'variable
 	
 	if (chunk_size > data_rows) chunk_size <- data_rows
 	
-	start <- 2
+	start <- 1
 	end <- chunk_size
 	
 	rows <- 0
