@@ -175,6 +175,8 @@ opbase.upload <- function(input, ident = NULL, name = NULL, obj_type = 'variable
 	response <- fromJSON(regmatches(response, regexpr('\\{.+\\}',response)))
 	if (! is.null(response$error)) stop(response$error)
 	if (is.null(response$key) || response$key == '') stop(paste("Invalid upload key retrieved! Query:", url, sep=''))
+
+	data_rows <- nrow(dataframe)
 	
 	# Automatic chunksize?
 	if (is.null(chunk_size))
@@ -190,9 +192,9 @@ opbase.upload <- function(input, ident = NULL, name = NULL, obj_type = 'variable
 		}
 	}
 	
-	data_rows <- nrow(dataframe)
+	if (chunk_size > data_rows) chunk_size <- data_rows
 	
-	start <- 1
+	start <- 2
 	end <- chunk_size
 	
 	rows <- 0
@@ -208,7 +210,7 @@ opbase.upload <- function(input, ident = NULL, name = NULL, obj_type = 'variable
 		response <- fromJSON(regmatches(response, regexpr('\\{.+\\}',response)))
 		if (! is.null(response$error)) stop(response$error)
 			
-		if (response$rows !=  (end-start)) stop(paste('Invalid inserted rows count! ',response$rows, ' vs ', (end-start), sep=''))
+		if (response$rows !=  (end-start+1)) stop(paste('Invalid inserted rows count! ',response$rows, ' vs ', (end-start+1), sep=''))
 	
 		rows <- rows + response$rows
 		
