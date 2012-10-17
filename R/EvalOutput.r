@@ -24,7 +24,7 @@ EvalOutput <- function(variable, indent = 0, ...) { # ... for e.g na.rm
 	}
 	if (is.numeric(b) & nrow(a) == 0) {
 		cat("\n")
-		stop(paste("No proper data nor formula defined for ", variable@name, "!\n", sep = ""))
+		stop(paste("No proper data nor formula defined for ", variable@name, "! (Numeric formula return and 0 rows data)\n", sep = ""))
 	}
 	if (is.numeric(b)) {
 		colnames(a)[colnames(a) == rescol] <- paste(variable@name, "Result", sep = "")
