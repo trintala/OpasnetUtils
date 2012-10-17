@@ -190,7 +190,7 @@ opbase.upload <- function(input, ident = NULL, name = NULL, obj_type = 'variable
 		}
 	}
 	
-	data_rows <- nrows(dataframe)
+	data_rows <- nrow(dataframe)
 	
 	start <- 1
 	end <- chunk_size
