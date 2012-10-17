@@ -73,7 +73,7 @@ opbase.data <- function(ident, series_id = NULL) {
 }
 
 # Write data to the new opasnet database
-opbase.upload <- function(input, ident = NULL, name = NULL, obj_type = 'variable', act_type = 'replace', language = 'eng', unit = '', who = NULL, rescol = NULL) {
+opbase.upload <- function(input, ident = NULL, name = NULL, obj_type = 'variable', act_type = 'replace', language = 'eng', unit = '', who = NULL, rescol = NULL, chunk_size = NULL) {
 	
 	# Parse arguments
 	targs <- strsplit(commandArgs(trailingOnly = TRUE),",")
@@ -176,7 +176,50 @@ opbase.upload <- function(input, ident = NULL, name = NULL, obj_type = 'variable
 	if (! is.null(response$error)) stop(response$error)
 	if (is.null(response$key) || response$key == '') stop(paste("Invalid upload key retrieved! Query:", url, sep=''))
 	
-	response$key
+	# Automatic chunksize?
+	if (is.null(chunk_size))
+	{
+		chunk_size <- 1000
+	
+		if (n > 1)
+		{
+			div <-  n/ 30
+			if (div < 1) div <- 1
+			chunk_size = round(chunk_size / div)	
+			if (chunk_size < 1) chunk_size <- 1
+		}
+	}
+	
+	data_rows <- nrows(dataframe)
+	
+	start <- 1
+	end <- chunk_size
+	
+	rows <- 0
+	
+	# Write the data
+	repeat
+	{
+		data <- list('json' = toJSON(list('key' = response$key, 'indices' =  indices,  'data' = dataframe[start:end,])))
+		response <- postToHost(server, path, data)
+		
+		if (is.null(response)) stop('Server is not responding!!!')
+		# Parse JSON data from the server response
+		response <- fromJSON(regmatches(response, regexpr('\\{.+\\}',response)))
+		if (! is.null(response$error)) stop(response$error)
+			
+		if (response$rows !=  (end-start)) stop(paste('Invalid inserted rows count! ',response$rows, ' vs ', (end-start), sep=''))
+	
+		rows <- rows + response$rows
+		
+		if (end >= data_rows) break
+		
+		start <- end + 1
+		end <- end + chunk_size
+		if (end > data_rows) end <- data_rows
+	}
+	
+	return(rows)
 	
 }
 
