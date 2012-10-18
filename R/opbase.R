@@ -127,7 +127,7 @@ opbase.upload <- function(input, ident = NULL, name = NULL, obj_type = 'variable
 	indices = list()
 
 	for (i in 1:length(ColNames)) {
-		indices[[i]] = list(type='entity',name=ColNames[[i]],page=page,wiki_id=wiki_id,order_index=i,hidden=0,unit='') 
+		indices[i] = list(type='entity',name=ColNames[i],page=page,wiki_id=wiki_id,order_index=i,hidden=0,unit='') 
 	}
 	
 	header <- list(
@@ -205,10 +205,10 @@ opbase.upload <- function(input, ident = NULL, name = NULL, obj_type = 'variable
 		for (r in 1:nrow(data_chunk))
 		{
 			row <- data_chunk[r,]
-			data_rows[[r]] <- list('res' = row[[rescol]])
+			data_rows[r] <- list('res' = row[rescol])
 			for (i in 1:length(ColNames))
 			{
-				data_rows[[r]][[i]] <- row[[ColNames[[i]]]]
+				data_rows[r][i] <- row[ColNames[i]]
 			}
 		}
 		
