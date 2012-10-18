@@ -117,7 +117,7 @@ opbase.upload <- function(input, ident = NULL, name = NULL, obj_type = 'variable
 				if (substr(ident, 1,4)=="test") {wiki_id <- 4; page <- substr(ident, 5, nchar(ident))} else {
 					stop(paste("No wiki id found in ident ",ident,sep=''))}}}}
 	
-	n <- length(dataframe[2,rescol])
+	n <- length(dataframe[1,rescol])
 	page <- as.numeric(page)
 	if (is.na(page)) stop("Could not convert characters following the wiki ident into a page number!\n")
 	if (is.null(who)==TRUE) stop("uploader name not given")
@@ -125,6 +125,7 @@ opbase.upload <- function(input, ident = NULL, name = NULL, obj_type = 'variable
 	
 	# Build index list
 	indices = list()
+
 	for (i in 1:length(ColNames)) {
 		indices[[i]] = list(type='entity',name=ColNames[[i]],page=page,wiki_id=wiki_id,order_index=i,hidden=0,unit='') 
 	}
@@ -195,14 +196,34 @@ opbase.upload <- function(input, ident = NULL, name = NULL, obj_type = 'variable
 	
 	rows <- 0
 	
+	# Resolve keys for data
+	for i in dataframe[1,]
+	
+	
 	# Write the data
 	repeat
 	{
 		data_chunk = dataframe[start:end,]
+		data_rows = list()
+		r = 1
+		# Create data list for JSON
+		for (row in data_chunk)
+		{
+			data_rows[[r]] <- list('res' = row[[rescol]])
+			i = 1
+			for (i in ColNames)
+			{
+				data_rows[[r]][[i]] <- row[[i]]
+				i <- i + 1
+			}
+			r <- r + 1
+		}
 		
-		if (verbose) print(data_chunk)
+		json <- toJSON(list('key' = response$key, 'indices' =  indices,  'data' = data_rows))
 		
-		data <- list('json' = toJSON(list('key' = response$key, 'indices' =  indices,  'data' = dataframe[start:end,])))
+		if (verbose) print(json)
+		
+		data <- list('json' = json)
 		response <- postToHost(server, path, data)
 		
 		if (is.null(response)) stop('Server is not responding!!!')
