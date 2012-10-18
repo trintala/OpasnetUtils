@@ -211,9 +211,9 @@ opbase.upload <- function(input, ident = NULL, name = NULL, obj_type = 'variable
 		{
 			data_rows[[r]] <- list('res' = row[[rescol]])
 			i = 1
-			for (i in ColNames)
+			for (col in ColNames)
 			{
-				data_rows[[r]][[i]] <- row[[i]]
+				data_rows[[r]][[i]] <- row[[col]]
 				i <- i + 1
 			}
 			r <- r + 1
