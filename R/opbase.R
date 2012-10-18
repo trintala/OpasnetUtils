@@ -217,11 +217,13 @@ opbase.upload <- function(input, ident = NULL, name = NULL, obj_type = 'variable
 			{
 				record[[i]] <- row[ColNames[i]]
 			}
+			
+			if (verbose) print(record)
 
 			data_rows[[r]] <- record
 	}
 		
-		if (verbose) print(data_rows)
+		#if (verbose) print(data_rows)
 		
 		json <- toJSON(list('key' = response$key, 'indices' =  indices,  'data' = data_rows))
 		
