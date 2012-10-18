@@ -158,9 +158,11 @@ opbase.upload <- function(input, ident = NULL, name = NULL, obj_type = 'variable
 		method <- 'PUT';
 	}
 	
-	if (verbose) print(header)
+	json <- toJSON(header)
 	
-	data <- list('_method' = method, 'json' = toJSON(header))
+	if (verbose) print(json)
+	
+	data <- list('_method' = method, 'json' = json)
 	
 	response <- postToHost(server, path, data)
 	
@@ -200,6 +202,9 @@ opbase.upload <- function(input, ident = NULL, name = NULL, obj_type = 'variable
 	repeat
 	{
 		data_chunk = dataframe[start:end,]
+		
+		if (verbose) print(data_chunk)
+		
 		data_rows = list()
 		# Create data list for JSON
 		for (r in 1:nrow(data_chunk))
