@@ -196,10 +196,6 @@ opbase.upload <- function(input, ident = NULL, name = NULL, obj_type = 'variable
 	
 	rows <- 0
 	
-	# Resolve keys for data
-	for i in dataframe[1,]
-	
-	
 	# Write the data
 	repeat
 	{
