@@ -203,19 +203,23 @@ opbase.upload <- function(input, ident = NULL, name = NULL, obj_type = 'variable
 	{
 		data_chunk = dataframe[start:end,]
 		
-		if (verbose) print(data_chunk)
+		#if (verbose) print(data_chunk)
 		
 		data_rows = list()
 		# Create data list for JSON
 		for (r in 1:nrow(data_chunk))
 		{
 			row <- data_chunk[r,]
-			data_rows[[r]] <- list('res' = row[rescol])
+			
+			record <- list('res' = row[rescol])
+			
 			for (i in 1:length(ColNames))
 			{
-				data_rows[[r]][i] <- row[ColNames[i]]
+				record[[i]] <- row[ColNames[i]]
 			}
-		}
+
+			data_rows[[r]] <- record
+	}
 		
 		if (verbose) print(data_rows)
 		
