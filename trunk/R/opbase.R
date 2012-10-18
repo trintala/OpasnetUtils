@@ -73,7 +73,7 @@ opbase.data <- function(ident, series_id = NULL) {
 }
 
 # Write data to the new opasnet database
-opbase.upload <- function(input, ident = NULL, name = NULL, obj_type = 'variable', act_type = 'replace', language = 'eng', unit = '', who = NULL, rescol = NULL, chunk_size = NULL) {
+opbase.upload <- function(input, ident = NULL, name = NULL, obj_type = 'variable', act_type = 'replace', language = 'eng', unit = '', who = NULL, rescol = NULL, chunk_size = NULL, verbose = FALSE) {
 	
 	# Parse arguments
 	targs <- strsplit(commandArgs(trailingOnly = TRUE),",")
@@ -91,7 +91,6 @@ opbase.upload <- function(input, ident = NULL, name = NULL, obj_type = 'variable
 	{
 		ident <- args$wiki_page_id
 	}
-	
 	
 	server <- 'cl1.opasnet.org'
 	path <- '/opasnet_base_2/index.php'
@@ -158,16 +157,21 @@ opbase.upload <- function(input, ident = NULL, name = NULL, obj_type = 'variable
 		method <- 'PUT';
 	}
 	
+	if (verbose) print(header)
+	
 	data <- list('_method' = method, 'json' = toJSON(header))
 	
 	response <- postToHost(server, path, data)
 	
 	if (is.null(response)) stop('Server is not responding!!!')
+
+	if (verbose) print(response)
+	
 	# Parse JSON data from the server response
 	response <- fromJSON(regmatches(response, regexpr('\\{.+\\}',response)))
 	if (! is.null(response$error)) stop(response$error)
 	if (is.null(response$key) || response$key == '') stop(paste("Invalid upload key retrieved! Query:", url, sep=''))
-
+	
 	data_rows <- nrow(dataframe)
 	
 	# Automatic chunksize?
@@ -194,10 +198,17 @@ opbase.upload <- function(input, ident = NULL, name = NULL, obj_type = 'variable
 	# Write the data
 	repeat
 	{
+		data_chunk = dataframe[start:end,]
+		
+		if (verbose) print(data_chunk)
+		
 		data <- list('json' = toJSON(list('key' = response$key, 'indices' =  indices,  'data' = dataframe[start:end,])))
 		response <- postToHost(server, path, data)
 		
 		if (is.null(response)) stop('Server is not responding!!!')
+		
+		if (verbose) print(response)
+		
 		# Parse JSON data from the server response
 		response <- fromJSON(regmatches(response, regexpr('\\{.+\\}',response)))
 		if (! is.null(response$error)) stop(response$error)
