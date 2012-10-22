@@ -175,7 +175,7 @@ opbase.upload <- function(input, ident = NULL, name = NULL, obj_type = 'variable
 	if (! is.null(response$error)) stop(response$error)
 	if (is.null(response$key) || response$key == '') stop(paste("Invalid upload key retrieved! Query:", url, sep=''))
 	
-	data_rows <- nrow(dataframe)
+	total_rows <- nrow(dataframe)
 	
 	# Automatic chunksize?
 	if (is.null(chunk_size))
@@ -191,7 +191,7 @@ opbase.upload <- function(input, ident = NULL, name = NULL, obj_type = 'variable
 		}
 	}
 	
-	if (chunk_size > data_rows) chunk_size <- data_rows
+	if (chunk_size > total_rows) chunk_size <- total_rows
 	
 	start <- 1
 	end <- chunk_size
@@ -202,12 +202,13 @@ opbase.upload <- function(input, ident = NULL, name = NULL, obj_type = 'variable
 	repeat
 	{
 		data_chunk <- data.frame(lapply(dataframe[start:end,], as.character), stringsAsFactors=FALSE)
+		chunk_rows <- nrow(data_chunk)
 		
 		#if (verbose) print(data_chunk)
 		
 		data_rows = list()
 		# Create data list for JSON
-		for (r in 1:nrow(data_chunk))
+		for (r in 1:nrow(chunk_rows))
 		{
 			row <- data_chunk[r,]
 			
@@ -246,15 +247,15 @@ opbase.upload <- function(input, ident = NULL, name = NULL, obj_type = 'variable
 		
 		rr <- as.integer(response$rows)
 		
-		if (rr !=  (end-start+1)) stop(paste('Invalid inserted rows count! ', rr, ' vs ', (end-start+1), sep=''))
+		if (rr != chunk_rows) stop(paste('Invalid inserted rows count! ', rr, ' vs ', chunk_rows, sep=''))
 	
 		rows <- (rows + rr)
 		
-		if (end >= data_rows) break
+		if (end >= total_rows) break
 		
 		start <- (end + 1)
 		end <- (end + chunk_size)
-		if (end > data_rows) end <- data_rows
+		if (end > total_rows) end <- total_rows
 	}
 	
 	return(rows)
