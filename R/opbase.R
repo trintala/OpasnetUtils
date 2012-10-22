@@ -201,7 +201,7 @@ opbase.upload <- function(input, ident = NULL, name = NULL, obj_type = 'variable
 	# Write the data
 	repeat
 	{
-		data_chunk = dataframe[start:end,]
+		data_chunk <- data.frame(lapply(dataframe[start:end,], as.character), stringsAsFactors=FALSE)
 		
 		#if (verbose) print(data_chunk)
 		
