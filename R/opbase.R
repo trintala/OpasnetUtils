@@ -208,7 +208,7 @@ opbase.upload <- function(input, ident = NULL, name = NULL, obj_type = 'variable
 		
 		data_rows = list()
 		# Create data list for JSON
-		for (r in 1:nrow(chunk_rows))
+		for (r in 1:chunk_rows)
 		{
 			row <- data_chunk[r,]
 			
