@@ -241,8 +241,12 @@ opbase.upload <- function(input, ident = NULL, name = NULL, obj_type = 'variable
 		# Parse JSON data from the server response
 		response <- fromJSON(regmatches(response, regexpr('\\{.+\\}',response)))
 		if (! is.null(response$error)) stop(response$error)
-			
-		if (response$rows !=  (end-start+1)) stop(paste('Invalid inserted rows count! ',response$rows, ' vs ', (end-start+1), sep=''))
+		
+		if (verbose) print(response)
+		
+		rr <- as.integer(response$rows)
+		
+		if (rr !=  (end-start+1)) stop(paste('Invalid inserted rows count! ', rr, ' vs ', (end-start+1), sep=''))
 	
 		rows <- rows + response$rows
 		
