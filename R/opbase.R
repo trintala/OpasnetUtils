@@ -248,12 +248,12 @@ opbase.upload <- function(input, ident = NULL, name = NULL, obj_type = 'variable
 		
 		if (rr !=  (end-start+1)) stop(paste('Invalid inserted rows count! ', rr, ' vs ', (end-start+1), sep=''))
 	
-		rows <- rows + response$rows
+		rows <- (rows + rr)
 		
 		if (end >= data_rows) break
 		
-		start <- end + 1
-		end <- end + chunk_size
+		start <- (end + 1)
+		end <- (end + chunk_size)
 		if (end > data_rows) end <- data_rows
 	}
 	
