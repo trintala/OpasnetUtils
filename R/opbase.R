@@ -215,13 +215,13 @@ opbase.upload <- function(input, ident = NULL, name = NULL, obj_type = 'variable
 			
 			for (i in 1:length(ColNames))
 			{
-				record[[toString(i)]] <- toString(row[ColNames[i]])
+				record[[toString(i)]] <- as.character(row[ColNames[i]])
 			}
 			
 			if (verbose) print(record)
 
 			data_rows[[r]] <- record
-	}
+		}
 		
 		#if (verbose) print(data_rows)
 		
