@@ -211,11 +211,13 @@ opbase.upload <- function(input, ident = NULL, name = NULL, obj_type = 'variable
 		{
 			row <- data_chunk[r,]
 			
-			record <- list('res' = row[rescol])
+			v <- as.character(row[rescol])
+			record <- list('res' = v)
 			
 			for (i in 1:length(ColNames))
 			{
-				record[[toString(i)]] <- as.character(row[ColNames[i]])
+				v <- as.character(row[ColNames[i]])
+				record[[toString(i)]] <- v
 			}
 			
 			if (verbose) print(record)
