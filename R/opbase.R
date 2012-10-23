@@ -52,21 +52,23 @@ opbase.data <- function(ident, series_id = NULL) {
 	#indices <- object[[2]][[acts$slot[acts$id == act]]][[2]]
 	#indices <- lapply(indices, as.data.frame)
 	
-	temp <- data.frame()
-	for (i in  object$indices) {
-		temp <- rbind(temp, data.frame(Name = i$name, id = i$ident))
-	}
-	indices <- temp
+	#temp <- data.frame()
+	#for (i in  object$indices) {
+	#	temp <- rbind(temp, data.frame(Name = i$name, id = i$ident))
+	#}
+	#indices <- temp
 	
-	colnames(out) <- gsub("^\"|\"$", "", colnames(out))
+	#colnames(out) <- gsub("^\"|\"$", "", colnames(out))
 	out <- out[,!colnames(out) %in% c("sid", "aid", "mean", "sd")]
 	for(i in 1:ncol(out)) {
-		out[[i]] <- gsub("^\"|\"$", "", out[[i]])
-		out[[i]] <- gsub("^ *| *$", "", out[[i]])
-		temp <- indices[indices$id == colnames(out)[i], "Name"]
-		if (length(temp) == 1) colnames(out)[i] <- as.character(temp)
-		temp <- suppressWarnings(as.numeric(out[[i]]))
-		if (sum(is.na(temp)) == 0) out[[i]] <- temp 
+		ind <- object$indices[i]
+		colnames(out)[i] <- as.character(ind$name)
+	#	out[[i]] <- gsub("^\"|\"$", "", out[[i]])
+	#	out[[i]] <- gsub("^ *| *$", "", out[[i]])
+	#	temp <- indices[indices$id == colnames(out)[i], "Name"]
+	#	if (length(temp) == 1) colnames(out)[i] <- as.character(temp)
+	#	temp <- suppressWarnings(as.numeric(out[[i]]))
+	#	if (sum(is.na(temp)) == 0) out[[i]] <- temp 
 	}
 	colnames(out)[colnames(out) == "res"] <- "Result"
 	return(out)
