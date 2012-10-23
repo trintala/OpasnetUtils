@@ -2,7 +2,7 @@
 #UseMethod("opbase")
 
 # Read data from opasnet base 2
-opbase.data <- function(ident, series_id = NULL) {
+opbase.data <- function(ident, series_id = NULL, verbose = FALSE) {
 	
 	# Then aim for the data itself
 	# act == 0 gets the most recent series of data!
@@ -16,6 +16,8 @@ opbase.data <- function(ident, series_id = NULL) {
 	}
 	
 	object <- opbase.query(url)
+	
+	if (verbose) print(object)
 	
 	if(is.null(object$key) || object$key == '')
 	{
@@ -60,9 +62,13 @@ opbase.data <- function(ident, series_id = NULL) {
 	
 	#colnames(out) <- gsub("^\"|\"$", "", colnames(out))
 	out <- out[,!colnames(out) %in% c("sid", "aid", "mean", "sd")]
+	
+	if (verbose) print(out)
+	
 	for(i in 1:ncol(out)) {
 		ind <- object$indices[i]
-		colnames(out)[i] <- as.character(ind$name)
+		temp <- ind$name
+		if (length(temp) == 1) colnames(out)[i] <- as.character(temp)
 	#	out[[i]] <- gsub("^\"|\"$", "", out[[i]])
 	#	out[[i]] <- gsub("^ *| *$", "", out[[i]])
 	#	temp <- indices[indices$id == colnames(out)[i], "Name"]
