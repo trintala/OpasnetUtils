@@ -67,8 +67,9 @@ opbase.data <- function(ident, series_id = NULL, verbose = FALSE) {
 	
 	for(i in 1:(ncol(out)-1)) {
 		ind <- object$indices[i]
-		temp <- ind$name
-		colnames(out)[i] <- as.character(temp)
+		temp <- as.character(ind$name)
+		if (verbose) print(paste("Index",i," name is ",temp,sep=''))
+		colnames(out)[[i]] <- temp
 	#	out[[i]] <- gsub("^\"|\"$", "", out[[i]])
 	#	out[[i]] <- gsub("^ *| *$", "", out[[i]])
 	#	temp <- indices[indices$id == colnames(out)[i], "Name"]
