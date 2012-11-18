@@ -4,7 +4,8 @@
 lmean <- function(parmean, parsd) {return(log(parmean)-log(1+(parsd^2)/(parmean^2))/2)}
 lsd <- function(parmean, parsd) {return(log(1+(parsd^2)/(parmean^2)))}
 
-# Actual interpretation function. Takes already pre-processed information and returns a distribution.
+# Actual interpretation function. Takes already pre-processed information and returns a distribution. This is a separate function because
+# it isn't vectorizable (easily anyway).
 interpf <- function(
 	n, 
 	res.char, 
@@ -17,7 +18,8 @@ interpf <- function(
 	plusminus.length, 
 	plusminus.pos,
 	doublePoint, 
-	minus.relevant,
+	minus.relevant, 
+	fromzero, 
 	dbug = FALSE
 	) {
 
@@ -40,7 +42,6 @@ interpf <- function(
 				if(dbug) cat("Lognormal distribution. \n")
 				isd <- sum(abs(log(ici) - log(imean)) / 2) / qnorm(0.975)
 				return(exp(rnorm(n, log(imean), isd)))
-				#return(rlnorm(n, lmean(imean, isd), lsd(imean, isd))) # menee vaarin koska isd on laskettu normaalijakaumalle
 			}
 		} else 
 		if(n.minus.inside.brackets %in% c(2,3)) {
@@ -79,6 +80,14 @@ interpf <- function(
 		if(dbug) cat("Discrete random samples. \n")
 		return(sample(unlist(strsplit(res.char, ";"), as.numeric), n, replace = TRUE))
 	}
+	if(fromzero[[1]][1] == 1) {
+		temp <- interpret(
+			paste("0-", substr(res.char, 2, nchar(res.char)), sep = ""), n, dbug = dbug
+		)
+		return(
+			temp$Result
+		)
+	}
 	warning(paste("Unable to interpret \"", res.char, "\"", sep = ""))
 	return(rep(NA, n))
 }
@@ -97,13 +106,14 @@ input.interp <- function(res.char, n = 1000, dbug = FALSE) {
 	brackets.length <- as.numeric(unlist(sapply(brackets, attributes)[1]))
 	brackets.pos <- unlist(brackets)
 	doublePoint <- gregexpr(":", res.char)
+	fromzero <- gregexpr("<", res.char)
 	out <- list()
 	for(i in 1:length(res.char)) {
 		val <- suppressWarnings(as.numeric(res.char[i]))
 		if(is.na(val)) {
 			minus.relevant <- unlist(minus)[(cumsum(c(0, minus.length)) + 1)[i]:cumsum(minus.length)[i]]
 			out[[i]] <- interpf(n, res.char[i], brackets.pos[i], brackets.length[i], minus[i], minus.length[i], minus.exists[i], plusminus[[i]], 
-				plusminus.length[i], plusminus.pos[i], doublePoint[[i]], minus.relevant, dbug
+				plusminus.length[i], plusminus.pos[i], doublePoint[[i]], minus.relevant, fromzero[i], dbug
 			)
 		} else out[[i]] <- rep(val, n)
 	}
@@ -148,3 +158,5 @@ setMethod(
 interpret("500(490-5000)", N = 2, dbug= TRUE)
 
 interpret("1;2;3;4", N = 20, dbug = TRUE)
+
+interpret("<9", N = 4, dbug = TRUE)
