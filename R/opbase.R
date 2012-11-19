@@ -34,11 +34,11 @@ opbase.data <- function(ident, series_id = NULL, verbose = FALSE, username = NUL
 	# Do some authentication!!!
 	if (is.null(username))
 	{
-		if (! is.null(args$user)) paste(url, paste("&username=",args$user,"&password=",opbase.hashed_password(opbase.read_auth(args$user),  ident=ident), sep=''), sep='')
+		if (! is.null(args$user)) url <- paste(url, paste("&username=",args$user,"&password=",opbase.hashed_password(opbase.read_auth(args$user),  ident=ident), sep=''), sep='')
 	}
 	else
 	{
-		if (! is.null(password)) paste(url, paste("&username=",username,"&password=",opbase.hashed_password(password,  ident=ident), sep=''), sep='')
+		if (! is.null(password)) url <- paste(url, paste("&username=",username,"&password=",opbase.hashed_password(password,  ident=ident), sep=''), sep='')
 	}
 	
 	object <- opbase.query(url)
@@ -47,7 +47,7 @@ opbase.data <- function(ident, series_id = NULL, verbose = FALSE, username = NUL
 	
 	if(is.null(object$key) || object$key == '')
 	{
-		stop(paste("Invalid download key retrieved! Query:", url, sep=''))
+		stop("Invalid download key retrieved!")
 	}
 	
 	out <- data.frame()
@@ -59,11 +59,11 @@ opbase.data <- function(ident, series_id = NULL, verbose = FALSE, username = NUL
 	# Do some authentication!!!
 	if (is.null(username))
 	{
-		if (! is.null(args$user)) paste(url, paste("&username=",args$user,"&password=",opbase.hashed_password(opbase.read_auth(args$user), key=object$key), sep=''), sep='')
+		if (! is.null(args$user)) url <- paste(url, paste("&username=",args$user,"&password=",opbase.hashed_password(opbase.read_auth(args$user), key=object$key), sep=''), sep='')
 	}
 	else
 	{
-		if (! is.null(password)) paste(url, paste("&username=",username,"&password=",opbase.hashed_password(password, key=object$key), sep=''), sep='')
+		if (! is.null(password)) url <- paste(url, paste("&username=",username,"&password=",opbase.hashed_password(password, key=object$key), sep=''), sep='')
 	}	
 	
 	while ((!is.null(data) && data != '') | first) {
@@ -238,7 +238,7 @@ opbase.upload <- function(input, ident = NULL, name = NULL, obj_type = 'variable
 	# Parse JSON data from the server response
 	response <- fromJSON(regmatches(response, regexpr('\\{.+\\}',response)))
 	if (! is.null(response$error)) stop(response$error)
-	if (is.null(response$key) || response$key == '') stop(paste("Invalid upload key retrieved! Query:", url, sep=''))
+	if (is.null(response$key) || response$key == '') stop("Invalid upload key retrieved!")
 	
 	total_rows <- nrow(dataframe)
 	
@@ -383,7 +383,7 @@ opbase.query <- function(query) {
 	
 	if (! is.null(response$error))
 	{
-		stop(paste("Query: ",query,", Error: ",response$error, sep= ''))
+		stop(paste("Query response error: ",response$error, sep= ''))
 	}
 	
 	return(response)
