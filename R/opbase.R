@@ -34,11 +34,11 @@ opbase.data <- function(ident, series_id = NULL, verbose = FALSE, username = NUL
 	# Do some authentication!!!
 	if (is.null(username))
 	{
-		if (! is.null(args$user)) url <- paste("&username=",args$user,"&password=",opbase.hashed_password(opbase.read_auth(args$user),  ident=ident), sep='')
+		if (! is.null(args$user)) paste(url, paste("&username=",args$user,"&password=",opbase.hashed_password(opbase.read_auth(args$user),  ident=ident), sep=''), sep='')
 	}
 	else
 	{
-		if (! is.null(password)) url <- paste("&username=",username,"&password=",opbase.hashed_password(password,  ident=ident), sep='')
+		if (! is.null(password)) paste(url, paste("&username=",username,"&password=",opbase.hashed_password(password,  ident=ident), sep=''), sep='')
 	}
 	
 	object <- opbase.query(url)
@@ -59,11 +59,11 @@ opbase.data <- function(ident, series_id = NULL, verbose = FALSE, username = NUL
 	# Do some authentication!!!
 	if (is.null(username))
 	{
-		if (! is.null(args$user)) url <- paste("&username=",args$user,"&password=",opbase.hashed_password(opbase.read_auth(args$user), key=object$key), sep='')
+		if (! is.null(args$user)) paste(url, paste("&username=",args$user,"&password=",opbase.hashed_password(opbase.read_auth(args$user), key=object$key), sep=''), sep='')
 	}
 	else
 	{
-		if (! is.null(password)) url <- paste("&username=",username,"&password=",opbase.hashed_password(password, key=object$key), sep='')
+		if (! is.null(password)) paste(url, paste("&username=",username,"&password=",opbase.hashed_password(password, key=object$key), sep=''), sep='')
 	}	
 	
 	while ((!is.null(data) && data != '') | first) {
