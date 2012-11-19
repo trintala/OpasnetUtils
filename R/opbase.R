@@ -1,8 +1,24 @@
 #opbase <- function(x, ...)
 #UseMethod("opbase")
 
+opbase.locations <- function(){
+  # TODO?	
+}
+
 # Read data from opasnet base 2
-opbase.data <- function(ident, series_id = NULL, verbose = FALSE) {
+opbase.data <- function(ident, series_id = NULL, verbose = FALSE, username = NULL, password = NULL) {
+	
+	# Parse arguments
+	targs <- strsplit(commandArgs(trailingOnly = TRUE),",")
+	args = list()
+	
+	for(i in targs[[1]])
+	{
+		tmp = strsplit(i,"=")
+		key <- tmp[[1]][1]
+		value <- tmp[[1]][2]
+		args[[key]] <- value
+	}
 	
 	# Then aim for the data itself
 	# act == 0 gets the most recent series of data!
@@ -13,6 +29,16 @@ opbase.data <- function(ident, series_id = NULL, verbose = FALSE) {
 	else
 	{
 		url <- paste("ident=", ident, "&series=", series_id, sep = "")
+	}
+	
+	# Do some authentication!!!
+	if (is.null(username))
+	{
+		if (! is.null(args$user)) url <- paste("&username=",args$user,"&password=",opbase.hashed_password(opbase.read_auth(args$user),  ident=ident), sep='')
+	}
+	else
+	{
+		if (! is.null(password)) url <- paste("&username=",username,"&password=",opbase.hashed_password(password,  ident=ident), sep='')
 	}
 	
 	object <- opbase.query(url)
@@ -28,10 +54,22 @@ opbase.data <- function(ident, series_id = NULL, verbose = FALSE) {
 	data <- NULL
 	first <- TRUE
 	
+	url <- paste("key=", object$key, sep = "")
+	
+	# Do some authentication!!!
+	if (is.null(username))
+	{
+		if (! is.null(args$user)) url <- paste("&username=",args$user,"&password=",opbase.hashed_password(opbase.read_auth(args$user), key=object$key), sep='')
+	}
+	else
+	{
+		if (! is.null(password)) url <- paste("&username=",username,"&password=",opbase.hashed_password(password, key=object$key), sep='')
+	}	
+	
 	while ((!is.null(data) && data != '') | first) {
 		first <- FALSE
-		
-		temp <- opbase.query(paste("key=", object$key, sep = ""))
+
+		temp <- opbase.query(url)
 		
 		data <- temp$data
 		
@@ -82,13 +120,13 @@ opbase.data <- function(ident, series_id = NULL, verbose = FALSE) {
 }
 
 # Write data to the new opasnet database
-opbase.upload <- function(input, ident = NULL, name = NULL, obj_type = 'variable', act_type = 'replace', language = 'eng', unit = '', who = NULL, rescol = NULL, chunk_size = NULL, verbose = FALSE) {
+opbase.upload <- function(input, ident = NULL, name = NULL, obj_type = 'variable', act_type = 'replace', language = 'eng', unit = '', who = NULL, rescol = NULL, chunk_size = NULL, verbose = FALSE, username = NULL, password = NULL ) {
 	
 	# Parse arguments
 	targs <- strsplit(commandArgs(trailingOnly = TRUE),",")
 	args = list()
 	
-	for(i in targs[[1]])
+	for(i in targs[[1]]) 
 	{
 		tmp = strsplit(i,"=")
 		key <- tmp[[1]][1]
@@ -167,6 +205,24 @@ opbase.upload <- function(input, ident = NULL, name = NULL, obj_type = 'variable
 		method <- 'PUT';
 	}
 	
+	# Do some authentication!!!
+	if (is.null(username))
+	{
+		if (! is.null(args$user))
+		{	
+			header[['username']] <- args$user
+			header[['password']] <- opbase.hashed_password(opbase.read_auth(args$user),  ident=ident)
+		}
+	}
+	else
+	{
+		if (! is.null(password))
+		{	
+			header[['username']] <- username
+			header[['password']] <- opbase.hashed_password(password,  ident=ident)
+		}
+	}	
+	
 	json <- toJSON(header)
 	
 	if (verbose) print(json)
@@ -207,6 +263,26 @@ opbase.upload <- function(input, ident = NULL, name = NULL, obj_type = 'variable
 	
 	rows <- 0
 	
+	raw_data <- list('key' = response$key, 'indices' =  indices)
+	
+	# Do some authentication!!!
+	if (is.null(username))
+	{
+		if (! is.null(username))
+		{	
+			raw_data[['username']] <- args$user
+			raw_data[['password']] <- opbase.hashed_password(opbase.read_auth(args$user),  ident=ident)
+		}
+	}
+	else
+	{
+		if (! is.null(password))
+		{	
+			raw_data[['username']] <- username
+			raw_data[['password']] <- opbase.hashed_password(password,  ident=ident)
+		}
+	}
+	
 	# Write the data
 	repeat
 	{
@@ -236,8 +312,9 @@ opbase.upload <- function(input, ident = NULL, name = NULL, obj_type = 'variable
 		}
 		
 		#if (verbose) print(data_rows)
-		
-		json <- toJSON(list('key' = response$key, 'indices' =  indices,  'data' = data_rows))
+	
+		raw_data[['data']] <- data_rows
+		json <- toJSON(raw_data)
 		
 		if (verbose) print(json)
 		
@@ -271,8 +348,25 @@ opbase.upload <- function(input, ident = NULL, name = NULL, obj_type = 'variable
 	
 }
 
+# Private function to get authentication
+opbase.read_auth <- function(user) {
+	auth <- fromJSON(paste(readLines("/var/www/html/rtools_server/offline/opasnet.json"),  collapse = ""))
+	return(auth[[user]])
+}
+
+# Private function to create hashed password
+opbase.hashed_password <- function(password, index = NULL, ident = NULL, key = NULL) {
+	str <- ''
+	if (! is.null(index)) str <- paste(str, index, sep='')
+	if (! is.null(ident)) str <- paste(str, ident, sep='')
+	if (! is.null(key)) str <- paste(str, key, sep='')
+	str <- paste(str, password, sep='')
+	return(digest(str, algo="md5"))
+}
+
 # Private function to make queries to server
 opbase.query <- function(query) {
+		
 	url <- paste("http://cl1.opasnet.org/opasnet_base_2/index.php?", query, sep = "")
 	
 	response <- fromJSON(
@@ -284,7 +378,7 @@ opbase.query <- function(query) {
 	
 	if (is.null(response))
 	{
-		stop("Server is not responding! Unable to retrieve data download key!")
+		stop("Opasnet server is not responding! Unable to query!")
 	}
 	
 	if (! is.null(response$error))
