@@ -361,7 +361,7 @@ opbase.hashed_password <- function(password, index = NULL, ident = NULL, key = N
 	if (! is.null(ident)) str <- paste(str, ident, sep='')
 	if (! is.null(key)) str <- paste(str, key, sep='')
 	str <- paste(str, password, sep='')
-	return(digest(str, algo="md5"))
+	return(digest(str, algo="md5", serialize=FALSE))
 }
 
 # Private function to make queries to server
