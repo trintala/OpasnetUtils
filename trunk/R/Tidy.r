@@ -1,8 +1,16 @@
-# TIDY ########### tidy: a function that cleans the tables from Opasnet Base. Intended to be used with table2base-uploaded
+############################################################3
+# TIDY ########### 
+#################################################
+# Tidy is a function that cleans the tables from Opasnet Base. Intended to be used with table2base-uploaded
 # tables, since they have the required Obs/Row - column.
-# inputs:
+# Inputs:
 #   data - is a table from the base
-#   widecol - can be a vector
+#   objname - is the prefix given to the 'new' columns, defaults to empty
+#   idvar - is a combination of the colnames that uniquely define a new row in the resulting dataframe. By default
+#     'obs' to which 'Row' and 'Obs' are converted. 'Obs' is a column used by the table2base wiki table data upload
+#     system to store the original row number. This can be used as such in reshape to bring out the original table.
+#   direction - reshape paramater that tells that we are 'widening' the dataframe
+#   widecol - the column which contains 'new' columns
 tidy <- function (data, objname = "", idvar = "obs", direction = "wide", widecol = NULL) {
 	data$Result <- ifelse(is.na(data$Result.Text), data$Result, as.character(data$Result.Text))
 	#data <- data[
@@ -16,12 +24,10 @@ tidy <- function (data, objname = "", idvar = "obs", direction = "wide", widecol
 	if("obs.1" %in% colnames(data)) { # this line is temporarily needed until the obs.1 bug is fixed.
 		data[, "obs"] <- data[, "obs.1"]
 		data <- data[, colnames(data) != "obs.1"]
-	}
-	if("Obs" %in% colnames(data)) { # this line
+	} else if("Obs" %in% colnames(data)) { # this line
 		data[, "obs"] <- data[, "Obs"]
 		data <- data[, colnames(data) != "Obs"]
-	}
-	if("Row" %in% colnames(data)) { # If user has given Row, it is used instead of automatic obs.
+	} else if("Row" %in% colnames(data)) { # If user has given Row, it is used instead of automatic obs.
 		data <- data[, colnames(data) != "obs"]
 		colnames(data)[colnames(data) == "Row"] <- "obs"
 	}
