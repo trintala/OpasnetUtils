@@ -42,7 +42,7 @@ tidy <- function (data, objname = "", idvar = "obs", direction = "wide", widecol
 			data <- data[colnames(data) != "obs"]
 			colnames(data) <- gsub("^Result.", objname, colnames(data))
 			for (i in paste(objname, cols, sep = "")) {
-				a <- suppressWarnings(as.numeric(data[, i]))
+				a <- suppressWarnings(as.numeric(as.character(data[, i])))
 				if (sum(is.na(a)) == 0) data[, i] <- a else data[, i] <- factor(data[, i])
 			}
 			colnames(data)[grepl(paste("^", objname, "result", sep = ""), colnames(data))] <- paste(objname, "Result", sep = "")
