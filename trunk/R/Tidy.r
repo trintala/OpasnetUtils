@@ -64,7 +64,7 @@ tidy.old <- function (data, objname = "", idvar = "obs", direction = "wide", wid
 
 
 
-tidy <- function (data, objname = "", idvar = "obs", direction = "wide", widecol = NULL) {
+tidy <- function (data, objname = "", idvar = "Obs", direction = "wide", widecol = NULL) {
 	#data$Result <- ifelse(is.na(data$Result.Text), data$Result, as.character(data$Result.Text))
 	#data <- data[
 	#	ifelse("Observation" %in% colnames(data), 
