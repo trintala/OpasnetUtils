@@ -116,6 +116,8 @@ opbase.data <- function(ident, series_id = NULL, verbose = FALSE, username = NUL
 	#	if (sum(is.na(temp)) == 0) out[[i]] <- temp 
 	}
 	colnames(out)[colnames(out) == "res"] <- "Result"
+	a <- suppressWarnings(as.numeric(as.character(data$Result)))
+	if (sum(is.na(a)) == 0) data$Result <- a
 	return(out)
 }
 
@@ -389,8 +391,8 @@ opbase.query <- function(query) {
 	return(response)
 }
 
-list.to.data.frame <- function(x) { # As.data.frame equivalent, but allows one list as longer than others. 
-	do.call("data.frame", x) # Which is the case with opb2's probabilistic results. 
+list.to.data.frame <- function(x) { # As.data.frame equivalent, but allows variable length lists, 
+	do.call("data.frame", x) # which is the case with opb2's probabilistic results. 
 }
 
 f.iter <- function(x) {
