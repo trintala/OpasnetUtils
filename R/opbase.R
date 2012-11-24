@@ -116,8 +116,8 @@ opbase.data <- function(ident, series_id = NULL, verbose = FALSE, username = NUL
 	#	if (sum(is.na(temp)) == 0) out[[i]] <- temp 
 	}
 	colnames(out)[colnames(out) == "res"] <- "Result"
-	a <- suppressWarnings(as.numeric(as.character(data$Result)))
-	if (sum(is.na(a)) == 0) data$Result <- a
+	a <- suppressWarnings(as.numeric(as.character(out$Result)))
+	if (sum(is.na(a)) == 0) out$Result <- a
 	return(out)
 }
 
