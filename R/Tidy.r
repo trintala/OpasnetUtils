@@ -16,8 +16,9 @@
 tidy <- function (data, objname = "", idvar = "Obs", direction = "wide", widecol = NULL, base1 = FALSE) {
 	if(base1){
 		data$Result <- ifelse(is.na(data$Result.Text), data$Result, as.character(data$Result.Text))
-		data <- data[, !colnames(data) %in% c("id", "Result.Text")]
 	}
+	data <- data[, !colnames(data) %in% c("id", "Result.Text")]
+	
 	# The following lines are there for base1 legacy functionality
 	if("obs.1" %in% colnames(data)) {
 		data[, "Obs"] <- data[, "obs.1"]
