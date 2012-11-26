@@ -12,13 +12,14 @@ opbase.data <- function(ident, series_id = NULL, verbose = FALSE, username = NUL
 	targs <- strsplit(commandArgs(trailingOnly = TRUE),",")
 	args = list()
 	
-	for(i in targs[[1]])
-	{
-		tmp = strsplit(i,"=")
-		key <- tmp[[1]][1]
-		value <- tmp[[1]][2]
-		args[[key]] <- value
-	}
+	if (length(targs) > 0)
+		for(i in targs[[1]])
+		{
+			tmp = strsplit(i,"=")
+			key <- tmp[[1]][1]
+			value <- tmp[[1]][2]
+			args[[key]] <- value
+		}
 	
 	# Then aim for the data itself
 	# act == 0 gets the most recent series of data!
@@ -127,19 +128,17 @@ opbase.upload <- function(input, ident = NULL, name = NULL, obj_type = 'variable
 	# Parse arguments
 	targs <- strsplit(commandArgs(trailingOnly = TRUE),",")
 	args = list()
+
+	if (length(targs) > 0)
+		for(i in targs[[1]]) 
+		{
+			tmp = strsplit(i,"=")
+			key <- tmp[[1]][1]
+			value <- tmp[[1]][2]
+			args[[key]] <- value
+		}
 	
-	for(i in targs[[1]]) 
-	{
-		tmp = strsplit(i,"=")
-		key <- tmp[[1]][1]
-		value <- tmp[[1]][2]
-		args[[key]] <- value
-	}
-	
-	if (is.null(ident) == TRUE)
-	{
-		ident <- args$wiki_page_id
-	}
+	if (is.null(ident) == TRUE && ! is.null(args$wiki_page_id)) ident <- args$wiki_page_id
 	
 	server <- 'cl1.opasnet.org'
 	path <- '/opasnet_base_2/index.php'

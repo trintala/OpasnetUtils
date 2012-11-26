@@ -1,3 +1,3 @@
 op_baseWrite <- function(dsn, input, ...) {
-	return(opbase.upload(input, ...))
+	return(opbase.write(dsn, input, ...))
 }
