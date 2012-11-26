@@ -15,13 +15,14 @@ opasnet.data <- function(filename,wiki='', unzip='') {
 	# Parse arguments
 	targs <- strsplit(commandArgs(trailingOnly = TRUE),",")
 	args = list()
-	for(i in targs[[1]])
-	{
-		tmp = strsplit(i,"=")
-		key <- tmp[[1]][1]
-		value <- tmp[[1]][2]
-		args[[key]] <- value
-	}
+	if (length(targs) > 0)
+		for(i in targs[[1]])
+		{
+			tmp = strsplit(i,"=")
+			key <- tmp[[1]][1]
+			value <- tmp[[1]][2]
+			args[[key]] <- value
+		}
 	
 	if (wiki == '')
 	{
@@ -63,13 +64,14 @@ opasnet.csv <- function(filename, wiki='', unzip = '', ...) {
 	# Parse arguments
 	targs <- strsplit(commandArgs(trailingOnly = TRUE),",")
 	args = list()
-	for(i in targs[[1]])
-	{
-		tmp = strsplit(i,"=")
-		key <- tmp[[1]][1]
-		value <- tmp[[1]][2]
-		args[[key]] <- value
-	}
+	if (length(targs) > 0)
+		for(i in targs[[1]])
+		{
+			tmp = strsplit(i,"=")
+			key <- tmp[[1]][1]
+			value <- tmp[[1]][2]
+			args[[key]] <- value
+		}
 	
 	if (wiki == '')
 	{

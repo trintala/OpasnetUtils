@@ -1,3 +1,7 @@
+Version: 0.1.41
+Author: Einari Happonen <einari.happonen@thl.fi>
+Description: Bugfixes, RODBC removed from depencies due moving to Base 2, modified opbase and opasnet -functions for local R usage
+
 Version: 0.1.4
 Author: Einari Happonen <einari.happonen@thl.fi>
 Description: database functions now use the Opasnet Base 2
