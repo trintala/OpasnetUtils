@@ -35,27 +35,36 @@ opbase.data <- function(ident, series_id = NULL, verbose = FALSE, username = NUL
 	if (! is.null(samples)) url <- paste(url, "&samples=", samples, sep = "")
 	
 	# Do some authentication!!!
+	# 1st case: Username or password has not been given as parameters
 	if (is.null(username))
 	{
-		if (! is.null(args$user)) url <- paste(url, paste("&username=",args$user,"&password=",opbase.hashed_password(opbase.read_auth(args$user),  ident=ident), sep=''), sep='')
-		if (! is.null(exclude)) url <- paste(url, "&exclude=", opbase.parse_locations(exclude, ident, series_id, args$user,opbase.hashed_password(opbase.read_auth(args$user),  ident=ident)), sep = '')
-		if (! is.null(include)) url <- paste(url, "&include=", opbase.parse_locations(include, ident, series_id, args$user,opbase.hashed_password(opbase.read_auth(args$user),  ident=ident)), sep = '')
+		if (! is.null(args$user)) {
+			url <- paste(url, paste("&username=",args$user,"&password=",opbase.hashed_password(opbase.read_auth(args$user),  ident=ident), sep=''), sep='')
+			if (! is.null(exclude)) url <- paste(url, "&exclude[]=", paste(opbase.parse_locations(exclude, ident, series_id, args$user,opbase.hashed_password(opbase.read_auth(args$user),  ident=ident)), collapse="&exclude[]="), sep = '')
+			if (! is.null(include)) url <- paste(url, "&include[]=", paste(opbase.parse_locations(include, ident, series_id, args$user,opbase.hashed_password(opbase.read_auth(args$user),  ident=ident)), collapse="&include[]="), sep = '')
+		}
+		else
+		{
+			if (! is.null(exclude)) url <- paste(url, "&exclude[]=", paste(opbase.parse_locations(exclude, ident, series_id), collapse="&exclude[]="), sep = '')
+			if (! is.null(include)) url <- paste(url, "&include[]=", paste(opbase.parse_locations(include, ident, series_id), collapse="&include[]="), sep = '')
+		}
 	}
+	# 2nd case: Username and password has been given as parameters
 	else
 	{
-		if (! is.null(password)) url <- paste(url, paste("&username=",username,"&password=",opbase.hashed_password(password,  ident=ident), sep=''), sep='')
-		if (! is.null(exclude)) url <- paste(url, "&exclude=", opbase.parse_locations(exclude, ident, series_id, username,opbase.hashed_password(password,  ident=ident)), sep = '')
-		if (! is.null(include)) url <- paste(url, "&include=", opbase.parse_locations(include, ident, series_id, username,opbase.hashed_password(password,  ident=ident)), sep = '')
+		if (! is.null(password)) {
+			url <- paste(url, paste("&username=",username,"&password=",opbase.hashed_password(password,  ident=ident), sep=''), sep='')
+			if (! is.null(exclude)) url <- paste(url, "&exclude[]=", paste(opbase.parse_locations(exclude, ident, series_id, username,opbase.hashed_password(password,  ident=ident)), collapse="&exclude[]="), sep = '')
+			if (! is.null(include)) url <- paste(url, "&include[]=", paste(opbase.parse_locations(include, ident, series_id, username,opbase.hashed_password(password,  ident=ident)), collapse="&include[]="), sep = '')
+		}
 	}
 	
 	object <- opbase.query(url)
 	
-	if (verbose) print(object)
+	#if (verbose) print(object)
+	if (verbose) print("Object info and download key loaded!")
 	
-	if(is.null(object$key) || object$key == '')
-	{
-		stop("Invalid download key retrieved!")
-	}
+	if(is.null(object$key) || object$key == '') stop("Invalid download key retrieved!")
 	
 	out <- data.frame()
 	data <- NULL
@@ -76,24 +85,32 @@ opbase.data <- function(ident, series_id = NULL, verbose = FALSE, username = NUL
 	while ((!is.null(data) && data != '') | first) {
 		first <- FALSE
 
+		if (verbose) print(paste('Loading data chunk from server... ',format(Sys.time(), "%H:%M:%OS3"),sep=''))
 		temp <- opbase.query(url)
-		
 		data <- temp$data
-		
+		if (verbose) print('Data loaded ok!')
+		if (verbose) print(paste('Processing data... ',format(Sys.time(), "%H:%M:%OS3"),sep=''))
 		if (!is.null(data) && data != '')
 		{
 			temp <- fromJSON(data)
-			temp <- lapply(temp, list.to.data.frame)		
+			if (verbose) print(paste('JSON parsed',format(Sys.time(), "%H:%M:%OS3"),sep=''))
+			temp <- lapply(temp, list.to.data.frame)	# THIS FUNCTION IS RELATIVELY SLOW!!!! Could this be done in any other way?
+			if (verbose) print(paste('Converted to data frame',format(Sys.time(), "%H:%M:%OS3"),sep=''))
 			lengths <- lapply(temp, nrow)	
+			if (verbose) print(paste('Row lengths resolved',format(Sys.time(), "%H:%M:%OS3"),sep=''))
 			temp <- do.call("rbind", temp)
+			if (verbose) print(paste('Rbind done',format(Sys.time(), "%H:%M:%OS3"),sep=''))
 			
-			if (! is.null(samples) && samples > 0 && sum(unlist(lengths) > 1) > 0) {
-				iterations <- lapply(lengths, f.iter)
-				temp$Iteration <- unlist(iterations)
+			if (is.null(samples) || (! is.null(samples) && samples > 0)) {
+				if  (sum(unlist(lengths) > 1) > 0) {
+					iterations <- lapply(lengths, f.iter)
+					temp$Iteration <- unlist(iterations)
+				}
 			}	
 			out <- rbind(out, temp)
+			if (verbose) print(paste('Concatenated chunk to output',format(Sys.time(), "%H:%M:%OS3"),sep=''))
 		}
-		
+		if (verbose) print('Data processed ok!')
 	}
 	
 	#indices <- object[[2]][[acts$slot[acts$id == act]]][[2]]
@@ -107,7 +124,7 @@ opbase.data <- function(ident, series_id = NULL, verbose = FALSE, username = NUL
 	
 	#colnames(out) <- gsub("^\"|\"$", "", colnames(out))
 	
-	if (verbose) print(out)
+	#if (verbose) print(out)
 
 
 	if (is.null(samples) || samples > 0) {
@@ -363,17 +380,33 @@ opbase.upload <- function(input, ident = NULL, name = NULL, obj_type = 'variable
 	
 }
 
-# Private
-opbase.parse_locations <- function(locs, ident, series_id, username, password) {
+# Private function to parse include or exclude list and return vector containing corresponding index idents and location ids
+opbase.parse_locations <- function(locs, ident, series_id, username = NULL, password = NULL) {
+	ret = c()
 	for(i in names(locs))
 	{
 		url <- paste('ident=',ident,'&index_name=',  URLencode(i, reserved = TRUE), sep = '')
 		if (! is.null(series_id)) url <- paste(url, '&series_id=', series_id, sep = '')
-		url <- paste(url, '&username=', username, '&password=', password, sep = '')
+		if (! is.null(username)) url <- paste(url, '&username=', username, '&password=', password, sep = '')
 		object <- opbase.query(url)
 		ind <- object$index
-		print(ind$id)
+		loc_ids = c()
+		for (loc in locs[[i]])
+		{
+			# Seek thru all locations of an index
+			for (lid in names(object$locations))
+			{
+				if (object$locations[[lid]] == loc)
+				{
+					loc_ids <- c(loc_ids, lid) 
+					break
+				}
+			}
+		}
+		ret <- c(ret, paste(object$index$ident,paste(loc_ids,collapse=','),sep=','))
 	}
+	#print(ret)
+	return(ret)
 }
 
 # Private function to get authentication
