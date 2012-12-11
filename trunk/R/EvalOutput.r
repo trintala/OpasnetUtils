@@ -1,8 +1,8 @@
 # EvalOutput #################### evaluates the output slot of ovariables
 ##### Marginals should be also checked and updated here or elsewhere
 
-EvalOutput <- function(variable, indent = 0, ...) { # ... for e.g na.rm 
-	cat(rep("-", indent), "Evaluating", variable@name, "...")
+EvalOutput <- function(variable, indent = 0, verbose = TRUE, ...) { # ... for e.g na.rm 
+	if (verbose) cat(rep("-", indent), "Evaluating", variable@name, "...")
 	if (nrow(variable@data) > 0) {
 		colnames(variable@data)[colnames(variable@data) %in% "Result"] <- paste(variable@name, "Result", sep = "")
 		rescol <- paste(variable@name, "Result", sep = "")
@@ -10,7 +10,7 @@ EvalOutput <- function(variable, indent = 0, ...) { # ... for e.g na.rm
 			a <- interpret(variable@data, rescol = rescol, ...) 
 		} else a <- variable@data
 	} else a <- variable@data
-	b <- variable@formula(variable@dependencies, indent = indent + 1, ...)
+	b <- variable@formula(variable@dependencies, indent = indent + 1, verbose = verbose, ...)
 	tempmarginals <- character()
 	if (class(b)[1]=="ovariable") {
 		if (length(b@marginal) > 0) {
@@ -23,14 +23,14 @@ EvalOutput <- function(variable, indent = 0, ...) { # ... for e.g na.rm
 		b <- b@output
 	}
 	if (is.numeric(b) & nrow(a) == 0) {
-		cat("\n")
+		if (verbose) cat("\n")
 		stop(paste("No proper data nor formula defined for ", variable@name, "! (Numeric formula return and 0 rows data)\n", sep = ""))
 	}
 	if (is.numeric(b)) {
 		colnames(a)[colnames(a) == rescol] <- paste(variable@name, "Result", sep = "")
 		a[,paste(variable@name, "Source", sep = "")] <- "Data"
 		variable@output <- a
-		cat("done!\n")
+		if (verbose) cat("done!\n")
 		return(variable)
 	}
 	if (nrow(a) == 0) {
@@ -40,7 +40,7 @@ EvalOutput <- function(variable, indent = 0, ...) { # ... for e.g na.rm
 		b[,paste(variable@name, "Source", sep = "")] <- "Formula"
 		variable@output <- b
 		if (length(tempmarginals) > 1) variable@marginal <- colnames(variable@output) %in% tempmarginals
-		cat(rep("-", indent), "done!\n")
+		if (verbose) cat(rep("-", indent), "done!\n")
 		return(variable)
 	}
 	colnames(a)[colnames(a) == rescol] <- "FromData"
@@ -63,6 +63,6 @@ EvalOutput <- function(variable, indent = 0, ...) { # ... for e.g na.rm
 	)
 	variable@output <- temp
 	if (length(tempmarginals) > 1) variable@marginal <- colnames(variable@output) %in% tempmarginals
-	cat(rep("-", indent), "done!\n")
+	if (verbose) cat(rep("-", indent), "done!\n")
 	return(variable)
 }
