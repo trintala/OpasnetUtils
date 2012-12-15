@@ -94,7 +94,7 @@ opbase.data <- function(ident, series_id = NULL, verbose = FALSE, username = NUL
 		{
 			temp <- fromJSON(data)
 			if (verbose) print(paste('JSON parsed',format(Sys.time(), "%H:%M:%OS3"),sep=''))
-			temp <- lapply(temp, list.to.data.frame)	# THIS FUNCTION IS RELATIVELY SLOW!!!! Could this be done in any other way?
+			temp <- lapply(temp, data.frame)#list.to.data.frame)	# THIS FUNCTION IS RELATIVELY SLOW!!!! Could this be done in any other way?
 			if (verbose) print(paste('Converted to data frame',format(Sys.time(), "%H:%M:%OS3"),sep=''))
 			lengths <- lapply(temp, nrow)	
 			if (verbose) print(paste('Row lengths resolved',format(Sys.time(), "%H:%M:%OS3"),sep=''))
