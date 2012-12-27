@@ -103,7 +103,7 @@ input.interp <- function(res.char, n = 1000, dbug = FALSE) {
 	minus.length <- sapply(minus, length)
 	minus.exists <- unlist(minus)[cumsum(c(0, minus.length[-length(minus.length)])) + 1] > 0
 	brackets <- gregexpr("\\(.*\\)", res.char) # matches for brackets "(...)"
-	brackets.length <- as.numeric(unlist(sapply(brackets, attributes)[1]))
+	brackets.length <- as.numeric(unlist(sapply(brackets, attributes)[1,]))
 	brackets.pos <- unlist(brackets)
 	doublePoint <- gregexpr(":", res.char)
 	fromzero <- gregexpr("<", res.char)
