@@ -98,11 +98,11 @@ CheckDecisions <- function(variable) {
 		for (j in 1:nrow(dectable)) {
 			out[
 				cond[[j]], 
-				paste(variable@name, "Result", split = "")
+				paste(variable@name, "Result", sep = "")
 			] <- eff[[j]](
 				out[
 					cond[[j]], 
-					paste(variable@name, "Result", split = "")
+					paste(variable@name, "Result", sep = "")
 				], 
 				dectable[["Result"]][j]
 			)
