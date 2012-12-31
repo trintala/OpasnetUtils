@@ -86,7 +86,7 @@ CheckDecisions <- function(variable) {
 		if (length(dec@effect) == 1 & dec@effect[[1]](variable@output) == 0) {
 			eff <- list()
 			for (j in 1:nrow(dectable)) { 
-				eff[[j]] <- EffectPreset(dectable$Change) # Returns a standard function from presets defined below.
+				eff[[j]] <- EffectPreset(dectable[["Change"]][j]) # Returns a standard function from presets defined below.
 			}
 		} else {
 			eff <- dec@effect
@@ -104,7 +104,7 @@ CheckDecisions <- function(variable) {
 					cond[[j]], 
 					paste(variable@name, "Result", split = "")
 				], 
-				dectable$Value[j]
+				dectable[["Amount"]][j]
 			)
 		}
 		
