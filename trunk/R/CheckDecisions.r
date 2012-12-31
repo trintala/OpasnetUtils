@@ -104,7 +104,7 @@ CheckDecisions <- function(variable) {
 					cond[[j]], 
 					paste(variable@name, "Result", split = "")
 				], 
-				dectable[["Amount"]][j]
+				dectable[["Result"]][j]
 			)
 		}
 		
