@@ -11,7 +11,7 @@
 #######################
 
 CheckDecisions <- function(variable) {
-	if(exists(get(paste("Dec", variable@name, sep = "")))) {
+	if(exists(paste("Dec", variable@name, sep = ""))) {
 		
 		# Initialization: Setting up a data.frame upon which to apply desired decision - option specific effect. 
 		
@@ -19,7 +19,8 @@ CheckDecisions <- function(variable) {
 		dectable <- dec@dectable # Decision input table in format described on http://en.opasnet.org/w/Decision
 		temp2 <- data.frame(ignoremeiamadummy = NA) # A mergeable dummy for loop initial value
 		for (i in unique(as.character(dectable$Decision))) { # Decisions form new indices. Here the decision indices are merged together.
-			tempdec[[i]] <- dectable$Option[dectable$Decision == i]
+			tempdec <- data.frame(dectable$Option[dectable$Decision == i])
+			colnames(tempdec) <- i
 			temp2 <- merge(temp2, tempdec)
 		}
 		temp2 <- temp2[!colnames(temp2) %in% "ignoremeiamadummy"] # remove dummy column
@@ -41,7 +42,7 @@ CheckDecisions <- function(variable) {
 				
 				# In the decision table format conditions are given in the "Cell"-column separated by ";".
 				
-				sel1 <- strsplit(dectable[j, "Cell"], split = ";")[[1]] 
+				sel1 <- strsplit(as.character(dectable[j, "Cell"]), split = ";")[[1]] 
 				
 				# ":" defines index - location matches as a condition.
 				
@@ -52,7 +53,7 @@ CheckDecisions <- function(variable) {
 				selection <- list() 
 				for (k in 1:length(sel1)) { # For each condition separated by ";"
 					if (length(sel2[[k]]) > 1) { # If ":" has been used for condition k
-						locs <- strsplit(sel2[[k]][2], split = ",") # Split by "," for multiple locs per given index
+						locs <- strsplit(sel2[[k]][2], split = ",")[[1]] # Split by "," for multiple locs per given index
 						selection[[k]] <- out[, sel2[[k]][1]] %in% locs # Match our data.frame to the condition
 					} #else { # Unimplemented code for (in)equality checks for numeric variables
 						#if(grepl(">=")) {
@@ -66,7 +67,7 @@ CheckDecisions <- function(variable) {
 				# Match all conditions given for this decision - option combination.
 				
 				selection <- as.data.frame(selection)
-				selection$optslice <- out[[as.character(dec[j,1])]] == dec[j,2] # We only want rows where the relevant option is in use to be affected
+				selection$optslice <- out[[as.character(dectable[["Decision"]][j])]] == dectable[["Option"]][j] # We only want rows where the relevant option is in use to be affected
 				selection <- as.matrix(selection)
 				cond[[j]] <- apply(
 					selection,
