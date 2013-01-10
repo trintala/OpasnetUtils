@@ -185,6 +185,10 @@ opbase.upload <- function(input, ident = NULL, name = NULL, obj_type = 'variable
 				if (sum(rescol) == 1) rescol <- "result"
 			}
 		}}
+
+	if (is.null(rescol)) stop('No result column could be defined!')
+	
+	if (verbose) print(paste('Rescol:',rescol, sep= ' '))
 	
 	dataframe <- dataframe[is.na(dataframe[,rescol]) == FALSE,]
 	ColNames <- colnames(dataframe)[!(colnames(dataframe)%in%c(rescol, "id", "obs"))]
