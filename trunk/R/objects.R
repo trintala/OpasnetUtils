@@ -101,9 +101,9 @@ objects.get_latest <- function(page_ident, code_name){
 
 # Private function for getting the ident for page holding the key data
 objects.page_ident <- function(base_user){
-	if (args$user == 'heande') return('heande')
-	if (args$user == 'opasnet_en') return('op_en')
-	if (args$user == 'opasnet_fi') return('op_fi')
-	if (args$user == 'eractest') return('test4228')	
+	if (base_user == 'heande') return('heande')
+	if (base_user == 'opasnet_en') return('op_en')
+	if (base_user == 'opasnet_fi') return('op_fi')
+	if (base_user == 'eractest') return('test4228')	
 }
 
