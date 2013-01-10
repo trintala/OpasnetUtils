@@ -11,6 +11,8 @@ export(
 	opasnet.data,
 	opasnet.csv,
 	objects.get,
+	objects.get_latest,
+	objects.put2,
 	objects.put,
 	apply.decisions,
 	decisions.apply,

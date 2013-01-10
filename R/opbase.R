@@ -154,7 +154,7 @@ opbase.data <- function(ident, series_id = NULL, verbose = FALSE, username = NUL
 }
 
 # Write data to the new opasnet database
-opbase.upload <- function(input, ident = NULL, name = NULL, obj_type = 'variable', act_type = 'replace', language = 'eng', unit = '', who = NULL, rescol = NULL, chunk_size = NULL, verbose = FALSE, username = NULL, password = NULL ) {
+opbase.upload <- function(input, ident = NULL, name = NULL, obj_type = 'variable', act_type = 'replace', language = 'eng', unit = '', who = NULL, rescol = NULL, chunk_size = NULL, verbose = FALSE, username = NULL, password = NULL, index_units = NULL, index_types = NULL ) {
 	
 	# Parse arguments
 	targs <- strsplit(commandArgs(trailingOnly = TRUE),",")
@@ -189,10 +189,12 @@ opbase.upload <- function(input, ident = NULL, name = NULL, obj_type = 'variable
 	dataframe <- dataframe[is.na(dataframe[,rescol]) == FALSE,]
 	ColNames <- colnames(dataframe)[!(colnames(dataframe)%in%c(rescol, "id", "obs"))]
 	
+	ident <- tolower(ident)
+	
 	# Wiki id
-	if (substr(ident, 1,5)=="Op_en") {wiki_id <- 1; page <- substr(ident, 6, nchar(ident))} else {
-		if (substr(ident, 1,5)=="Op_fi") {wiki_id <- 2; page <- substr(ident, 6, nchar(ident))} else {
-			if (substr(ident, 1,6)=="Heande") {wiki_id <- 3; page <- substr(ident, 7, nchar(ident))} else {
+	if (substr(ident, 1,5)=="op_en") {wiki_id <- 1; page <- substr(ident, 6, nchar(ident))} else {
+		if (substr(ident, 1,5)=="op_fi") {wiki_id <- 2; page <- substr(ident, 6, nchar(ident))} else {
+			if (substr(ident, 1,6)=="heande") {wiki_id <- 3; page <- substr(ident, 7, nchar(ident))} else {
 				if (substr(ident, 1,4)=="test") {wiki_id <- 4; page <- substr(ident, 5, nchar(ident))} else {
 					stop(paste("No wiki id found in ident ",ident,sep=''))}}}}
 	
@@ -206,7 +208,19 @@ opbase.upload <- function(input, ident = NULL, name = NULL, obj_type = 'variable
 	indices = list()
 
 	for (i in 1:length(ColNames)) {
-		indices[[i]] = list(type='entity',name=ColNames[i],page=page,wiki_id=wiki_id,order_index=i,hidden=0,unit='') 
+		if (is.null(index_types))
+		{
+			t = 'entity'; 
+		} else {
+			t = index_types[i]
+		}
+		if (is.null(index_units))
+		{
+			u = ''; 
+		} else {
+			u = index_units[i]
+		}	
+		indices[[i]] = list(type=t,name=ColNames[i],page=page,wiki_id=wiki_id,order_index=i,hidden=0,unit=u) 
 	}
 	
 	header <- list(
