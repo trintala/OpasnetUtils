@@ -66,11 +66,11 @@ objects.put2 <- function(..., list = character(), verbose = FALSE){
 	if (verbose) paste('Objects page ident:',print(ident),sep=' ')
 	if (verbose) paste('Data to insert:',print(data),sep=' ')
 	
-	ret <- tryCatch(opbase.upload(input = data, ident = ident, name = obj_name, act_type = 'append', unit = unit, who = who), error = function(e) return(NULL))
+	ret <- tryCatch(opbase.upload(input = data, ident = ident, name = obj_name, act_type = 'append', unit = unit, who = who, verbose = verbose), error = function(e) return(NULL))
 	# If appending failed, then try replacing (object might not exist yet)
 	if (is.null(ret))
 	{
-		opbase.upload(input = data, ident = ident, name = obj_name, act_type = 'replace', unit = unit, who = who, index_types = index_types)
+		opbase.upload(input = data, ident = ident, name = obj_name, act_type = 'replace', unit = unit, who = who, index_types = index_types, verbose = verbose)
 	}
 	
 	# Now finally write objects
