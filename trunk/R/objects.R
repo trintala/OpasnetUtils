@@ -47,9 +47,12 @@ objects.put2 <- function(..., list = character(), verbose = FALSE){
 	}
 	
 	now <- Sys.time()
+	okey <- gsub("\\.","",as.character(as.numeric(now)))
+	
+	if (! args$code_name) stop('R-code block must have NAME to save objects!')
 	
 	# Write to base
-	data <- matrix(c(args$wiki_page_id,args$code_name,format(now,"%Y-%m-%dT%I:%M:%OS2Z",tz='GMT'),as.numeric(now)),ncol=4,byrow=TRUE)
+	data <- matrix(c(args$wiki_page_id, args$code_name, format(now,"%Y-%m-%dT%I:%M:%OS2Z",tz='GMT'), okey), ncol=4, byrow=TRUE)
 	colnames(data) <- c("Page ident","Code name","Time","result")
 	data <- as.data.frame(data)
 	
@@ -71,7 +74,7 @@ objects.put2 <- function(..., list = character(), verbose = FALSE){
 	}
 	
 	# Now finally write objects
-	fname <- paste(as.numeric(now),'_objs.RData.gz',sep='')
+	fname <- paste(okey,'_objs.RData.gz',sep='')
 	
 	save(..., list = list,
 			file = fname,
@@ -79,7 +82,7 @@ objects.put2 <- function(..., list = character(), verbose = FALSE){
 			compress = 'gzip', compression_level = 6,
 			eval.promises = TRUE, precheck = TRUE)	
 	
-	return(as.numeric(now))
+	return(okey)
 }
 
 
