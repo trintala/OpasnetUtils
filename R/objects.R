@@ -33,7 +33,7 @@ objects.get <- function(token){
 }
 
 
-objects.put2 <- function(..., list = character()){
+objects.put2 <- function(..., list = character(), verbose = FALSE){
 	
 	# Parse arguments
 	targs <- strsplit(commandArgs(trailingOnly = TRUE),",")
@@ -49,7 +49,7 @@ objects.put2 <- function(..., list = character()){
 	now <- Sys.time()
 	
 	# Write to base
-	data <- matrix(c(args$wiki_page_id,args$wiki_page_id,format(now,"%Y-%m-%dT%I:%M:%OS2Z",tz='GMT'),as.numeric(now)),ncol=4,byrow=TRUE)
+	data <- matrix(c(args$wiki_page_id,args$code_name,format(now,"%Y-%m-%dT%I:%M:%OS2Z",tz='GMT'),as.numeric(now)),ncol=4,byrow=TRUE)
 	colnames(data) <- c("Page ident","Code name","Time","result")
 	data <- as.data.frame(data)
 	
@@ -59,6 +59,9 @@ objects.put2 <- function(..., list = character()){
 	unit <- "#"
 	who <- 'RTools'
 	ident <- objects.page_ident(args$user)
+	
+	if (verbose) paste('Objects page ident:',print(ident),sep=' ')
+	if (verbose) paste('Data to insert:',print(data),sep=' ')
 	
 	ret <- tryCatch(opbase.upload(input = data, ident = ident, name = obj_name, act_type = 'append', unit = unit, who = who), error = function(e) return(NULL))
 	# If appending failed, then try replacing (object might not exist yet)
