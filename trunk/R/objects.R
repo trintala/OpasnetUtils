@@ -49,11 +49,6 @@ objects.put2 <- function(..., list = character()){
 	now <- Sys.time()
 	
 	# Write to base
-	if (args$user == 'heande') prefix <- 'heande'
-	if (args$user == 'opasnet_en') prefix <- 'op_en'
-	if (args$user == 'opasnet_fi') prefix <- 'op_fi'
-	if (args$user == 'eractest') prefix <- 'test'
-
 	data <- matrix(c(args$wiki_page_id,args$wiki_page_id,format(now,"%Y-%m-%dT%I:%M:%OS2Z",tz='GMT'),as.numeric(now)),ncol=4,byrow=TRUE)
 	colnames(data) <- c("Page ident","Code name","Time","result")
 	data <- as.data.frame(data)
@@ -63,7 +58,7 @@ objects.put2 <- function(..., list = character()){
 	obj_name <- "Saved R objects"
 	unit <- "#"
 	who <- 'RTools'
-	ident <- paste(prefix,"_r_objects",sep='')
+	ident <- objects.page_ident(args$user)
 	
 	ret <- tryCatch(opbase.upload(input = data, ident = ident, name = obj_name, act_type = 'append', unit = unit, who = who), error = function(e) return(NULL))
 	# If appending failed, then try replacing (object might not exist yet)
@@ -88,7 +83,7 @@ objects.put2 <- function(..., list = character()){
 objects.get_latest <- function(page_ident, code_name){
 	
 	# Parse arguments
-	targs <- strsplit(commandArgs(trailingOnly = TRUE),",")
+	targs <- strsplit(commandArgs(trailingOnly = TRUE),",") 
 	args = list()
 	for(i in targs[[1]])
 	{
@@ -98,11 +93,17 @@ objects.get_latest <- function(page_ident, code_name){
 		args[[key]] <- value
 	}
 	
-	if (args$user == 'heande') prefix <- 'heande'
-	if (args$user == 'opasnet_en') prefix <- 'op_en'
-	if (args$user == 'opasnet_fi') prefix <- 'op_fi'
-	if (args$user == 'eractest') prefix <- 'test'
+	ident <- objects.page_ident(args$user)
 	
-	res <- opbase.data(paste(prefix,'_r_objects',sep=''), include = list('Page ident' = page_ident, 'Code name' = code_name))
+	res <- opbase.data(ident, include = list('Page ident' = page_ident, 'Code name' = code_name))
 	objects.get(max(res$Key))
-}		
+}
+
+# Private function for getting the ident for page holding the key data
+objects.page_ident <- function(base_user){
+	if (args$user == 'heande') return('heande')
+	if (args$user == 'opasnet_en') return('op_en')
+	if (args$user == 'opasnet_fi') return('op_fi')
+	if (args$user == 'eractest') return('test4228')	
+}
+
