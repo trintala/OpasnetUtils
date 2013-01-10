@@ -49,7 +49,7 @@ objects.put2 <- function(..., list = character(), verbose = FALSE){
 	now <- Sys.time()
 	okey <- gsub("\\.","",as.character(as.numeric(now)))
 	
-	if (! args$code_name) stop('R-code block must have NAME to save objects!')
+	if (is.null(args$code_name)) stop('R-code block must have NAME to save objects!')
 	
 	# Write to base
 	data <- matrix(c(args$wiki_page_id, args$code_name, format(now,"%Y-%m-%dT%I:%M:%OS2Z",tz='GMT'), okey), ncol=4, byrow=TRUE)
