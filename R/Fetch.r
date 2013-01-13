@@ -17,15 +17,15 @@ Fetch2 <- function(dependencies, evaluate = FALSE, indent = 0, verbose = TRUE, .
 	if (nrow(dependencies) > 0) {
 		for (i in 1:nrow(dependencies)) {
 			if(!exists(as.character(dependencies$Name[i]))) {
-				testkey <- if (is.null(dependencies$Key[i])) TRUE else is.na(dependencies$Key[i]) | dependencies$Key[i] == "")
-				testid <- if (is.null(dependencies$Ident[i])) TRUE else is.na(dependencies$Ident[i]) | dependencies$Ident[i] == "")
+				testkey <- if (is.null(dependencies$Key[i])) TRUE else is.na(dependencies$Key[i]) | dependencies$Key[i] == ""
+				testid <- if (is.null(dependencies$Ident[i])) TRUE else is.na(dependencies$Ident[i]) | dependencies$Ident[i] == ""
 				if (testkey & testid) {
 					stop(paste("No key nor ident given for dependent variable: ", dependencies$Name, "!", sep = ""))
 				}
-				if (testkey) {
+				if (!testkey) {
 					objects.get(dependencies$Key[i]) # Key is the R-tools session identifier (shown at the end of the url)
 				}
-				if (!testkey & testid) {
+				if (testkey & testid) {
 					ident <- strsplit(dependencies$Ident[i], "/")[[1]] # Ident should be in format <page_id>/<code_name>
 					objects.get_latest(ident[1], ident[2])
 				}
