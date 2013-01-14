@@ -128,19 +128,15 @@ opbase.data <- function(ident, series_id = NULL, verbose = FALSE, username = NUL
 		colnames(out)[colnames(out) == "mean"] <- "Mean"	
 		colnames(out)[colnames(out) == "sd"] <- "Sd"	
 	}
-	
-	cnames = vector(length=length(object$indices))
-	
+
 	for(i in 1:length(object$indices)) {
 		ind <- object$indices[[i]]
 		temp <- as.character(ind$name)
 		if (verbose) print(paste("Index ",i," name is ",temp,sep=''))
-		cnames[i] <- temp
+		colnames(out)[i] <- temp
 	}
 	
-	if (verbose) print(cnames)
 	
-	colnames(out) <- cnames
 	
 	return(out)
 }
