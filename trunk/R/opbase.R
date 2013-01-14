@@ -113,16 +113,7 @@ opbase.data <- function(ident, series_id = NULL, verbose = FALSE, username = NUL
 		if (verbose) print('Data processed ok!')
 	}
 	
-	#indices <- object[[2]][[acts$slot[acts$id == act]]][[2]]
-	#indices <- lapply(indices, as.data.frame)
-	
-	#temp <- data.frame()
-	#for (i in  object$indices) {
-	#	temp <- rbind(temp, data.frame(Name = i$name, id = i$ident))
-	#}
-	#indices <- temp
-	
-	#colnames(out) <- gsub("^\"|\"$", "", colnames(out))
+	if (nrow(out) == 0) stop('Empty result set!')
 	
 	#if (verbose) print(out)
 
@@ -138,18 +129,19 @@ opbase.data <- function(ident, series_id = NULL, verbose = FALSE, username = NUL
 		colnames(out)[colnames(out) == "sd"] <- "Sd"	
 	}
 	
+	cnames = vector(length=length(object$indices))
+	
 	for(i in 1:length(object$indices)) {
 		ind <- object$indices[[i]]
 		temp <- as.character(ind$name)
 		if (verbose) print(paste("Index ",i," name is ",temp,sep=''))
-		colnames(out)[i] <- temp
-	#	out[[i]] <- gsub("^\"|\"$", "", out[[i]])
-	#	out[[i]] <- gsub("^ *| *$", "", out[[i]])
-	#	temp <- indices[indices$id == colnames(out)[i], "Name"]
-	#	if (length(temp) == 1) colnames(out)[i] <- as.character(temp)
-	#	temp <- suppressWarnings(as.numeric(out[[i]]))
-	#	if (sum(is.na(temp)) == 0) out[[i]] <- temp 
+		cnames[i] <- temp
 	}
+	
+	if (verbose) print(cnames)
+	
+	colnames(out) <- cnames
+	
 	return(out)
 }
 
@@ -400,6 +392,9 @@ opbase.upload <- function(input, ident = NULL, name = NULL, obj_type = 'variable
 # Private function to parse include or exclude list and return vector containing corresponding index idents and location ids
 opbase.parse_locations <- function(locs, ident, series_id, username = NULL, password = NULL) {
 	ret = c()
+	
+	#print(locs)
+	
 	for(i in names(locs))
 	{
 		url <- paste('ident=',ident,'&index_name=',  URLencode(i, reserved = TRUE), sep = '')
