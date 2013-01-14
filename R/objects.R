@@ -35,8 +35,10 @@ objects.get <- function(token){
 	load(fname, .GlobalEnv)
 }
 
+# New method for storing objects, writes key to the opasnet base as well
+# Returns the key
 
-objects.put2 <- function(..., list = character(), verbose = FALSE){
+objects.store <- function(..., list = character(), verbose = FALSE){
 	
 	# Parse arguments
 	targs <- strsplit(commandArgs(trailingOnly = TRUE),",")
@@ -93,7 +95,7 @@ objects.put2 <- function(..., list = character(), verbose = FALSE){
 }
 
 
-objects.get_latest <- function(page_ident, code_name, verbose = FALSE){
+objects.latest <- function(page_ident, code_name, verbose = FALSE){
 	
 	# Parse arguments
 	targs <- strsplit(commandArgs(trailingOnly = TRUE),",") 
@@ -114,14 +116,17 @@ objects.get_latest <- function(page_ident, code_name, verbose = FALSE){
 	if (verbose) print(paste('Saved R objects page ident is ', ident, sep=''))
 	
 	res <- opbase.data(ident, include = list('Page ident' = page_ident, 'Code name' = code_name), verbose = verbose)
+	
+	if (verbose) print(res)
+	
 	objects.get(max(res$Result))
 }
 
 # Private function for getting the ident for page holding the key data
 objects.page_ident <- function(base_user){
-	if (base_user == 'heande') return('heande')
-	if (base_user == 'opasnet_en') return('op_en')
-	if (base_user == 'opasnet_fi') return('op_fi')
+	if (base_user == 'heande') return('Heande3827')
+	if (base_user == 'opasnet_en') return('Op_en5897')
+	if (base_user == 'opasnet_fi') return('Op_fi3382')
 	if (base_user == 'eractest') return('test4228')	
 }
 

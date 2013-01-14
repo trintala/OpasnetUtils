@@ -27,7 +27,7 @@ Fetch2 <- function(dependencies, evaluate = FALSE, indent = 0, verbose = TRUE, .
 				}
 				if (testkey & testid) {
 					ident <- strsplit(dependencies$Ident[i], "/")[[1]] # Ident should be in format <page_id>/<code_name>
-					objects.get_latest(ident[1], ident[2])
+					objects.latest(ident[1], ident[2])
 				}
 				if (evaluate) assign(
 						as.character(dependencies$Name[i]), 
