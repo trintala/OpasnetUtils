@@ -187,7 +187,6 @@ opbase.upload <- function(input, ident = NULL, name = NULL, obj_type = 'variable
 		}}
 
 	if (is.null(rescol)) stop('No result column could be defined!')
-	
 	if (verbose) print(paste('Rescol:',rescol, sep= ' '))
 	
 	dataframe <- dataframe[is.na(dataframe[,rescol]) == FALSE,]
@@ -336,10 +335,10 @@ opbase.upload <- function(input, ident = NULL, name = NULL, obj_type = 'variable
 	# Write the data
 	repeat
 	{
-		data_chunk <- data.frame(lapply(dataframe[start:end,], as.character), stringsAsFactors=FALSE)
+		data_chunk <- data.frame(lapply(dataframe[start:end,], as.character), stringsAsFactors=FALSE, check.names=FALSE)
 		chunk_rows <- nrow(data_chunk)
 		
-		#if (verbose) print(data_chunk)
+		if (verbose) print(data_chunk)
 		
 		data_rows = list()
 		# Create data list for JSON

@@ -8,6 +8,9 @@ objects.put <- function(..., list = character()){
 	# Parse arguments
 	targs <- strsplit(commandArgs(trailingOnly = TRUE),",")
 	args = list()
+	
+	if (length(targs) == 0) stop('This function can be used within Opasnet only!!!')
+	
 	for(i in targs[[1]])
 	{
 		tmp = strsplit(i,"=")
@@ -38,6 +41,9 @@ objects.put2 <- function(..., list = character(), verbose = FALSE){
 	# Parse arguments
 	targs <- strsplit(commandArgs(trailingOnly = TRUE),",")
 	args = list()
+	
+	if (length(targs) == 0) stop('This function can be used within Opasnet only!!!')
+	
 	for(i in targs[[1]])
 	{
 		tmp = strsplit(i,"=")
@@ -48,6 +54,7 @@ objects.put2 <- function(..., list = character(), verbose = FALSE){
 	
 	now <- Sys.time()
 	okey <- gsub("\\.","",as.character(as.numeric(now)))
+	okey <- substr(okey,0,12)
 	
 	if (is.null(args$code_name)) stop('R-code block must have NAME to save objects!')
 	
@@ -91,6 +98,9 @@ objects.get_latest <- function(page_ident, code_name){
 	# Parse arguments
 	targs <- strsplit(commandArgs(trailingOnly = TRUE),",") 
 	args = list()
+	
+	if (length(targs) == 0) stop('This function can be used within Opasnet only!!!') 
+	
 	for(i in targs[[1]])
 	{
 		tmp = strsplit(i,"=")
@@ -102,7 +112,7 @@ objects.get_latest <- function(page_ident, code_name){
 	ident <- objects.page_ident(args$user)
 	
 	res <- opbase.data(ident, include = list('Page ident' = page_ident, 'Code name' = code_name))
-	objects.get(max(res$Key))
+	objects.get(max(res$Result))
 }
 
 # Private function for getting the ident for page holding the key data
