@@ -93,7 +93,7 @@ objects.put2 <- function(..., list = character(), verbose = FALSE){
 }
 
 
-objects.get_latest <- function(page_ident, code_name){
+objects.get_latest <- function(page_ident, code_name, verbose = FALSE){
 	
 	# Parse arguments
 	targs <- strsplit(commandArgs(trailingOnly = TRUE),",") 
@@ -111,7 +111,9 @@ objects.get_latest <- function(page_ident, code_name){
 	
 	ident <- objects.page_ident(args$user)
 	
-	res <- opbase.data(ident, include = list('Page ident' = page_ident, 'Code name' = code_name))
+	if (verbose) print(paste('Saved R objects page ident is ', ident, sep=''))
+	
+	res <- opbase.data(ident, include = list('Page ident' = page_ident, 'Code name' = code_name), verbose = verbose)
 	objects.get(max(res$Result))
 }
 
