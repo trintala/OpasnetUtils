@@ -48,7 +48,7 @@ EvalOutput <- function(variable, indent = 0, verbose = TRUE, ...) { # ... for e.
 	colnames(b)[colnames(b) %in% c(paste(variable@name, "Result", sep = ""), "Result")] <- "FromFormula" # *
 	# <variablename> prefix not necessitated for "Result" column of formula output
 	temp <- melt(
-		merge(a, b, ...), #all = TRUE, ...), # Will cause problems if dependencies contain non-marginal indices that match with -
+		merge(a, b, all = TRUE, ...), # Will cause problems if dependencies contain non-marginal indices that match with -
 		# marginal indeces in data. Or maybe not.
 		measure.vars = c("FromData", "FromFormula"),
 		variable.name = paste(variable@name, "Source", sep = ""),
