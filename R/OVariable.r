@@ -7,7 +7,8 @@ setClass(
 		data			= "data.frame", 
 		marginal		= "logical", 
 		formula			= "function", 
-		dependencies	= "data.frame"
+		dependencies	= "data.frame",
+		ddata			= "character"
 	),
 	prototype = prototype(
 		name			= character(),
@@ -15,9 +16,65 @@ setClass(
 		data			= data.frame(),
 		marginal		= logical(),
 		formula			= function(...){0},
-		dependencies	= data.frame()
+		dependencies	= data.frame(),
+		ddata			= character()
 	)
 )
+
+####################
+# ddata_apply
+############################
+# This function will download newest available data in the base according to the defined ddata link (page identifier).
+# Normally if data already exists it is left alone. Replacement can be forced with a parameter.
+# Remember to use ddata_tidy = FALSE for old data with "obs" as Iteration column.
+#########################
+ddata_apply <- function(
+		ovariable, 
+		ddata_tidy = TRUE, 
+		force_ddata = FALSE, 
+		...
+) { 
+	if ((!identical(ovariable@data, data.frame()) | force_ddata) & !identical(ovariable@ddata, character())) {
+		ovariable@data <- opbase.data(ovariable@ddata)
+		if (ddata_tidy) ovariable@data <- tidy(ovariable@data, ovariable@name)
+	}
+	return(ovariable)
+}
+
+####################
+# Ovariable (constructor)
+#################
+# Constructs an ovariable and optionally downloads ddata and saves the variable for use in other codes on the server. 
+# The point of this constructor is to simplify variable creation: where before many different functions would have to
+# be used to get data into a usable format now a simple call Ovariable(<variable_name>, ddata = <page_ident>, save = TRUE)
+# will do the trick.
+#####################
+Ovariable <- function(
+		name = character(), 
+		data = data.frame(), 
+		formula = function(...){0}, 
+		dependencies = data.frame(), 
+		ddata = character(),
+		getddata = TRUE, # will dynamic data be immediately be downloaded, as opposed waiting until variable output is Evaluated
+		save = FALSE, # will the variable be saved on the server using objects.put
+		public = TRUE, # will the saved variable be public or private
+		...
+) {
+	out <- new(
+			"ovariable",
+			name = name,
+			data = data,
+			formula = formula,
+			dependencies = dependencies,
+			ddata = ddata
+	)
+	if (getddata) out <- ddata_apply(out)
+	if (save){
+		assign(name, out)
+		if (public) objects.put2(get(name), ...) else objects.put(get(name), ...)
+	}
+	return(out)
+}
 
 # MOVARIABLE ########## movariable takes a data.frame, a function, and a list and makes an ovariable out of them. It is a 
 #####subfunction of make.ovariable and prevents infinite recursion of S4 methods.
