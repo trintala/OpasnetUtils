@@ -72,7 +72,7 @@ Ovariable <- function(
 	if (getddata) out <- ddata_apply(out)
 	if (save){
 		assign(name, out)
-		if (public) objects.put2(get(name), ...) else objects.put(get(name), ...)
+		if (public) objects.store(get(name), ...) else objects.put(get(name), ...)
 	}
 	return(out)
 }
