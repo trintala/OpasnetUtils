@@ -53,5 +53,7 @@ export(
 	#dphi.dx,
 	#LaPerKm,
 	#LoPerKm,
-	GIS.Concentration.matrix
+	GIS.Concentration.matrix,
+	Ovariable,
+	ddata_apply
 )
