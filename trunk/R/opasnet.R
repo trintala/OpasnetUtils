@@ -26,7 +26,8 @@ opasnet.data <- function(filename,wiki='', unzip='') {
 	
 	if (wiki == '')
 	{
-		wiki = args$user
+		if (is.null(args$user)) stop('Wiki cannot be resolved!')
+		wiki <- args$user
 	}
 	if (wiki == 'opasnet_en' || wiki == 'op_en')
 	{
