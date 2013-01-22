@@ -25,7 +25,7 @@ Fetch2 <- function(dependencies, evaluate = FALSE, indent = 0, verbose = TRUE, .
 				if (!testkey) {
 					objects.get(dependencies$Key[i]) # Key is the R-tools session identifier (shown at the end of the url)
 				}
-				if (testkey & testid) {
+				if (testkey & !testid) {
 					ident <- strsplit(dependencies$Ident[i], "/")[[1]] # Ident should be in format <page_id>/<code_name>
 					objects.latest(ident[1], ident[2])
 				}
