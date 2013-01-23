@@ -308,7 +308,7 @@ opbase.upload <- function(input, ident = NULL, name = NULL, obj_type = 'variable
 		if (! is.null(username))
 		{	
 			raw_data[['username']] <- args$user
-			raw_data[['password']] <- opbase.hashed_password(opbase.read_auth(args$user),  ident=ident)
+			raw_data[['password']] <- opbase.hashed_password(opbase.read_auth(args$user),  key=raw_data$key)
 		}
 	}
 	else
@@ -316,7 +316,7 @@ opbase.upload <- function(input, ident = NULL, name = NULL, obj_type = 'variable
 		if (! is.null(password))
 		{	
 			raw_data[['username']] <- username
-			raw_data[['password']] <- opbase.hashed_password(password,  ident=ident)
+			raw_data[['password']] <- opbase.hashed_password(password, key=raw_data$key)
 		}
 	}
 	
