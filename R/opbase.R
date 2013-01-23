@@ -305,7 +305,7 @@ opbase.upload <- function(input, ident = NULL, name = NULL, obj_type = 'variable
 	# Do some authentication!!!
 	if (is.null(username))
 	{
-		if (! is.null(username))
+		if (! is.null(args$user))
 		{	
 			raw_data[['username']] <- args$user
 			raw_data[['password']] <- opbase.hashed_password(opbase.read_auth(args$user),  key=raw_data$key)
