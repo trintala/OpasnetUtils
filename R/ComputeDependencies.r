@@ -10,6 +10,8 @@ ComputeDependencies <- function(dependencies, forceEval = FALSE, indent = 0, ...
 			if (nrow(get(i)@output) == 0 | forceEval) assign(i, EvalOutput(get(i), indent = indent, ...), envir = .GlobalEnv)
 			assign(i, CheckMarginals(get(i), indent = indent, ...), envir = .GlobalEnv)
 			assign(i, CheckInput(get(i), indent = indent, ...), envir = .GlobalEnv)
+			assign(i, CheckDecisions(get(i), indent = indent, ...), envir = .GlobalEnv)
+			assign(i, CheckCollapse(get(i), indent = indent, ...), envir = .GlobalEnv)
 		}
 	}
 	cat("\n")

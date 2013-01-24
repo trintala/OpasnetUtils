@@ -36,8 +36,8 @@ CheckMarginals <- function(variable, deps = list(), priormarg = TRUE, indent = 0
 	varmar <- varmar[!varmar %in% novarmar]
 	variable@marginal <- colnames(variable@output) %in% c(varmar, "Iter")
 	if (sum(variable@marginal) > 0) {
-		if (verbose) cat(paste(colnames(variable@output)[variable@marginal], collapse = ", "), "recognized as marginal(s).\n")
-	} else {if (verbose) cat("none recognized.\n")}
+		if (verbose) cat("", paste(colnames(variable@output)[variable@marginal], collapse = ", "), "recognized as marginal(s).\n")
+	} else {if (verbose) cat(" none recognized.\n")}
 	#cat("done!\n")
 	return(variable)
 }
