@@ -31,7 +31,7 @@ EvalOutput <- function(variable, indent = 0, verbose = TRUE, ...) { # ... for e.
 		colnames(a)[colnames(a) == rescol] <- paste(variable@name, "Result", sep = "")
 		a[,paste(variable@name, "Source", sep = "")] <- "Data"
 		variable@output <- a
-		if (verbose) cat("done!\n")
+		if (verbose) cat(" done!\n")
 		return(variable)
 	}
 	if (nrow(a) == 0) {
@@ -41,7 +41,7 @@ EvalOutput <- function(variable, indent = 0, verbose = TRUE, ...) { # ... for e.
 		b[,paste(variable@name, "Source", sep = "")] <- "Formula"
 		variable@output <- b
 		if (length(tempmarginals) > 1) variable@marginal <- colnames(variable@output) %in% tempmarginals
-		if (verbose) cat(rep("-", indent), "done!\n")
+		if (verbose) cat(rep("-", indent), " done!\n")
 		return(variable)
 	}
 	colnames(a)[colnames(a) == rescol] <- "FromData"
@@ -64,6 +64,6 @@ EvalOutput <- function(variable, indent = 0, verbose = TRUE, ...) { # ... for e.
 	)
 	variable@output <- temp
 	if (length(tempmarginals) > 1) variable@marginal <- colnames(variable@output) %in% tempmarginals
-	if (verbose) cat(rep("-", indent), "done!\n")
+	if (verbose) cat(rep("-", indent), " done!\n")
 	return(variable)
 }

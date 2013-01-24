@@ -10,9 +10,9 @@
 # below. The function also makes use of a preset of decision effects which match a given string constant (i.e. "Multiply"). 
 #######################
 
-CheckDecisions <- function(variable) {
+CheckDecisions <- function(variable, indent = 0, ...) {
 	if(exists(paste("Dec", variable@name, sep = ""))) {
-		
+		if (verbose) cat(rep("-", indent), "Processing", variable@name, "decisions", "...")
 		# Initialization: Setting up a data.frame upon which to apply desired decision - option specific effect. 
 		
 		dec <- get(paste("Dec", variable@name, sep = "")) # Get decision variable
@@ -110,6 +110,7 @@ CheckDecisions <- function(variable) {
 		
 		variable@marginal <- colnames(out) %in% c(colnames(variable@output)[variable@marginal], colnames(temp2))
 		variable@output <- out
+		if (verbose) cat(" done!\n")
 	}
 	return(variable)
 }

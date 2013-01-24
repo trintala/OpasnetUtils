@@ -17,8 +17,10 @@ CollapseTableParser <- function(CTable){ # DTable is a data.frame
 
 CheckCollapse <- function(variable, indent = 0, ...) {
 	if (exists(paste("Col", variable@name, sep = ""))) {
+		if (verbose) cat(rep("-", indent), "Processing", variable@name, "marginal collapses", "...")
 		Col <- get(paste("Col", variable@name, sep = ""))
 		variable <- CollapseMarginal(variable, Col$cols, Col$probs, ...)
+		if (verbose) cat(" done!\n")
 	}
 	return(variable)
 }
