@@ -1,4 +1,4 @@
-import(methods, rjson, RCurl, xtable, reshape2, triangle, httpRequest, digest)
+import(methods, rjson, RCurl, xtable, reshape2, triangle, httpRequest, digest, RODBC)
 export(
 	op_baseGetData,
 	op_baseGetLocs,
