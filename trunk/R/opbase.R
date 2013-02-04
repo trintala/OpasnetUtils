@@ -1,65 +1,52 @@
 #opbase <- function(x, ...)
 #UseMethod("opbase")
 
-opbase.locations <- function(){
+# Returns TRUE if object with given ident exists in Opasnet Base
+opbase.obj.exists <- function(ident, username = NULL, password = NULL)
+{
+	q <- list('ident' = ident)
+	ret <- tryCatch(opbase.query(q, username, password), error = function(e) return(NULL))
+	if (is.null(ret)){
+		return(FALSE)
+	} else {
+		return(TRUE)
+	}
+}
+
+opbase.locations <- function(ident, series_id = NULL)
+{
+	
   # TODO?	
 }
 
 # Read data from opasnet base 2
 opbase.data <- function(ident, series_id = NULL, verbose = FALSE, username = NULL, password = NULL, samples = NULL, exclude = NULL, include = NULL) {
 	
-	# Parse arguments
-	targs <- strsplit(commandArgs(trailingOnly = TRUE),",")
-	args = list()
+	query = list()
 	
-	if (length(targs) > 0)
-		for(i in targs[[1]])
-		{
-			tmp = strsplit(i,"=")
-			key <- tmp[[1]][1]
-			value <- tmp[[1]][2]
-			args[[key]] <- value
-		}
+	# args <- opbase.parse_args()
 		
 	# Then aim for the data itself
 	# act == 0 gets the most recent series of data!
 	if (is.null(series_id))
 	{
-		url <- paste("ident=", ident, "&act=0", sep = "")
+		query[['ident']] <- ident
+		query[['act']] <- 0
 	}
 	else
 	{
-		url <- paste("ident=", ident, "&series=", series_id, sep = "")
+		query[['ident']] <- ident
+		query[['series']] <- series_id
 	}
 	
-	if (! is.null(samples)) url <- paste(url, "&samples=", samples, sep = "")
+	if (! is.null(samples)) query[['samples']] <- samples
+	if (! is.null(exclude)) query[['exclude']] <- opbase.parse_locations(exclude, ident, series_id, username, password)
+	if (! is.null(include)) query[['include']] <- opbase.parse_locations(include, ident, series_id, username, password)
+	query[['username']] <- username
+	query[['password']] <- password
 	
-	# Do some authentication!!!
-	# 1st case: Username or password has not been given as parameters
-	if (is.null(username))
-	{
-		if (! is.null(args$user)) {
-			url <- paste(url, paste("&username=",args$user,"&password=",opbase.hashed_password(opbase.read_auth(args$user),  ident=ident), sep=''), sep='')
-			if (! is.null(exclude)) url <- paste(url, "&exclude[]=", paste(opbase.parse_locations(exclude, ident, series_id, args$user,opbase.hashed_password(opbase.read_auth(args$user),  ident=ident)), collapse="&exclude[]="), sep = '')
-			if (! is.null(include)) url <- paste(url, "&include[]=", paste(opbase.parse_locations(include, ident, series_id, args$user,opbase.hashed_password(opbase.read_auth(args$user),  ident=ident)), collapse="&include[]="), sep = '')
-		}
-		else
-		{
-			if (! is.null(exclude)) url <- paste(url, "&exclude[]=", paste(opbase.parse_locations(exclude, ident, series_id), collapse="&exclude[]="), sep = '')
-			if (! is.null(include)) url <- paste(url, "&include[]=", paste(opbase.parse_locations(include, ident, series_id), collapse="&include[]="), sep = '')
-		}
-	}
-	# 2nd case: Username and password has been given as parameters
-	else
-	{
-		if (! is.null(password)) {
-			url <- paste(url, paste("&username=",username,"&password=",opbase.hashed_password(password,  ident=ident), sep=''), sep='')
-			if (! is.null(exclude)) url <- paste(url, "&exclude[]=", paste(opbase.parse_locations(exclude, ident, series_id, username,opbase.hashed_password(password,  ident=ident)), collapse="&exclude[]="), sep = '')
-			if (! is.null(include)) url <- paste(url, "&include[]=", paste(opbase.parse_locations(include, ident, series_id, username,opbase.hashed_password(password,  ident=ident)), collapse="&include[]="), sep = '')
-		}
-	}
-	
-	object <- opbase.query(url)
+	# Run query to get KEY for downloading the actual data
+	object <- opbase.query(query, username, password)
 	
 	#if (verbose) print(object)
 	if (verbose) print("Object info and download key loaded!")
@@ -70,23 +57,14 @@ opbase.data <- function(ident, series_id = NULL, verbose = FALSE, username = NUL
 	data <- NULL
 	first <- TRUE
 	
-	url <- paste("key=", object$key, sep = "")
-	
-	# Do some authentication!!!
-	if (is.null(username))
-	{
-		if (! is.null(args$user)) url <- paste(url, paste("&username=",args$user,"&password=",opbase.hashed_password(opbase.read_auth(args$user), key=object$key), sep=''), sep='')
-	}
-	else
-	{
-		if (! is.null(password)) url <- paste(url, paste("&username=",username,"&password=",opbase.hashed_password(password, key=object$key), sep=''), sep='')
-	}	
+	query = list()
+	query[['key']] <- object$key
 	
 	while ((!is.null(data) && data != '') | first) {
 		first <- FALSE
 
 		if (verbose) print(paste('Loading data chunk from server... ',format(Sys.time(), "%H:%M:%OS3"),sep=''))
-		temp <- opbase.query(url)
+		temp <- opbase.query(query, username, password)
 		data <- temp$data
 		if (verbose) print('Data loaded ok!')
 		if (verbose) print(paste('Processing data... ',format(Sys.time(), "%H:%M:%OS3"),sep=''))
@@ -144,18 +122,7 @@ opbase.data <- function(ident, series_id = NULL, verbose = FALSE, username = NUL
 # Write data to the new opasnet database
 opbase.upload <- function(input, ident = NULL, name = NULL, obj_type = 'variable', act_type = 'replace', language = 'eng', unit = '', who = NULL, rescol = NULL, chunk_size = NULL, verbose = FALSE, username = NULL, password = NULL, index_units = NULL, index_types = NULL ) {
 	
-	# Parse arguments
-	targs <- strsplit(commandArgs(trailingOnly = TRUE),",")
-	args = list()
-
-	if (length(targs) > 0)
-		for(i in targs[[1]]) 
-		{
-			tmp = strsplit(i,"=")
-			key <- tmp[[1]][1]
-			value <- tmp[[1]][2]
-			args[[key]] <- value
-		}
+	args <- opbase.parse_args()
 	
 	if (is.null(ident) == TRUE && ! is.null(args$wiki_page_id)) ident <- args$wiki_page_id
 	
@@ -302,23 +269,7 @@ opbase.upload <- function(input, ident = NULL, name = NULL, obj_type = 'variable
 	
 	raw_data <- list('key' = response$key, 'indices' =  indices)
 	
-	# Do some authentication!!!
-	if (is.null(username))
-	{
-		if (! is.null(args$user))
-		{	
-			raw_data[['username']] <- args$user
-			raw_data[['password']] <- opbase.hashed_password(opbase.read_auth(args$user),  key=raw_data$key)
-		}
-	}
-	else
-	{
-		if (! is.null(password))
-		{	
-			raw_data[['username']] <- username
-			raw_data[['password']] <- opbase.hashed_password(password, key=raw_data$key)
-		}
-	}
+
 	
 	# Write the data
 	repeat
@@ -393,11 +344,12 @@ opbase.parse_locations <- function(locs, ident, series_id, username = NULL, pass
 	
 	for(i in names(locs))
 	{
-		url <- paste('ident=',ident,'&index_name=',  URLencode(i, reserved = TRUE), sep = '')
-		if (! is.null(series_id)) url <- paste(url, '&series_id=', series_id, sep = '')
-		if (! is.null(username)) url <- paste(url, '&username=', username, '&password=', password, sep = '')
-		object <- opbase.query(url)
-		ind <- object$index
+		query = list()
+		query[['ident']] <- ident
+		query[['index_name']] <- URLencode(i, reserved = TRUE)
+		if (! is.null(series_id)) query[['series_id']] <- series_id
+		object <- opbase.query(query, username, password)
+		#ind <- object$index
 		loc_ids = c()
 		for (loc in locs[[i]])
 		{
@@ -434,9 +386,53 @@ opbase.hashed_password <- function(password, index = NULL, ident = NULL, key = N
 }
 
 # Private function to make queries to server
-opbase.query <- function(query) {
+opbase.query <- function(data, username = NULL, password = NULL) {
+
+	args <- opbase.parse_args() 
+	
+	index <- NULL
+	ident <- NULL
+	key <- NULL
+	
+	if (! is.null(data[['index']])) index <- data[['index']]
+	if (! is.null(data[['ident']])) ident <- data[['ident']]
+	if (! is.null(data[['key']])) key <- data[['key']]
+	
+	# Do some authentication!!!
+	if (is.null(username))
+	{
+		if (! is.null(args$user))
+		{	
+			data[['username']] <- args$user
+			data[['password']] <- opbase.hashed_password(opbase.read_auth(args$user), index = index, ident = ident, key = key)
+		}
+	}
+	else
+	{
+		if (! is.null(password))
+		{	
+			data[['username']] <- username
+			data[['password']] <- opbase.hashed_password(password, index = index, ident = ident, key = key)
+		}
+	}
+	
+	# Build http-query key / value pairs
+	tmp = c(1:length(data))
+	i <-1
+	for (k in names(data)){
+		if (length(data[[k]]) > 1)
+		{
+			sepi <- paste(k,'[]=',sep='')
+			tmp[i] <- paste(sepi,paste(data[[k]], collapse=sepi), sep='')
+		} else {
+			tmp[i] <- paste(k, '=', data[[k]], sep= '')
+		}
+		i <- i + 1
+	}
+	
+	#print( paste(tmp, collapse='&') )
 		
-	url <- paste("http://cl1.opasnet.org/opasnet_base_2/index.php?", query, sep = "")
+	url <- paste("http://cl1.opasnet.org/opasnet_base_2/index.php?", paste(tmp, collapse='&'), sep = "")
 	
 	response <- fromJSON(
 			paste(
@@ -480,16 +476,7 @@ objlist <- fromJSON(
 # Read data from the old opasnet database
 opbase.old.data <- function(dsn, ident, ...) {
 
-	# Parse arguments
-	targs <- strsplit(commandArgs(trailingOnly = TRUE),",")
-	args = list()
-	for(i in targs[[1]])
-	{
-		tmp = strsplit(i,"=")
-		key <- tmp[[1]][1]
-		value <- tmp[[1]][2]
-		args[[key]] <- value
-	}
+	args <- opbase.parse_args()
 	
 	if (dsn == 'heande_base' && args$user != 'heande')
 	{
@@ -503,16 +490,7 @@ opbase.old.data <- function(dsn, ident, ...) {
 # Write data to the old opasnet database
 opbase.old.upload <- function(dsn, input, ...) {
 	
-	# Parse arguments
-	targs <- strsplit(commandArgs(trailingOnly = TRUE),",")
-	args = list()
-	for(i in targs[[1]])
-	{
-		tmp = strsplit(i,"=")
-		key <- tmp[[1]][1]
-		value <- tmp[[1]][2]
-		args[[key]] <- value
-	}
+	args <- opbase.parse_args()
 	
 	if (dsn == 'heande_base' && args$user != 'heande')
 	{
@@ -525,16 +503,7 @@ opbase.old.upload <- function(dsn, input, ...) {
 # Locations of an object in the old opasnet database
 opbase.old.locations <- function(dsn, ident, ...) {
 	
-	# Parse arguments
-	targs <- strsplit(commandArgs(trailingOnly = TRUE),",")
-	args = list()
-	for(i in targs[[1]])
-	{
-		tmp = strsplit(i,"=")
-		key <- tmp[[1]][1]
-		value <- tmp[[1]][2]
-		args[[key]] <- value
-	}
+	args <- opbase.parse_args()
 	
 	if (dsn == 'heande_base' && args$user != 'heande')
 	{
@@ -865,4 +834,22 @@ opbase.write <- function(
 
 	return(opbase.upload(input, ident = ident, name = name, obj_type = obj_type, act_type = act_type, unit = unit, who = who, rescol = rescol))
 	
+}
+
+# Private function to parse arguments
+opbase.parse_args <- function()
+{
+	# Parse arguments
+	targs <- strsplit(commandArgs(trailingOnly = TRUE),",")
+	args = list()
+	
+	if (length(targs) > 0)
+		for(i in targs[[1]])
+		{
+			tmp = strsplit(i,"=")
+			key <- tmp[[1]][1]
+			value <- tmp[[1]][2]
+			args[[key]] <- value
+		}
+	return(args)
 }
