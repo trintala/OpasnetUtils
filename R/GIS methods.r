@@ -54,6 +54,7 @@ GIS.Exposure <- function(
 		cat("LoPerKm = ", LoPerKm, "\n")
 	}
 	
+	
 	# Population. A function that searches and returns only relevant data from the database. Defined inside of GIS.Exposure to make it 
 	# inaccessible outside of this function as the data involved is protected. Parameters are self explanatory or have been discussed above. 
 	
@@ -64,7 +65,8 @@ GIS.Exposure <- function(
 		}
 		
 		GetPopData <- function(...) {
-			return(opbase.old.read("heande_base", "Heande3182", use.utf8 = TRUE, apply.utf8 = FALSE, ...))
+			#return(opbase.old.read("heande_base", "Heande3182", use.utf8 = TRUE, apply.utf8 = FALSE, ...))
+			return(opbase.data('Heande3182', username='heande', password=opbase.read_auth('heande')))
 		}
 		# Download list of locations in data. 
 		pop.locs <- GetPopLocs()

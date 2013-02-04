@@ -1,8 +1,9 @@
-import(methods, rjson, RCurl, xtable, reshape2, triangle, httpRequest, digest, RODBC)
+import(methods, rjson, RCurl, xtable, reshape2, triangle, httpRequest, digest)
 export(
 	op_baseGetData,
 	op_baseGetLocs,
 	op_baseWrite,
+	opbase.obj.exists,
 	opbase.data,
 	opbase.upload,
 	opbase.old.data,
