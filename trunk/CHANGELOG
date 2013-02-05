@@ -1,3 +1,7 @@
+Version: 0.1.7
+Author: Einari Happonen <einari.happonen@thl.fi>
+Description: opbase.obj.exists and opbase.locations functions added.
+
 Version: 0.1.6
 Author: Einari Happonen <einari.happonen@thl.fi>
 Description: objects.store and objects.latest functions.

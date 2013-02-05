@@ -3,6 +3,7 @@ export(
 	op_baseGetData,
 	op_baseGetLocs,
 	op_baseWrite,
+	opbase.locations,
 	opbase.obj.exists,
 	opbase.data,
 	opbase.upload,
