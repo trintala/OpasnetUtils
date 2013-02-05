@@ -60,41 +60,57 @@ GIS.Exposure <- function(
 	
 	Population <- function(LO, LA, LaPerKm, LoPerKm, distx = 10.5, disty = 10.5, dbug = FALSE) {
 		# Small wrapper functions used inside this function
-		GetPopLocs <- function(...) {
-			return(opbase.old.locations.read("heande_base", "Heande3182", use.utf8 = TRUE, apply.utf8 = FALSE, ...))
+		#GetPopLocs <- function(...) {
+		#	return(opbase.old.locations.read("heande_base", "Heande3182", use.utf8 = TRUE, apply.utf8 = FALSE, ...))
+		#}
+		GetPopLocs <- function(index_name)
+		{
+			return(opbase.locations('Heande3182', index_name, username='heande', password=opbase.read_auth('heande')))
 		}
 		
 		GetPopData <- function(...) {
 			#return(opbase.old.read("heande_base", "Heande3182", use.utf8 = TRUE, apply.utf8 = FALSE, ...))
-			return(opbase.data('Heande3182', username='heande', password=opbase.read_auth('heande')))
+			return(opbase.data('Heande3182', username='heande', password=opbase.read_auth('heande'), ...))
 		}
 		# Download list of locations in data. 
-		pop.locs <- GetPopLocs()
+		#pop.locs <- GetPopLocs()
+		if (dbug) print("Fetching latitudes and longitudes...")
+		locs.la <- GetPopLocs('Latitude')
+		locs.lo <- GetPopLocs('Longitude')
+		if (dbug) print('Done!')
 		
 		# Define selection where latitude falls within disty km of given coordinates.
-		pop.slice.la <- pop.locs$loc_id[
-			pop.locs$ind == "Latitude" & 
-			pop.locs$loc < LA + disty * LaPerKm & 
-			pop.locs$loc > LA - disty * LaPerKm
-		]
+		pop.slice.la <- locs.la[locs.la < LA + disty * LaPerKm & locs.la > LA - disty * LaPerKm]
+		#pop.slice.la <- pop.locs$loc_id[
+		#	pop.locs$ind == "Latitude" & 
+		#	pop.locs$loc < LA + disty * LaPerKm & 
+		#	pop.locs$loc > LA - disty * LaPerKm
+		#]
 		# Define selection where longitude is beyond distx.
-		pop.slice.lo <- pop.locs$loc_id[
-			pop.locs$ind == "Longitude" &
-			pop.locs$loc < LO + distx * LoPerKm &
-			pop.locs$loc > LO - distx * LoPerKm
-		]
+		pop.slice.lo <- locs.lo[locs.lo < LO + distx * LoPerKm & locs.lo > LO - distx * LoPerKm]
+		#]
+		#pop.slice.lo <- pop.locs$loc_id[
+		#	pop.locs$ind == "Longitude" &
+		#	pop.locs$loc < LO + distx * LoPerKm &
+		#	pop.locs$loc > LO - distx * LoPerKm
+		#]
 		# Define inverse of that because of the current database structure. 
-		pop.slice.lo.inverse <- pop.locs$loc_id[
-			pop.locs$ind == "Longitude" &
-			!pop.locs$loc_id %in% pop.slice.lo
-		]
+		#pop.slice.lo.inverse <- pop.locs$loc_id[
+		#	pop.locs$ind == "Longitude" &
+		#	!pop.locs$loc_id %in% pop.slice.lo
+		#]
+	
+		if (length(pop.slice.lo) == 0 || length(pop.slice.la) == 0) stop('No population on selected LA + LO')
 		
 		if(dbug) {
 			cat("Matching LA locations in population data: ", paste(pop.slice.la, collapse = ", "), ".\n")
 			cat("Matching LO locations in population data: ", paste(pop.slice.lo, collapse = ", "), ".\n")
 		}
 		# Download data within defined selection.
-		Population <- tidy(GetPopData(include = pop.slice.la, exclude = pop.slice.lo.inverse)) 
+		#Population <- tidy(GetPopData(include = pop.slice.la, exclude = pop.slice.lo.inverse))
+		if (dbug) print('Fetching the population data...')
+		Population <- tidy(GetPopData(include = list('Latitude' = pop.slice.la, 'Longitude' = pop.slice.lo))) 
+		if (dbug) print('Done!')
 		# Convert textual values into numbers. 
 		Population$Longitude <- as.numeric(as.character(Population$Longitude))
 		Population$Latitude <- as.numeric(as.character(Population$Latitude))

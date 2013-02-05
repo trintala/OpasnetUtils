@@ -13,10 +13,14 @@ opbase.obj.exists <- function(ident, username = NULL, password = NULL)
 	}
 }
 
-opbase.locations <- function(ident, series_id = NULL)
+opbase.locations <- function(ident, index_name, series_id = NULL, username = NULL, password = NULL)
 {
-	
-  # TODO?	
+	query = list()
+	query[['ident']] <- ident
+	query[['index_name']] <- URLencode(index_name, reserved = TRUE)
+	if (! is.null(series_id)) query[['series_id']] <- series_id
+	ret <- opbase.query(query, username, password)
+	return(ret$locations)
 }
 
 # Read data from opasnet base 2
@@ -268,8 +272,25 @@ opbase.upload <- function(input, ident = NULL, name = NULL, obj_type = 'variable
 	rows <- 0
 	
 	raw_data <- list('key' = response$key, 'indices' =  indices)
-	
 
+	# Do some authentication!!!
+	if (is.null(username))
+	{
+		if (! is.null(args$user))
+		{	
+			raw_data[['username']] <- args$user
+			raw_data[['password']] <- opbase.hashed_password(opbase.read_auth(args$user),  key=response$key)
+		}
+	}
+	else
+	{
+		if (! is.null(password))
+		{	
+			raw_data[['username']] <- username
+			raw_data[['password']] <- opbase.hashed_password(password,  key=response$key)
+		}
+	}	
+	
 	
 	# Write the data
 	repeat
@@ -337,7 +358,7 @@ opbase.upload <- function(input, ident = NULL, name = NULL, obj_type = 'variable
 }
 
 # Private function to parse include or exclude list and return vector containing corresponding index idents and location ids
-opbase.parse_locations <- function(locs, ident, series_id, username = NULL, password = NULL) {
+opbase.parse_locations <- function(locs, ident, series_id = NULL, username = NULL, password = NULL) {
 	ret = c()
 	
 	#print(locs)
