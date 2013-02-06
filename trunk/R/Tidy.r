@@ -44,6 +44,7 @@ tidy <- function (data, objname = "", idvar = "Obs", direction = "wide", widecol
 		if(!is.na(widecol)) {
 			cols <- levels(data$Observation)
 			data <- reshape(data, idvar = idvar, timevar = widecol, v.names = "Result", direction = "wide")
+			data <- data[colnames(data) != "Obs"]
 			colnames(data) <- gsub("^Result.", objname, colnames(data))
 			for (i in paste(objname, cols, sep = "")) {
 				a <- suppressWarnings(as.numeric(as.character(data[, i])))
@@ -51,7 +52,6 @@ tidy <- function (data, objname = "", idvar = "Obs", direction = "wide", widecol
 			}
 			colnames(data)[grepl(paste("^", objname, "result", sep = ""), colnames(data))] <- paste(objname, "Result", sep = "")
 			colnames(data)[grepl(paste("^", objname, "Amount", sep = ""), colnames(data))] <- paste(objname, "Result", sep = "")
-			data <- data[colnames(data) != "Obs"]
 			return(data)
 		}
 	}
