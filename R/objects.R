@@ -118,7 +118,11 @@ objects.latest <- function(page_ident, code_name, verbose = FALSE){
 	
 	if (verbose) print(res)
 	
-	objects.get(max(res$Result))
+	k <- max(res$Result)
+	
+	if (verbose) print(paste('Object key is ', k, sep=''))
+	
+	objects.get(k)
 }
 
 # Private function for getting the ident for page holding the key data
