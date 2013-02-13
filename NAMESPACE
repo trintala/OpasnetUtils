@@ -16,6 +16,8 @@ export(
 	objects.latest,
 	objects.store,
 	objects.put,
+	objects.encode,
+	objects.decode,
 	apply.decisions,
 	decisions.apply,
 	dropall,
