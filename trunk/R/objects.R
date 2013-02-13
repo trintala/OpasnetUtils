@@ -1,5 +1,52 @@
-objects <- function(x, ...)
-UseMethod("objects")
+# Encode single R object with given key using ECB encryption, returns ciphertext as raw vector
+
+objects.encode <- function(obj, key){
+	
+	# Check key
+	key <- charToRaw(key)
+	if (length(key) %% 16 != 0) stop('Invalid key length! Must be 16, 32 or 64 ASCII chars!')
+	
+	sobj <- serialize(obj, NULL, TRUE)
+	m <- length(sobj) %% 16
+	add <- 0
+
+	if (m != 0){
+		add <- 16 - m
+		sobj <- c(sobj, rep(as.raw(00),each=add))
+	}
+	
+	if (length(sobj) %% 16 != 0) stop('Something went wrong adding extra chars!')
+	
+	aes <- AES(key, mode="ECB")
+	eobj <- aes$encrypt(sobj)
+	
+# Add character (as HEX) to tell us the amount of added zeros
+	eobj <- c(as.raw(sprintf("%x", add)), eobj)
+	return(eobj)
+}
+
+# Decode raw ciphertext encoded with objects.encode, use the same key obviously!
+
+objects.decode <- function(eobj, key){
+
+	# Check key
+	key <- charToRaw(key)
+	if (length(key) %% 16 != 0) stop('Invalid key length! Must be 16, 32 or 64 ASCII chars!')
+	
+	xtra <- strtoi(eobj[[1]])
+	aes <- AES(key, mode="ECB")
+	sobj <- aes$decrypt(eobj[-1], raw=TRUE)
+	
+	# Remove extra chars?
+	if (xtra > 0) {
+		l <- length(sobj)
+		tmp <- c((l-xtra+1):l)
+		sobj <- sobj[-(tmp)]
+	}
+	
+	obj <- unserialize(sobj)
+	return(obj)
+}
 
 # Wrapper for save-method, writes desired objects to run path as rdata
 
