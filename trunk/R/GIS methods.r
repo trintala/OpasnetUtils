@@ -190,7 +190,7 @@ GIS.Concentration.matrix <- function(
 	
 	# PILTTI source-receptor-matrices
 	
-	PILTTI.matrix <- tidy(op_baseGetData("opasnet_base", "Op_en5797"), objname = "PILTTI.matrix") # unit: ugm^-3/Mga^-1
+	PILTTI.matrix <- tidy(op_baseGetData("opasnet_base", "Op_en5797", ...), objname = "PILTTI.matrix") # unit: ugm^-3/Mga^-1
 	
 	PILTTI.matrix$dy <- as.numeric(as.character(PILTTI.matrix$dy))
 	PILTTI.matrix$dx <- as.numeric(as.character(PILTTI.matrix$dx))
