@@ -79,12 +79,15 @@ opbase.data <- function(ident, series_id = NULL, verbose = FALSE, username = NUL
 				tmp <- list()
 				for (rivi in temp) {
 					for (sarake in names(rivi)) {
+						if (verbose)cat(sarake, ",")
+						if (verbose)cat(rivi[[sarake]], "\n")
 						temp[[sarake]][length(tmp[[sarake]]) + 1] <- rivi[[sarake]]
 					}
 				}
 				out <- rbind(out, data.frame(tmp))
-				if (verbose) cat(names(tmp), ",")
-				if (verbose) cat(length(tmp[[1]]), ",")
+				#if (verbose) cat(names(tmp), ",")
+				#if (verbose) cat(length(tmp[[1]]), ",")
+				stop("Backstop")
 				if (verbose) cat(nrow(out), "\n")
 			} else {
 				if (verbose) print(paste('JSON parsed',format(Sys.time(), "%H:%M:%OS3"),sep=''))
