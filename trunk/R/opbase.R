@@ -24,7 +24,7 @@ opbase.locations <- function(ident, index_name, series_id = NULL, username = NUL
 }
 
 # Read data from opasnet base 2
-opbase.data <- function(ident, series_id = NULL, verbose = FALSE, username = NULL, password = NULL, samples = NULL, exclude = NULL, include = NULL) {
+opbase.data <- function(ident, series_id = NULL, verbose = FALSE, username = NULL, password = NULL, samples = NULL, exclude = NULL, include = NULL, optim_test = FALSE) {
 	
 	query = list()
 	
@@ -75,22 +75,32 @@ opbase.data <- function(ident, series_id = NULL, verbose = FALSE, username = NUL
 		if (!is.null(data) && data != '')
 		{
 			temp <- fromJSON(data)
-			if (verbose) print(paste('JSON parsed',format(Sys.time(), "%H:%M:%OS3"),sep=''))
-			temp <- lapply(temp, data.frame)#list.to.data.frame)	# THIS FUNCTION IS RELATIVELY SLOW!!!! Could this be done in any other way?
-			if (verbose) print(paste('Converted to data frame',format(Sys.time(), "%H:%M:%OS3"),sep=''))
-			lengths <- lapply(temp, nrow)	
-			if (verbose) print(paste('Row lengths resolved',format(Sys.time(), "%H:%M:%OS3"),sep=''))
-			temp <- do.call("rbind", temp)
-			if (verbose) print(paste('Rbind done',format(Sys.time(), "%H:%M:%OS3"),sep=''))
-			
-			if (is.null(samples) || (! is.null(samples) && samples > 0)) {
-				if  (sum(unlist(lengths) > 1) > 0) {
-					iterations <- lapply(lengths, f.iter)
-					temp$Iteration <- unlist(iterations)
+			if (optim_test){
+				tmp <- list()
+				for (rivi in temp) {
+					for (sarake in names(rivi)) {
+						temp[[sarake]][length(tmp[[sarake]]) + 1] <- rivi[[sarake]]
+					}
 				}
-			}	
-			out <- rbind(out, temp)
-			if (verbose) print(paste('Concatenated chunk to output',format(Sys.time(), "%H:%M:%OS3"),sep=''))
+				out <- rbind(out, data.frame(tmp))
+			} else {
+				if (verbose) print(paste('JSON parsed',format(Sys.time(), "%H:%M:%OS3"),sep=''))
+				temp <- lapply(temp, data.frame)#list.to.data.frame)	# THIS FUNCTION IS RELATIVELY SLOW!!!! Could this be done in any other way?
+				if (verbose) print(paste('Converted to data frame',format(Sys.time(), "%H:%M:%OS3"),sep=''))
+				lengths <- lapply(temp, nrow)	
+				if (verbose) print(paste('Row lengths resolved',format(Sys.time(), "%H:%M:%OS3"),sep=''))
+				temp <- do.call("rbind", temp)
+				if (verbose) print(paste('Rbind done',format(Sys.time(), "%H:%M:%OS3"),sep=''))
+				
+				if (is.null(samples) || (! is.null(samples) && samples > 0)) {
+					if  (sum(unlist(lengths) > 1) > 0) {
+						iterations <- lapply(lengths, f.iter)
+						temp$Iteration <- unlist(iterations)
+					}
+				}	
+				out <- rbind(out, temp)
+				if (verbose) print(paste('Concatenated chunk to output',format(Sys.time(), "%H:%M:%OS3"),sep=''))
+			}
 		}
 		if (verbose) print('Data processed ok!')
 	}
