@@ -83,7 +83,8 @@ opbase.data <- function(ident, series_id = NULL, verbose = FALSE, username = NUL
 					}
 				}
 				out <- rbind(out, data.frame(tmp))
-				if (verbose) cat(nrow(tmp), ",")
+				if (verbose) cat(names(tmp), ",")
+				if (verbose) cat(length(tmp[[1]]), ",")
 				if (verbose) cat(nrow(out), "\n")
 			} else {
 				if (verbose) print(paste('JSON parsed',format(Sys.time(), "%H:%M:%OS3"),sep=''))
