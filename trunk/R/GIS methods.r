@@ -192,12 +192,10 @@ GIS.Concentration.matrix <- function(
 	
 	PILTTI.matrix <- tidy(op_baseGetData("opasnet_base", "Op_en5797", ...), objname = "PILTTI.matrix") # unit: ugm^-3/Mga^-1
 	
-	PILTTI.matrix$dy <- as.numeric(as.character(PILTTI.matrix$dy))
-	PILTTI.matrix$dx <- as.numeric(as.character(PILTTI.matrix$dx))
 	if (N == 0) {
 		PILTTI.matrix <- as.data.frame(as.table(tapply(PILTTI.matrix[["PILTTI.matrixResult"]], PILTTI.matrix[,c("dx", "dy")], mean)))
 		colnames(PILTTI.matrix)[colnames(PILTTI.matrix) == "Freq"] <- "PILTTI.matrixResult"
-		PILTTI.matrix <- PILTTI.matrix[,c("dy", "dx", "PILTTI.matrixResult")]
+		#PILTTI.matrix <- PILTTI.matrix[,c("dy", "dx", "PILTTI.matrixResult")]
 	} else {
 		# Sampling; first make lists containing row numbers of individual matrices defined in the data. 
 		ID.list <- tapply(1:nrow(PILTTI.matrix), PILTTI.matrix[,c("Kaupunki", "Vuosi", "Tyyppi")], list)
@@ -208,10 +206,13 @@ GIS.Concentration.matrix <- function(
 		# Take all the values in the list and make one big vector out of it. 
 		ID.vec <- unlist(ID.list.samples)
 		# Use that vector to select corresponding rows from the original data. 
-		PILTTI.matrix <- PILTTI.matrix[ID.vec, c("dy", "dx", "PILTTI.matrixResult")]
+		PILTTI.matrix <- PILTTI.matrix[ID.vec, c("dx", "dy", "PILTTI.matrixResult")]
 		# Add iteration indicator by repeating the numbers 1 to N according to the lengths of the list elements. 
 		PILTTI.matrix$Iter <- rep(1:N, times = ID.sample.lengths)
 	}
+	
+	PILTTI.matrix$dy <- as.numeric(as.character(PILTTI.matrix$dy))
+	PILTTI.matrix$dx <- as.numeric(as.character(PILTTI.matrix$dx))
 	
 	# dx and dy in PILTTI matrix is given in meters
 	PILTTI.matrix$LObin <- cut(PILTTI.matrix$dx / 1000 * LoPerKm + LO, breaks = LO + seq(-distx, distx, resolution) * LoPerKm)
