@@ -24,7 +24,7 @@ opbase.locations <- function(ident, index_name, series_id = NULL, username = NUL
 }
 
 # Read data from opasnet base 2
-opbase.data <- function(ident, series_id = NULL, verbose = FALSE, username = NULL, password = NULL, samples = NULL, exclude = NULL, include = NULL, optim_test = FALSE) {
+opbase.data <- function(ident, series_id = NULL, verbose = FALSE, username = NULL, password = NULL, samples = NULL, exclude = NULL, include = NULL, optim_test = TRUE, ...) {
 	
 	query = list()
 	
@@ -77,18 +77,33 @@ opbase.data <- function(ident, series_id = NULL, verbose = FALSE, username = NUL
 			temp <- fromJSON(data)
 			if (optim_test){
 				tmp <- list()
+				iterator <- list()
 				for (rivi in temp) {
 					for (sarake in names(rivi)) {
-						#if (verbose)cat(sarake, ",")
-						#if (verbose)cat(rivi[[sarake]], "\n")
-						tmp[[sarake]][length(tmp[[sarake]]) + 1] <- rivi[[sarake]]
+						tmp[[sarake]] <- c(tmp[[sarake]], rivi[[sarake]])
+						iterator[[sarake]] <- c(iterator[[sarake]], length(rivi[[sarake]]))
 					}
 				}
-				out <- rbind(out, data.frame(tmp))
-				#if (verbose) cat(names(tmp), ",")
-				#if (verbose) cat(length(tmp[[1]]), ",")
-				#stop("Backstop")
-				#if (verbose) cat(nrow(out), "\n")
+				# Using iterator it would be possible to implement multiple results on any column, but since this is not possible
+				# at the moment only res will be checked.
+				iterate = FALSE
+				if (is.null(samples) || (! is.null(samples) && samples > 0)) {
+					if (prod(iterator[["res"]])>1) {
+						for (sarake in names(tmp[names(tmp)!="res"])) {
+							tmp[[sarake]] <- rep(tmp[[sarake]], times = iterator[["res"]])
+						}
+						iterate = TRUE
+					}
+				}
+				tmp <- data.frame(tmp)
+				if (iterate) {
+					iterations <- lapply(iterator[["res"]], f.iter)
+					tmp$Iteration <- unlist(iterations)
+				}
+				# This method appears to be slower than the original with heavily iterated data (~15% difference with 5000 samples).
+				# As the number of rows per chunk gets smaller, the difference between per-row and per-column approaches 
+				# diminishes while this method wastes more resources calculating the cell data lengths.
+				out <- rbind(out, tmp)
 			} else {
 				if (verbose) print(paste('JSON parsed',format(Sys.time(), "%H:%M:%OS3"),sep=''))
 				temp <- lapply(temp, data.frame)#list.to.data.frame)	# THIS FUNCTION IS RELATIVELY SLOW!!!! Could this be done in any other way?
