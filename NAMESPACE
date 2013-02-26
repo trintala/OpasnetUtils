@@ -1,5 +1,6 @@
 import(methods, rjson, RCurl, xtable, reshape2, triangle, httpRequest, digest)
 export(
+	oprint,
 	op_baseGetData,
 	op_baseGetLocs,
 	op_baseWrite,
