@@ -1,4 +1,4 @@
-#opbase <- function(x, ...)
+ #opbase <- function(x, ...)
 #UseMethod("opbase")
 
 # Returns TRUE if object with given ident exists in Opasnet Base
@@ -24,7 +24,7 @@ opbase.locations <- function(ident, index_name, series_id = NULL, username = NUL
 }
 
 # Read data from opasnet base 2
-opbase.data <- function(ident, series_id = NULL, verbose = FALSE, username = NULL, password = NULL, samples = NULL, exclude = NULL, include = NULL, optim_test = TRUE, ...) {
+opbase.data <- function(ident, series_id = NULL, subset = NULL, verbose = FALSE, username = NULL, password = NULL, samples = NULL, exclude = NULL, include = NULL, optim_test = TRUE, ...) {
 	
 	query = list()
 	
@@ -32,14 +32,16 @@ opbase.data <- function(ident, series_id = NULL, verbose = FALSE, username = NUL
 		
 	# Then aim for the data itself
 	# act == 0 gets the most recent series of data!
+
+	query[['ident']] <- ident
+	if (! is.null(subset)) query[['ident']] <- paste(query[['ident']], opbase.sanitize_subset_name(subset), sep='.')
+	
 	if (is.null(series_id))
 	{
-		query[['ident']] <- ident
 		query[['act']] <- 0
 	}
 	else
 	{
-		query[['ident']] <- ident
 		query[['series']] <- series_id
 	}
 	
@@ -905,3 +907,21 @@ opbase.parse_args <- function()
 		}
 	return(args)
 }
+
+# Private function to sanitize object subset data name 
+opbase.sanitize_subset_name <- function(name)
+{
+	# Make lowercase
+	name <- tolower(name)
+	# Remove all punctuation marks: ! " # $ % & ' ( ) * + , - . / : ; < = > ? @ [ \ ] ^ _ ` { | } ~.
+	name <- gsub('[[:punct:] ]','_',name)
+	# Convert to ASCII
+	name <- iconv(name, "latin1", "ASCII//TRANSLIT","_")
+	# Truncate multiple underscores
+	name <- gsub('_+','_',name)
+	# Remove trailing or leading underscores
+	name <- gsub('^_|_$','',name)
+	return(name)
+}
+
+
