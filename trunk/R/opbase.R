@@ -157,7 +157,7 @@ opbase.data <- function(ident, series_id = NULL, subset = NULL, verbose = FALSE,
 }
 
 # Write data to the new opasnet database
-opbase.upload <- function(input, ident = NULL, name = NULL, obj_type = 'variable', act_type = 'replace', language = 'eng', unit = '', who = NULL, rescol = NULL, chunk_size = NULL, verbose = FALSE, username = NULL, password = NULL, index_units = NULL, index_types = NULL ) {
+opbase.upload <- function(input, ident = NULL, name = NULL, subset = NULL, obj_type = 'variable', act_type = 'replace', language = 'eng', unit = '', who = NULL, rescol = NULL, chunk_size = NULL, verbose = FALSE, username = NULL, password = NULL, index_units = NULL, index_types = NULL ) {
 	
 	args <- opbase.parse_args()
 	
@@ -236,6 +236,12 @@ opbase.upload <- function(input, ident = NULL, name = NULL, obj_type = 'variable
 			),
 			indices = indices
 	)
+	
+	if (! is.null(subset))
+	{
+		header[['object']][['subset_name']] <- subset
+		header[['object']][['ident']] <- paste(header[['object']][['ident']], opbase.sanitize_subset_name(subset), sep='.')
+	}
 		
 	if (act_type == 'replace')
 	{
