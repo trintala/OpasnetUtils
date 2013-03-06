@@ -161,7 +161,14 @@ opbase.upload <- function(input, ident = NULL, name = NULL, subset = NULL, obj_t
 	
 	args <- opbase.parse_args()
 	
-	if (is.null(ident) == TRUE && ! is.null(args$wiki_page_id)) ident <- args$wiki_page_id
+	if (is.null(ident))
+	{
+		if (! is.null(args$wiki_page_id)){
+			ident <- args$wiki_page_id
+		} else {
+			stop('Ident missing!')
+		}
+	}
 	
 	server <- 'cl1.opasnet.org'
 	path <- '/opasnet_base_2/index.php'
@@ -220,15 +227,15 @@ opbase.upload <- function(input, ident = NULL, name = NULL, subset = NULL, obj_t
 	
 	header <- list(
 			object = list(
-					name = name,
+					name = opbase.ensure_utf8(name),
 					ident = ident,
 					type = obj_type,
 					page = page,
 					wiki_id = wiki_id
 			),
 			act = list(
-					unit = unit,
-					who = who,
+					unit = opbase.ensure_utf8(unit),
+					who = opbase.ensure_utf8(who),
 					samples = n,
 					comments = "R upload",
 					language = language
@@ -238,7 +245,7 @@ opbase.upload <- function(input, ident = NULL, name = NULL, subset = NULL, obj_t
 	
 	if (! is.null(subset))
 	{
-		header[['object']][['subset_name']] <- subset
+		header[['object']][['subset_name']] <- opbase.ensure_utf8(subset)
 		header[['object']][['ident']] <- paste(ident, opbase.sanitize_subset_name(subset), sep='.')
 	}
 		
@@ -917,13 +924,12 @@ opbase.parse_args <- function()
 opbase.sanitize_subset_name <- function(name)
 {
 	enc <- Encoding(name)
-	if (enc=='unknown') stop("Unidentified encoding in subset name!")
 	# Make lowercase
 	name <- tolower(name)
 	# Remove all punctuation marks: ! " # $ % & ' ( ) * + , - . / : ; < = > ? @ [ \ ] ^ _ ` { | } ~.
 	name <- gsub('[[:punct:] ]','_',name)
-	# Convert to ASCII
-	name <- iconv(name, enc, "ASCII//TRANSLIT","_")
+	# Convert to ASCII?
+	if (enc != 'unknown') name <- iconv(name, enc, "ASCII//TRANSLIT","_")
 	# Truncate multiple underscores
 	name <- gsub('_+','_',name)
 	# Remove trailing or leading underscores
@@ -931,4 +937,9 @@ opbase.sanitize_subset_name <- function(name)
 	return(name)
 }
 
-
+opbase.ensure_utf8 <- function(str)
+{
+	enc <- Encoding(str)
+	if (enc == 'UTF8' || enc == 'unknown') return(str)
+	return(iconv(str, enc, "UTF8","?"))
+}
