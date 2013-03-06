@@ -27,11 +27,6 @@ opbase.locations <- function(ident, index_name, series_id = NULL, username = NUL
 opbase.data <- function(ident, series_id = NULL, subset = NULL, verbose = FALSE, username = NULL, password = NULL, samples = NULL, exclude = NULL, include = NULL, optim_test = TRUE, ...) {
 	
 	query = list()
-	
-	# args <- opbase.parse_args()
-		
-	# Then aim for the data itself
-	# act == 0 gets the most recent series of data!
 
 	query[['ident']] <- ident
 	if (! is.null(subset)) query[['ident']] <- paste(query[['ident']], opbase.sanitize_subset_name(subset), sep='.')
@@ -264,7 +259,7 @@ opbase.upload <- function(input, ident = NULL, name = NULL, subset = NULL, obj_t
 		if (! is.null(args$user))
 		{	
 			header[['username']] <- args$user
-			header[['password']] <- opbase.hashed_password(opbase.read_auth(args$user),  ident=ident)
+			header[['password']] <- opbase.hashed_password(opbase.read_auth(args$user),  ident=header[['object']][['ident']])
 		}
 	}
 	else
