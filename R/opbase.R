@@ -222,7 +222,6 @@ opbase.upload <- function(input, ident = NULL, name = NULL, subset = NULL, obj_t
 			object = list(
 					name = name,
 					ident = ident,
-					#subset_name = 'Kaavi',
 					type = obj_type,
 					page = page,
 					wiki_id = wiki_id
@@ -266,7 +265,7 @@ opbase.upload <- function(input, ident = NULL, name = NULL, subset = NULL, obj_t
 		if (! is.null(password))
 		{	
 			header[['username']] <- username
-			header[['password']] <- opbase.hashed_password(password,  ident=ident)
+			header[['password']] <- opbase.hashed_password(password,  ident=header[['object']][['ident']])
 		}
 	}	
 	
