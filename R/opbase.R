@@ -240,7 +240,7 @@ opbase.upload <- function(input, ident = NULL, name = NULL, subset = NULL, obj_t
 	if (! is.null(subset))
 	{
 		header[['object']][['subset_name']] <- subset
-		header[['object']][['ident']] <- paste(header[['object']][['ident']], opbase.sanitize_subset_name(subset), sep='.')
+		header[['object']][['ident']] <- paste(ident, opbase.sanitize_subset_name(subset), sep='.')
 	}
 		
 	if (act_type == 'replace')
@@ -917,12 +917,14 @@ opbase.parse_args <- function()
 # Private function to sanitize object subset data name 
 opbase.sanitize_subset_name <- function(name)
 {
+	enc <- Encoding(name)
+	if (enc=='unknown') stop("Unidentified encoding in subset name!")
 	# Make lowercase
 	name <- tolower(name)
 	# Remove all punctuation marks: ! " # $ % & ' ( ) * + , - . / : ; < = > ? @ [ \ ] ^ _ ` { | } ~.
 	name <- gsub('[[:punct:] ]','_',name)
 	# Convert to ASCII
-	name <- iconv(name, "latin1", "ASCII//TRANSLIT","_")
+	name <- iconv(name, enc, "ASCII//TRANSLIT","_")
 	# Truncate multiple underscores
 	name <- gsub('_+','_',name)
 	# Remove trailing or leading underscores
