@@ -56,11 +56,14 @@ Ovariable <- function(
 		formula = function(...){0}, 
 		dependencies = data.frame(), 
 		ddata = character(),
+		subset = NULL,
 		getddata = TRUE, # will dynamic data be immediately be downloaded, as opposed waiting until variable output is Evaluated
 		save = FALSE, # will the variable be saved on the server using objects.put
 		public = TRUE, # will the saved variable be public or private
 		...
 ) {
+	if (! is.null(subset)) ddata <- paste(ddata, opbase.sanitize_subset_name(subset), sep='.')
+	
 	out <- new(
 			"ovariable",
 			name = name,
