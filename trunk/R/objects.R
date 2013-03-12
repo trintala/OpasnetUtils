@@ -33,7 +33,7 @@ objects.decode <- function(eobj, key){
 	key <- charToRaw(key)
 	if (length(key) %% 16 != 0) stop('Invalid key length! Must be 16, 32 or 64 ASCII chars!')
 	
-	xtra <- strtoi(eobj[[1]])
+	xtra <- as.integer(eobj[[1]])
 	aes <- AES(key, mode="ECB")
 	sobj <- aes$decrypt(eobj[-1], raw=TRUE)
 	
