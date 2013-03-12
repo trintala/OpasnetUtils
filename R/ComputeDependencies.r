@@ -1,4 +1,4 @@
-# ComputeDependencies ############ uses Fetch2, EvalOutput, CheckMarginals and CheckInput to load and pre-process
+ # ComputeDependencies ############ uses Fetch2, EvalOutput, CheckMarginals and CheckInput to load and pre-process
 # upstream variables. Typically seen on the first line of ovariable formula code. 
 # '...' can be used for input substitution, na.rm, number of iterations (N) and others
 
@@ -12,6 +12,8 @@ ComputeDependencies <- function(dependencies, forceEval = FALSE, indent = 0, ...
 			assign(i, CheckInput(get(i), indent = indent, ...), envir = .GlobalEnv)
 			assign(i, CheckDecisions(get(i), indent = indent, ...), envir = .GlobalEnv)
 			assign(i, CheckCollapse(get(i), indent = indent, ...), envir = .GlobalEnv)
+		} else {
+			stop(paste("Ovariable '", i, "' not found!", sep=''))
 		}
 	}
 	cat("\n")
