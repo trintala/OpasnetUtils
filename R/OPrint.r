@@ -18,7 +18,7 @@ setMethod(
 		f = "oprint",
 		signature = signature(x = "ovariable"),
 		definition = function(x, show_all = FALSE, sortable = TRUE, ...) {
-			x <- EvalOutput(x)
+			if (ncol(x@output) == 0) x <- EvalOutput(x)
 			callGeneric(x@output, show_all = show_all, sortable = sortable, ...)
 		}
 )
