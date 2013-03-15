@@ -43,8 +43,11 @@ opbase.data <- function(ident, series_id = NULL, subset = NULL, verbose = FALSE,
 	if (! is.null(samples)) query[['samples']] <- samples
 	if (! is.null(exclude)) query[['exclude']] <- opbase.parse_locations(exclude, ident, series_id, username, password)
 	if (! is.null(include)) query[['include']] <- opbase.parse_locations(include, ident, series_id, username, password)
+	
 	query[['username']] <- username
 	query[['password']] <- password
+	
+	#if (verbose) print(query)
 	
 	# Run query to get KEY for downloading the actual data
 	object <- opbase.query(query, username, password)
@@ -484,7 +487,7 @@ opbase.query <- function(data, username = NULL, password = NULL) {
 		if (length(data[[k]]) > 1)
 		{
 			sepi <- paste(k,'[]=',sep='')
-			tmp[i] <- paste(sepi,paste(data[[k]], collapse=sepi), sep='')
+			tmp[i] <- paste(sepi, paste(data[[k]], collapse=paste("&", sepi, sep='')), sep='')
 		} else {
 			tmp[i] <- paste(k, '=', data[[k]], sep= '')
 		}
