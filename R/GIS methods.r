@@ -72,12 +72,14 @@ GIS.Exposure <- function(
 				warning(paste('Population data missing in LA', LAlower[i], 'to', LAupper[i], 'LO', LOlower[i], 'to', LOupper[i]))
 			}
 			else {
+				inc = list('Latitude' = LAlocs, 'Longitude' = LOlocs)
+				if (dbug) print(inc)
 				pop <- tidy(
 					opbase.data(
 						'Heande3182', 
 						username='heande', 
 						password=opbase.read_auth('heande'), 
-						include = list('Latitude' = LAlocs, 'Longitude' = LOlocs)
+						include = inc
 					)
 				)
 				if (first) {
