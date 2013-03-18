@@ -65,10 +65,6 @@ GIS.Exposure <- function(
 			tmp <- strsplit(as.character(bounds$LObin[i]), ",")[[1]]
 			LOlower[i] <- substring(tmp[1], 2, nchar(tmp[1]))
 			LOupper[i] <- substring(tmp[2], 1, nchar(tmp[2])-1)
-			if (dbug) print(LAlower)
-			if (dbug) print(LAupper)
-			if (dbug) print(LOlower)
-			if (dbug) print(LOupper)
 			LAlocs <- PopLocs.la[as.numeric(PopLocs.la) > as.numeric(LAlower) & as.numeric(PopLocs.la) <= as.numeric(LAupper)]
 			LOlocs <- PopLocs.lo[as.numeric(PopLocs.lo) > as.numeric(LOlower) & as.numeric(PopLocs.lo) <= as.numeric(LOupper)]
 			if (length(LAlocs) == 0 || length(LOlocs) == 0) {
@@ -76,7 +72,6 @@ GIS.Exposure <- function(
 			}
 			else {
 				inc = list(Latitude = LAlocs, Longitude = LOlocs)
-				if (dbug) print(inc)
 				pop <- tidy(
 					opbase.data(
 						'Heande3182', 
@@ -95,6 +90,7 @@ GIS.Exposure <- function(
 			}
 		}
 		if (is.null(Population)) stop('No population data at these coordinates.')
+		if (dbug) print(nrow(Population))
 		
 		LAcuts <- unique(c(-Inf, as.numeric(LAlower), as.numeric(LAupper), Inf))
 		LOcuts <- unique(c(-Inf, as.numeric(LOlower), as.numeric(LOupper), Inf))
@@ -177,6 +173,7 @@ GIS.Exposure <- function(
 		}
 		# Use function defined above
 		Population <- Population(LO, LA, LaPerKm, LoPerKm, dbug = dbug)
+		if (dbug) print(nrow(Population))
 		# Bin Population data into the defined grid. 
 		Population$LObin <- cut(Population$Longitude, breaks = LO + seq(-distx, distx, resolution) * LoPerKm)
 		Population$LAbin <- cut(Population$Latitude, breaks = LA + seq(-disty, disty, resolution) * LaPerKm)
