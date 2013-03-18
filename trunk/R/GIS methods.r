@@ -36,92 +36,146 @@ dphi.dx <- function(r, theta) 1 / (cos(theta * pi / 180) * r) * 180 / pi
 
 GIS.Exposure <- function(
 	Concentration.matrix, 
-	LO, 
-	LA, 
+	LO = NULL, 
+	LA = NULL, 
 	distx = 10.5, 
 	disty = 10.5, 
 	resolution = 1,
 	dbug = FALSE,
 	...
 ) {
-	# Ideally Longitude per kilometer would be calculated for each horizontal gridline separately, but satisfactory accuracy is achieved
-	# by just approximating it at the center. 
-	LaPerKm <- dtheta.dy(earth.radius)
-	LoPerKm <- dphi.dx(earth.radius, LA)
-	
-	if(dbug) {
-		cat("LaPerKm = ", LaPerKm, "\n")
-		cat("LoPerKm = ", LoPerKm, "\n")
+	if (is.null(LO)|is.null(LA)) {
+		bounds = unique(Concentration.matrix@output[c("LAbin", "LObin")])
+		LAlower = NA
+		LAupper = NA
+		LOlower = NA
+		LOupper = NA
+		
+		PopLocs.la <- opbase.locations('Heande3182', 'Latitude', username='heande', password=opbase.read_auth('heande'))
+		PopLocs.la <- unlist(PopLocs.la)
+		PopLocs.lo <- opbase.locations('Heande3182', 'Longitude', username='heande', password=opbase.read_auth('heande'))
+		PopLocs.lo <- unlist(PopLocs.lo)
+		
+		Population <- NULL
+		first <- TRUE
+		for (i in 1:nrow(bounds)) {
+			tmp <- strsplit(as.character(bounds$LAbin[i]), ",")
+			LAlower[i] <- substring(tmp[1], 2, nchar(tmp[1]))
+			LAupper[i] <- substring(tmp[2], 1, nchar(tmp[2])-1)
+			tmp <- strsplit(as.character(bounds$LObin[i]), ",")
+			LOlower[i] <- substring(tmp[1], 2, nchar(tmp[1]))
+			LOupper[i] <- substring(tmp[2], 1, nchar(tmp[2])-1)
+			
+			LAlocs <- PopLocs.la[as.numeric(PopLocs.la) > as.numeric(LAlower) & as.numeric(PopLocs.la) <= as.numeric(LAupper)]
+			LOlocs <- PopLocs.lo[as.numeric(PopLocs.lo) > as.numeric(LOlower) & as.numeric(PopLocs.lo) <= as.numeric(LOupper)]
+			if (length(LAlocs) == 0 || length(LOlocs) == 0) {
+				warning(paste('Population data missing in LA', LAlower[i], 'to', LAupper[i], 'LO', LOlower[i], 'to', LOupper[i]))
+			}
+			else {
+				pop <- tidy(
+					opbase.data(
+						'Heande3182', 
+						username='heande', 
+						password=opbase.read_auth('heande'), 
+						include = list('Latitude' = LAlocs, 'Longitude' = LOlocs)
+					)
+				)
+				if (first) {
+					Population <- pop
+					first <- FALSE
+				}
+				else {
+					Population <- rbind(Population, pop)
+				}
+			}
+		}
+		if (is.null(Population)) stop('No population data at these coordinates.')
+		
+		LAcuts <- unique(c(-Inf, as.numeric(LAlower), as.numeric(LAupper), Inf))
+		LOcuts <- unique(c(-Inf, as.numeric(LOlower), as.numeric(LOupper), Inf))
+		
+		Population$LAbin <- cut(as.numeric(as.character(Population$Latitude)), LAcuts)
+		Population$LObin <- cut(as.numeric(as.character(Population$Longitude)), LOcuts)
 	}
-	
-	
-	# Population. A function that searches and returns only relevant data from the database. Defined inside of GIS.Exposure to make it 
-	# inaccessible outside of this function as the data involved is protected. Parameters are self explanatory or have been discussed above. 
-	
-	Population <- function(LO, LA, LaPerKm, LoPerKm, distx = 10.5, disty = 10.5, dbug = FALSE) {
-		# Small wrapper functions used inside this function
-		#GetPopLocs <- function(...) {
-		#	return(opbase.old.locations.read("heande_base", "Heande3182", use.utf8 = TRUE, apply.utf8 = FALSE, ...))
-		#}
-		GetPopLocs <- function(index_name)
-		{
-			return(opbase.locations('Heande3182', index_name, username='heande', password=opbase.read_auth('heande')))
-		}
-		
-		GetPopData <- function(...) {
-			#return(opbase.old.read("heande_base", "Heande3182", use.utf8 = TRUE, apply.utf8 = FALSE, ...))
-			return(opbase.data('Heande3182', username='heande', password=opbase.read_auth('heande'), ...))
-		}
-		# Download list of locations in data. 
-		#pop.locs <- GetPopLocs()
-		if (dbug) print("Fetching latitudes and longitudes...")
-		locs.la <- GetPopLocs('Latitude')
-		locs.lo <- GetPopLocs('Longitude')
-		if (dbug) print('Done!')
-		
-		# Define selection where latitude falls within disty km of given coordinates.
-		pop.slice.la <- locs.la[locs.la < LA + disty * LaPerKm & locs.la > LA - disty * LaPerKm]
-		#pop.slice.la <- pop.locs$loc_id[
-		#	pop.locs$ind == "Latitude" & 
-		#	pop.locs$loc < LA + disty * LaPerKm & 
-		#	pop.locs$loc > LA - disty * LaPerKm
-		#]
-		# Define selection where longitude is beyond distx.
-		pop.slice.lo <- locs.lo[locs.lo < LO + distx * LoPerKm & locs.lo > LO - distx * LoPerKm]
-		#]
-		#pop.slice.lo <- pop.locs$loc_id[
-		#	pop.locs$ind == "Longitude" &
-		#	pop.locs$loc < LO + distx * LoPerKm &
-		#	pop.locs$loc > LO - distx * LoPerKm
-		#]
-		# Define inverse of that because of the current database structure. 
-		#pop.slice.lo.inverse <- pop.locs$loc_id[
-		#	pop.locs$ind == "Longitude" &
-		#	!pop.locs$loc_id %in% pop.slice.lo
-		#]
-	
-		if (length(pop.slice.lo) == 0 || length(pop.slice.la) == 0) stop('No population on selected LA + LO')
+	else { # Old implementation
+		# Ideally Longitude per kilometer would be calculated for each horizontal gridline separately, but satisfactory accuracy is achieved
+		# by just approximating it at the center. 
+		LaPerKm <- dtheta.dy(earth.radius)
+		LoPerKm <- dphi.dx(earth.radius, LA)
 		
 		if(dbug) {
-			cat("Matching LA locations in population data: ", paste(pop.slice.la, collapse = ", "), ".\n")
-			cat("Matching LO locations in population data: ", paste(pop.slice.lo, collapse = ", "), ".\n")
+			cat("LaPerKm = ", LaPerKm, "\n")
+			cat("LoPerKm = ", LoPerKm, "\n")
 		}
-		# Download data within defined selection.
-		#Population <- tidy(GetPopData(include = pop.slice.la, exclude = pop.slice.lo.inverse))
-		if (dbug) print('Fetching the population data...')
-		Population <- tidy(GetPopData(include = list('Latitude' = pop.slice.la, 'Longitude' = pop.slice.lo))) 
-		if (dbug) print('Done!')
-		# Convert textual values into numbers. 
-		Population$Longitude <- as.numeric(as.character(Population$Longitude))
-		Population$Latitude <- as.numeric(as.character(Population$Latitude))
-		return(Population)
+		
+		
+		# Population. A function that searches and returns only relevant data from the database. Defined inside of GIS.Exposure to make it 
+		# inaccessible outside of this function as the data involved is protected. Parameters are self explanatory or have been discussed above. 
+		
+		Population <- function(LO, LA, LaPerKm, LoPerKm, distx = 10.5, disty = 10.5, dbug = FALSE) {
+			# Small wrapper functions used inside this function
+			#GetPopLocs <- function(...) {
+			#	return(opbase.old.locations.read("heande_base", "Heande3182", use.utf8 = TRUE, apply.utf8 = FALSE, ...))
+			#}
+			GetPopLocs <- function(index_name)
+			{
+				return(opbase.locations('Heande3182', index_name, username='heande', password=opbase.read_auth('heande')))
+			}
+			
+			GetPopData <- function(...) {
+				#return(opbase.old.read("heande_base", "Heande3182", use.utf8 = TRUE, apply.utf8 = FALSE, ...))
+				return(opbase.data('Heande3182', username='heande', password=opbase.read_auth('heande'), ...))
+			}
+			# Download list of locations in data. 
+			#pop.locs <- GetPopLocs()
+			if (dbug) print("Fetching latitudes and longitudes...")
+			locs.la <- GetPopLocs('Latitude')
+			locs.lo <- GetPopLocs('Longitude')
+			if (dbug) print('Done!')
+			
+			# Define selection where latitude falls within disty km of given coordinates.
+			pop.slice.la <- locs.la[locs.la < LA + disty * LaPerKm & locs.la > LA - disty * LaPerKm]
+			#pop.slice.la <- pop.locs$loc_id[
+			#	pop.locs$ind == "Latitude" & 
+			#	pop.locs$loc < LA + disty * LaPerKm & 
+			#	pop.locs$loc > LA - disty * LaPerKm
+			#]
+			# Define selection where longitude is beyond distx.
+			pop.slice.lo <- locs.lo[locs.lo < LO + distx * LoPerKm & locs.lo > LO - distx * LoPerKm]
+			#]
+			#pop.slice.lo <- pop.locs$loc_id[
+			#	pop.locs$ind == "Longitude" &
+			#	pop.locs$loc < LO + distx * LoPerKm &
+			#	pop.locs$loc > LO - distx * LoPerKm
+			#]
+			# Define inverse of that because of the current database structure. 
+			#pop.slice.lo.inverse <- pop.locs$loc_id[
+			#	pop.locs$ind == "Longitude" &
+			#	!pop.locs$loc_id %in% pop.slice.lo
+			#]
+		
+			if (length(pop.slice.lo) == 0 || length(pop.slice.la) == 0) stop('No population on selected LA + LO')
+			
+			if(dbug) {
+				cat("Matching LA locations in population data: ", paste(pop.slice.la, collapse = ", "), ".\n")
+				cat("Matching LO locations in population data: ", paste(pop.slice.lo, collapse = ", "), ".\n")
+			}
+			# Download data within defined selection.
+			#Population <- tidy(GetPopData(include = pop.slice.la, exclude = pop.slice.lo.inverse))
+			if (dbug) print('Fetching the population data...')
+			Population <- tidy(GetPopData(include = list('Latitude' = pop.slice.la, 'Longitude' = pop.slice.lo))) 
+			if (dbug) print('Done!')
+			# Convert textual values into numbers. 
+			Population$Longitude <- as.numeric(as.character(Population$Longitude))
+			Population$Latitude <- as.numeric(as.character(Population$Latitude))
+			return(Population)
+		}
+		# Use function defined above
+		Population <- Population(LO, LA, LaPerKm, LoPerKm, dbug = dbug)
+		# Bin Population data into the defined grid. 
+		Population$LObin <- cut(Population$Longitude, breaks = LO + seq(-distx, distx, resolution) * LoPerKm)
+		Population$LAbin <- cut(Population$Latitude, breaks = LA + seq(-disty, disty, resolution) * LaPerKm)
 	}
-	# Use function defined above
-	Population <- Population(LO, LA, LaPerKm, LoPerKm, dbug = dbug)
-	# Bin Population data into the defined grid. 
-	Population$LObin <- cut(Population$Longitude, breaks = LO + seq(-distx, distx, resolution) * LoPerKm)
-	Population$LAbin <- cut(Population$Latitude, breaks = LA + seq(-disty, disty, resolution) * LaPerKm)
-	
 	Population <- new(
 		"ovariable",
 		output = Population
