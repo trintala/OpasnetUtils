@@ -59,10 +59,10 @@ GIS.Exposure <- function(
 		Population <- NULL
 		first <- TRUE
 		for (i in 1:nrow(bounds)) {
-			tmp <- strsplit(as.character(bounds$LAbin[i]), ",")
+			tmp <- strsplit(as.character(bounds$LAbin[i]), ",")[[1]]
 			LAlower[i] <- substring(tmp[1], 2, nchar(tmp[1]))
 			LAupper[i] <- substring(tmp[2], 1, nchar(tmp[2])-1)
-			tmp <- strsplit(as.character(bounds$LObin[i]), ",")
+			tmp <- strsplit(as.character(bounds$LObin[i]), ",")[[1]]
 			LOlower[i] <- substring(tmp[1], 2, nchar(tmp[1]))
 			LOupper[i] <- substring(tmp[2], 1, nchar(tmp[2])-1)
 			if (dbug) print(LAlower)
