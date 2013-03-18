@@ -65,14 +65,17 @@ GIS.Exposure <- function(
 			tmp <- strsplit(as.character(bounds$LObin[i]), ",")
 			LOlower[i] <- substring(tmp[1], 2, nchar(tmp[1]))
 			LOupper[i] <- substring(tmp[2], 1, nchar(tmp[2])-1)
-			
+			if (dbug) print(LAlower)
+			if (dbug) print(LAupper)
+			if (dbug) print(LOlower)
+			if (dbug) print(LOupper)
 			LAlocs <- PopLocs.la[as.numeric(PopLocs.la) > as.numeric(LAlower) & as.numeric(PopLocs.la) <= as.numeric(LAupper)]
 			LOlocs <- PopLocs.lo[as.numeric(PopLocs.lo) > as.numeric(LOlower) & as.numeric(PopLocs.lo) <= as.numeric(LOupper)]
 			if (length(LAlocs) == 0 || length(LOlocs) == 0) {
 				warning(paste('Population data missing in LA', LAlower[i], 'to', LAupper[i], 'LO', LOlower[i], 'to', LOupper[i]))
 			}
 			else {
-				inc = list('Latitude' = LAlocs, 'Longitude' = LOlocs)
+				inc = list(Latitude = LAlocs, Longitude = LOlocs)
 				if (dbug) print(inc)
 				pop <- tidy(
 					opbase.data(
