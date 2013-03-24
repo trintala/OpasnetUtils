@@ -3,6 +3,7 @@
 
 EvalOutput <- function(variable, indent = 0, verbose = TRUE, ...) { # ... for e.g na.rm 
 	if (verbose) cat(rep("-", indent), "Evaluating", variable@name, "...")
+	ComputeDependencies(variable@dependencies, indent = indent + 1, verbose = verbose, new_code = TRUE, ...)
 	variable <- ddata_apply(variable, ...)
 	if (nrow(variable@data) > 0) {
 		colnames(variable@data)[colnames(variable@data) %in% "Result"] <- paste(variable@name, "Result", sep = "")
@@ -11,7 +12,7 @@ EvalOutput <- function(variable, indent = 0, verbose = TRUE, ...) { # ... for e.
 			a <- interpret(variable@data, rescol = rescol, ...) 
 		} else a <- variable@data
 	} else a <- variable@data
-	b <- variable@formula(variable@dependencies, indent = indent + 1, verbose = verbose, ...)
+	b <- variable@formula(variable@dependencies, indent = indent, verbose = verbose, ...)
 	tempmarginals <- character()
 	if (class(b)[1]=="ovariable") {
 		if (length(b@marginal) > 0) {
@@ -31,39 +32,39 @@ EvalOutput <- function(variable, indent = 0, verbose = TRUE, ...) { # ... for e.
 		colnames(a)[colnames(a) == rescol] <- paste(variable@name, "Result", sep = "")
 		a[,paste(variable@name, "Source", sep = "")] <- "Data"
 		variable@output <- a
-		if (verbose) cat(" done!\n")
-		return(variable)
 	}
-	if (nrow(a) == 0) {
+	else if (nrow(a) == 0) {
 		colnames(b)[
 			colnames(b) %in% "Result"
 		] <- paste(variable@name, "Result", sep = "")
 		b[,paste(variable@name, "Source", sep = "")] <- "Formula"
 		variable@output <- b
 		if (length(tempmarginals) > 1) variable@marginal <- colnames(variable@output) %in% tempmarginals
-		if (verbose) cat(rep("-", indent), " done!\n")
-		return(variable)
 	}
-	colnames(a)[colnames(a) == rescol] <- "FromData"
-	colnames(b)[colnames(b) %in% c(paste(variable@name, "Result", sep = ""), "Result")] <- "FromFormula" # *
-	# <variablename> prefix not necessitated for "Result" column of formula output
-	temp <- melt(
-		merge(a, b, all = TRUE, ...), # Will cause problems if dependencies contain non-marginal indices that match with -
-		# marginal indeces in data. Or maybe not.
-		measure.vars = c("FromData", "FromFormula"),
-		variable.name = paste(variable@name, "Source", sep = ""),
-		value.name = paste(variable@name, "Result", sep = ""),
-		...
-	)
-	levels(
-		temp[[paste(variable@name, "Source", sep = "")]]
-	) <- gsub("^From", "", 
+	else {
+		colnames(a)[colnames(a) == rescol] <- "FromData"
+		colnames(b)[colnames(b) %in% c(paste(variable@name, "Result", sep = ""), "Result")] <- "FromFormula" # *
+		# <variablename> prefix not necessitated for "Result" column of formula output
+		temp <- melt(
+			merge(a, b, all = TRUE, ...), # Will cause problems if dependencies contain non-marginal indices that match with -
+			# marginal indeces in data. Or maybe not.
+			measure.vars = c("FromData", "FromFormula"),
+			variable.name = paste(variable@name, "Source", sep = ""),
+			value.name = paste(variable@name, "Result", sep = ""),
+			...
+		)
 		levels(
 			temp[[paste(variable@name, "Source", sep = "")]]
+		) <- gsub("^From", "", 
+			levels(
+				temp[[paste(variable@name, "Source", sep = "")]]
+			)
 		)
-	)
-	variable@output <- temp
-	if (length(tempmarginals) > 1) variable@marginal <- colnames(variable@output) %in% tempmarginals
-	if (verbose) cat(rep("-", indent), " done!\n")
+		variable@output <- temp
+		if (length(tempmarginals) > 1) variable@marginal <- colnames(variable@output) %in% tempmarginals
+		if (verbose) cat(rep("-", indent), " done!\n")
+	}
+	if (verbose) cat(" done!\n")
+	variable <- CheckMarginals(variable, indent = indent, verbose = verbose, ...)
 	return(variable)
 }
