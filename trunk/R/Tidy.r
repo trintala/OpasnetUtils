@@ -42,7 +42,7 @@ tidy <- function (data, objname = "", idvar = "Obs", direction = "wide", widecol
 			} else widecol <- NA
 		}
 		if(!is.na(widecol)) {
-			cols <- levels(data$Observation)
+			cols <- levels(data[[widecol]])
 			data <- reshape(data, idvar = idvar, timevar = widecol, v.names = "Result", direction = "wide")
 			data <- data[colnames(data) != "Obs"]
 			colnames(data) <- gsub("^Result.", objname, colnames(data))
