@@ -37,7 +37,7 @@ ddata_apply <- function(
 	if (length(attributes(ovariable)) < 8) return(ovariable) # line for compatibility with old ovariable definitions
 	if ((identical(ovariable@data, data.frame()) | force_ddata) & !identical(ovariable@ddata, character())) {
 		ovariable@data <- opbase.data(ovariable@ddata)
-		if (ddata_tidy) ovariable@data <- tidy(ovariable@data, ovariable@name)
+		if (ddata_tidy) ovariable@data <- tidy(ovariable@data, ovariable@name, direction='long')
 	}
 	return(ovariable)
 }
