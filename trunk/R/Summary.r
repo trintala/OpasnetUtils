@@ -8,7 +8,7 @@ setMethod(
 			#object@output <- object@output[ , -grep("Description|Source", colnames(object@output))] # not a necessary line
 			
 			# If no function names are defined then use defaults which depend on whether the data is probabilistic or not
-			if("Iteration" %in% colnames(object@output) && !"Iteration" %in% marginals) {
+			if("Iter" %in% colnames(object@output) && !"Iter" %in% marginals) {
 				if (length(function_names)==0) function_names <- c("mean", "sd", "min", "Q0.025", "median", "Q0.975", "max")
 				#object@output <- object@output[object@output$Iter == 1, ]
 			}
@@ -24,7 +24,7 @@ setMethod(
 			
 			# If marginals are not defined the data is assumed probabilistic and the summary to be about the distribution
 			if(length(marginals)==0) {
-				marginals <- colnames(object@output)[object@marginal & colnames(object@output) != "Iteration"]
+				marginals <- colnames(object@output)[object@marginal & colnames(object@output) != "Iter"]
 			}
 			
 			# Apply the selected functions
