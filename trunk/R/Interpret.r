@@ -78,7 +78,7 @@ interpf <- function(
 	}
 	if(sum(unlist(strsplit(res.char, ""))==";") > 0) {
 		if(dbug) cat("Discrete random samples. \n")
-		return(sample(unlist(strsplit(res.char, ";"), as.numeric), n, replace = TRUE))
+		return(sample(as.numeric(unlist(strsplit(res.char, ";"))), n, replace = TRUE))
 	}
 	if(fromzero[[1]][1] == 1) {
 		temp <- interpret(
@@ -155,8 +155,32 @@ setMethod(
 	}
 )
 
-interpret("500(490-5000)", N = 2, dbug= TRUE)
+#setMethod(
+#		f = "interpret",
+#		signature = signature(idata = "interpret"),
+#		definition = function(idata, N = 1000, dbug = FALSE) {
+#			callGeneric(data.frame(Result = idata), N = N, dbug = dbug)
+#		}
+#)
 
-interpret("1;2;3;4", N = 20, dbug = TRUE)
+# Interpreting empty locations in indices
 
-interpret("<9", N = 4, dbug = TRUE)
+fillna <- function(object, marginals) {
+	a <- dropall(object)
+	for(i in marginals) {
+		a[[i]] <- as.factor(a[[i]])
+		a1 <- a[!is.na(a[[i]]), ]
+		a2 <- a[is.na(a[[i]]), ][-i]
+		addition <- data.frame(A = levels(a[[i]]))
+		colnames(addition) <- colnames(a)[i]
+		a2 <- merge(addition, a2)
+		a <- rbind(a1, a2)
+	}
+	return(a)
+}
+
+#interpret("500(490-5000)", N = 2, dbug= TRUE)
+
+#interpret("1;2;3;4", N = 20, dbug = TRUE)
+
+#interpret("<9", N = 4, dbug = TRUE)

@@ -1,9 +1,9 @@
 # EvalOutput #################### evaluates the output slot of ovariables
 ##### Marginals should be also checked and updated here or elsewhere
 
-EvalOutput <- function(variable, indent = 0, verbose = TRUE, ...) { # ... for e.g na.rm 
+EvalOutput <- function(variable, fillna = TRUE, indent = 0, verbose = TRUE, ...) { # ... for e.g na.rm 
 	if (verbose) cat(rep("-", indent), "Evaluating", variable@name, "...")
-	ComputeDependencies(variable@dependencies, indent = indent + 1, verbose = verbose, new_code = TRUE, ...)
+	ComputeDependencies(variable@dependencies, fillna = fillna, indent = indent + 1, verbose = verbose, new_code = TRUE, ...)
 	variable <- ddata_apply(variable, ...)
 	if (nrow(variable@data) > 0) {
 		colnames(variable@data)[colnames(variable@data) %in% "Result"] <- paste(variable@name, "Result", sep = "")
@@ -32,6 +32,7 @@ EvalOutput <- function(variable, indent = 0, verbose = TRUE, ...) { # ... for e.
 		colnames(a)[colnames(a) == rescol] <- paste(variable@name, "Result", sep = "")
 		a[,paste(variable@name, "Source", sep = "")] <- "Data"
 		variable@output <- a
+		if (verbose) cat(" done!\n")
 	}
 	else if (nrow(a) == 0) {
 		colnames(b)[
@@ -40,6 +41,7 @@ EvalOutput <- function(variable, indent = 0, verbose = TRUE, ...) { # ... for e.
 		b[,paste(variable@name, "Source", sep = "")] <- "Formula"
 		variable@output <- b
 		if (length(tempmarginals) > 1) variable@marginal <- colnames(variable@output) %in% tempmarginals
+		if (verbose) cat(rep("-", indent), " done!\n")
 	}
 	else {
 		colnames(a)[colnames(a) == rescol] <- "FromData"
@@ -64,7 +66,11 @@ EvalOutput <- function(variable, indent = 0, verbose = TRUE, ...) { # ... for e.
 		if (length(tempmarginals) > 1) variable@marginal <- colnames(variable@output) %in% tempmarginals
 		if (verbose) cat(rep("-", indent), " done!\n")
 	}
-	if (verbose) cat(" done!\n")
+	#if (verbose) cat(rep("-", indent), " done!\n")
+	#if (verbose) cat(" done!\n")
 	variable <- CheckMarginals(variable, indent = indent, verbose = verbose, ...)
+	if (fillna) {
+		variable@output <- fillna(variable@output, 1:ncol(variable@output)[variable@marginal])
+	}
 	return(variable)
 }
