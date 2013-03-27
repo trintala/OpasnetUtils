@@ -15,11 +15,23 @@ ComputeDependencies <- function(dependencies, forceEval = FALSE, indent = 0, new
 			if (is.null(ret)) stop(paste("Ovariable depends on missing variable named '",i,"'",sep='' ))
 			# If dependency is ovariable
 			if (class(get(i)) == "ovariable") {
-				if (nrow(get(i)@output) == 0 | forceEval) assign(i, EvalOutput(get(i), indent = indent, ...), envir = .GlobalEnv)
+				if (nrow(get(i)@output) == 0 | forceEval) {
+					tryCatch(
+						assign(i, EvalOutput(get(i), indent = indent, ...), envir = .GlobalEnv), 
+						error = function(e) stop(paste("Evaluating", get(i)@name, "failed!"))
+					)
+				}
 				#assign(i, CheckMarginals(get(i), indent = indent, ...), envir = .GlobalEnv) # moved to EvalOutput
-				assign(i, CheckInput(get(i), indent = indent, ...), envir = .GlobalEnv)
-				assign(i, CheckDecisions(get(i), indent = indent, ...), envir = .GlobalEnv)
-				assign(i, CheckCollapse(get(i), indent = indent, ...), envir = .GlobalEnv)
+				tryCatch(
+					assign(i, CheckInput(get(i), indent = indent, ...), envir = .GlobalEnv), 
+					error = function(e) stop(paste("Input checking", get(i)@name, "failed!"))
+				)
+				tryCatch(assign(i, CheckDecisions(get(i), indent = indent, ...), envir = .GlobalEnv), 
+						error = function(e) stop(paste("Decision checking", get(i)@name, "failed!"))
+				)
+				tryCatch(assign(i, CheckCollapse(get(i), indent = indent, ...), envir = .GlobalEnv), 
+						error = function(e) stop(paste("Collapse checking", get(i)@name, "failed!"))
+				)
 			}
 		}
 		cat("\n")
