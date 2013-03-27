@@ -21,6 +21,44 @@ setClass(
 	)
 )
 
+
+### result returns a vector that contains the result column of the
+### output of a given ovariable. The vector contains the original column
+### name as the attribute comment.
+### e1 is the ovariable to operate with.
+
+result <- function(e1) { # e1 must be an ovariable or a data.frame.
+	
+# Should we allow people to use this for data.frames as well?
+#	if(class(e1) == "data.frame") e1 <- new("ovariable", name = character(), output = e1)
+	
+	# First check presence of name specific Result-columns
+	
+	test1 <- "Result" %in% colnames(e1@output)
+	
+	test3 <- paste(e1@name, "Result", sep = "") %in% colnames(e1@output)
+	
+	# If found take note
+	
+	rescol1 <- ifelse(test1, "Result", paste(e1@name, "Result", sep = ""))
+	
+	if(!(test1 | test3)) stop("No result column found while operating mathematically with ovariables!\n")
+	
+	out <- e1@output[[rescol1]]
+	comment(out) <- rescol1 # Save the column name for later use
+	
+	return(out)
+}
+
+## "result<-" is a function that tells what is done if content is assigned into Getrescol(ovariable).
+## e1 is the ovariable into which something is assigned.
+## value is the thing to assign into the ovariable.
+
+assign("result<-", function(e1, value) {
+			e1@output[[comment(result(e1))]] <- value
+			return(e1)}
+)
+
 ####################
 # ddata_apply
 ############################
