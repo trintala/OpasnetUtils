@@ -20,7 +20,7 @@ Fetch2 <- function(dependencies, evaluate = FALSE, indent = 0, verbose = TRUE, .
 				testkey <- if (is.null(dependencies$Key[i])) TRUE else is.na(dependencies$Key[i]) | dependencies$Key[i] == ""
 				testid <- if (is.null(dependencies$Ident[i])) TRUE else is.na(dependencies$Ident[i]) | dependencies$Ident[i] == ""
 				if (testkey & testid) {
-					stop(paste("No key nor ident given for dependent variable: ", dependencies$Name, "!", sep = ""))
+					stop(paste("No key nor ident given for dependent variable: ", dependencies$Name[i], "!", sep = ""))
 				}
 				if (!testkey) {
 					objects.get(dependencies$Key[i]) # Key is the R-tools session identifier (shown at the end of the url)
