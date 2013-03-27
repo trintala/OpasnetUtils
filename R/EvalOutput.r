@@ -1,7 +1,7 @@
 # EvalOutput #################### evaluates the output slot of ovariables
 ##### Marginals should be also checked and updated here or elsewhere
 
-EvalOutput <- function(variable, fillna = TRUE, indent = 0, verbose = TRUE, ...) { # ... for e.g na.rm 
+EvalOutput <- function(variable, fillna = FALSE, indent = 0, verbose = TRUE, ...) { # ... for e.g na.rm 
 	if (verbose) cat(rep("-", indent), "Evaluating", variable@name, "...")
 	ComputeDependencies(variable@dependencies, fillna = fillna, indent = indent + 1, verbose = verbose, new_code = TRUE, ...)
 	variable <- ddata_apply(variable, ...)
