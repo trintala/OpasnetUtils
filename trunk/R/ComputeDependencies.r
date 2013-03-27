@@ -18,20 +18,24 @@ ComputeDependencies <- function(dependencies, forceEval = FALSE, indent = 0, new
 				if (nrow(get(i)@output) == 0 | forceEval) {
 					ret <- tryCatch(
 						assign(i, EvalOutput(get(i), indent = indent, ...), envir = .GlobalEnv), 
-						error = function(e) stop(paste("Evaluating", get(i)@name, "failed!"))
+						error = function(e) return(NULL)
 					)
+					if (is.null(ret)) stop(paste("Evaluating", get(i)@name, "failed!"))
 				}
 				#assign(i, CheckMarginals(get(i), indent = indent, ...), envir = .GlobalEnv) # moved to EvalOutput
 				ret <- tryCatch(
 					assign(i, CheckInput(get(i), indent = indent, ...), envir = .GlobalEnv), 
-					error = function(e) stop(paste("Input checking", get(i)@name, "failed!"))
+					error = function(e) return(NULL)
 				)
+				if (is.null(ret)) stop(paste("Input checking", get(i)@name, "failed!"))
 				ret <- tryCatch(assign(i, CheckDecisions(get(i), indent = indent, ...), envir = .GlobalEnv), 
-						error = function(e) stop(paste("Decision checking", get(i)@name, "failed!"))
+						error = function(e) return(NULL)
 				)
+				if (is.null(ret)) stop(paste("Decision checking", get(i)@name, "failed!"))
 				ret <- tryCatch(assign(i, CheckCollapse(get(i), indent = indent, ...), envir = .GlobalEnv), 
-						error = function(e) stop(paste("Collapse checking", get(i)@name, "failed!"))
+						error = function(e) return(NULL)
 				)
+				if (is.null(ret)) stop(paste("Collapse checking", get(i)@name, "failed!"))
 			}
 		}
 		cat("\n")
