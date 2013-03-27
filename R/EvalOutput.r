@@ -70,7 +70,8 @@ EvalOutput <- function(variable, fillna = TRUE, indent = 0, verbose = TRUE, ...)
 	#if (verbose) cat(" done!\n")
 	variable <- CheckMarginals(variable, indent = indent, verbose = verbose, ...)
 	if (fillna) {
-		ret <- tryCatch(variable@output <- fillna(variable@output, 1:ncol(variable@output)[variable@marginal]), function(e) warning("Unable to FillNA."))
+		ret <- tryCatch(variable@output <- fillna(variable@output, 1:ncol(variable@output)[variable@marginal]), function(e) return(NULL))
+		if (is.null(ret)) warning("Unable to FillNA.")
 	}
 	return(variable)
 }
