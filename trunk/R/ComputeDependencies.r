@@ -16,12 +16,12 @@ ComputeDependencies <- function(dependencies, forceEval = FALSE, indent = 0, new
 			# If dependency is ovariable
 			if (class(get(i)) == "ovariable") {
 				if (nrow(get(i)@output) == 0 | forceEval) {
-					assign(i, EvalOutput(get(i), indent = indent, ...), envir = .GlobalEnv)
-					#ret1 <- tryCatch(
-					#	assign(i, EvalOutput(get(i), indent = indent, ...), envir = .GlobalEnv), 
-					#	error = function(e) return(NULL)
-					#)
-					#if (is.null(ret1)) stop(paste("Evaluating", get(i)@name, "failed!"))
+					#assign(i, EvalOutput(get(i), indent = indent, ...), envir = .GlobalEnv)
+					ret1 <- tryCatch(
+						assign(i, EvalOutput(get(i), indent = indent, ...), envir = .GlobalEnv), 
+						error = function(e) return(NULL)
+					)
+					if (is.null(ret1)) stop(paste("Evaluating", get(i)@name, "failed!"))
 				}
 				#assign(i, CheckMarginals(get(i), indent = indent, ...), envir = .GlobalEnv) # moved to EvalOutput
 				ret2 <- tryCatch(
