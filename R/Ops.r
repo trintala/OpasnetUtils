@@ -8,7 +8,7 @@
 setMethod(
 	f = "Ops", 
 	signature = signature(e1 = "ovariable", e2 = "ovariable"), 
-	definition = function(e1, e2, ...) {
+	definition = function(e1, e2) {
 		# First check presence of name specific Result-columns
 		
 		test1 <- "Result" %in% colnames(e1@output)
@@ -43,7 +43,7 @@ setMethod(
 		
 		# Now merging should be possible without any confusion
 		
-		out <- merge(e1, e2, ...)@output
+		out <- merge(e1, e2)@output
 		
 		# Call generic function on the two Result-columns
 		
