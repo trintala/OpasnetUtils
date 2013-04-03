@@ -8,7 +8,7 @@ orbind <- function(x, y) {
 		cols <- setdiff(colnames(e2), colnames(e1)) # Take all columns that do not exist in e1.
 		
 		if("Iter" %in% cols) {
-			e1 <- merge(e2["Iter"], e1) # Add Iter with all locations existing in e2.
+			e1 <- merge(unique(e2["Iter"]), e1) # Add Iter with all locations existing in e2.
 			cols <- cols[cols != "Iter"] # Remove Iter from the list of columns to add.
 		}
 		col <- as.data.frame(array(NA, dim = c(1, length(cols))))
