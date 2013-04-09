@@ -28,15 +28,15 @@ ComputeDependencies <- function(dependencies, forceEval = FALSE, indent = 0, new
 					assign(i, CheckInput(get(i), indent = indent, ...), envir = .GlobalEnv), 
 					error = function(e) return(NULL)
 				)
-				if (is.null(ret2)) stop(paste("Input checking", get(i)@name, "failed!"))
+				if (is.null(ret2)) warning(paste("Input checking", get(i)@name, "failed!"))
 				ret3 <- tryCatch(assign(i, CheckDecisions(get(i), indent = indent, ...), envir = .GlobalEnv), 
 						error = function(e) return(NULL)
 				)
-				if (is.null(ret3)) stop(paste("Decision checking", get(i)@name, "failed!"))
+				if (is.null(ret3)) warning(paste("Decision checking", get(i)@name, "failed!"))
 				ret4 <- tryCatch(assign(i, CheckCollapse(get(i), indent = indent, ...), envir = .GlobalEnv), 
 						error = function(e) return(NULL)
 				)
-				if (is.null(ret4)) stop(paste("Collapse checking", get(i)@name, "failed!"))
+				if (is.null(ret4)) warning(paste("Collapse checking", get(i)@name, "failed!"))
 			}
 		}
 		cat("\n")
