@@ -23,6 +23,29 @@ opbase.locations <- function(ident, index_name, series_id = NULL, username = NUL
 	return(ret$locations)
 }
 
+# Fetch all series ids
+opbase.series <- function(ident, username = NULL, password = NULL, verbose = FALSE)
+{
+	query = list()
+	query[['ident']] <- ident
+	query[['username']] <- username
+	query[['password']] <- password
+	object <- opbase.query(query, username, password)
+
+	if(is.null(object$acts)) stop("Acts not found!")
+	
+	ret = c()
+	
+	if (verbose) print(object$acts)
+	
+	for (a in object$acts)
+	{
+		ret <- append(ret, as.numeric(a$act$series_id))
+	}
+	
+	return(unique(ret))
+}
+
 # Read data from opasnet base 2
 opbase.data <- function(ident, series_id = NULL, subset = NULL, verbose = FALSE, username = NULL, password = NULL, samples = NULL, exclude = NULL, include = NULL, optim_test = TRUE, ...) {
 	
