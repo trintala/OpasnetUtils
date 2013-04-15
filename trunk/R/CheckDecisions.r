@@ -44,36 +44,40 @@ CheckDecisions <- function(variable, indent = 0, verbose = TRUE, ...) {
 				
 				sel1 <- strsplit(as.character(dectable[j, "Cell"]), split = ";")[[1]] 
 				
-				# ":" defines index - location matches as a condition.
-				
-				sel2 <- strsplit(sel1, split = ":") # No need for lapply, since strsplit is a vectorized function and current list depth is 1.
-				
-				# Create a list of conditions which the decision and option specific condition vector consists of. 
-				
-				selection <- list() 
-				for (k in 1:length(sel1)) { # For each condition separated by ";"
-					if (length(sel2[[k]]) > 1) { # If ":" has been used for condition k
-						locs <- strsplit(sel2[[k]][2], split = ",")[[1]] # Split by "," for multiple locs per given index
-						selection[[k]] <- out[, sel2[[k]][1]] %in% locs # Match our data.frame to the condition
-					} #else { # Unimplemented code for (in)equality checks for numeric variables
-						#if(grepl(">=")) {
-							#a <- strsplit(sel1[[k]])
-							#b <-  <- out[, sel2[[k]][1]]
-							#selection[[k]]
+				if (length(sel1)>0){ # Check for non-empty Cell
+					# ":" defines index - location matches as a condition.
+					
+					sel2 <- strsplit(sel1, split = ":") # No need for lapply, since strsplit is a vectorized function and current list depth is 1.
+					
+					# Create a list of conditions which the decision and option specific condition vector consists of. 
+					
+					selection <- list() 
+					for (k in 1:length(sel1)) { # For each condition separated by ";"
+						if (length(sel2[[k]]) > 1) { # If ":" has been used for condition k
+							locs <- strsplit(sel2[[k]][2], split = ",")[[1]] # Split by "," for multiple locs per given index
+							selection[[k]] <- out[, sel2[[k]][1]] %in% locs # Match our data.frame to the condition
+						} #else { # Unimplemented code for (in)equality checks for numeric variables
+							#if(grepl(">=")) {
+								#a <- strsplit(sel1[[k]])
+								#b <-  <- out[, sel2[[k]][1]]
+								#selection[[k]]
+							#}
 						#}
-					#}
+					}
+					
+					# Match all conditions given for this decision - option combination.
+					
+					selection <- as.data.frame(selection)
+					selection$optslice <- out[[as.character(dectable[["Decision"]][j])]] == dectable[["Option"]][j] # We only want rows where the relevant option is in use to be affected
+					selection <- as.matrix(selection)
+					cond[[j]] <- apply(
+						selection,
+						1,
+						all
+					)
+				} else { # For empty Cell
+					cond[[j]] <- TRUE
 				}
-				
-				# Match all conditions given for this decision - option combination.
-				
-				selection <- as.data.frame(selection)
-				selection$optslice <- out[[as.character(dectable[["Decision"]][j])]] == dectable[["Option"]][j] # We only want rows where the relevant option is in use to be affected
-				selection <- as.matrix(selection)
-				cond[[j]] <- apply(
-					selection,
-					1,
-					all
-				)
 			}
 		} else { # Otherwise use given condition functions.
 			for (j in 1:length(dec@condition)) {
@@ -120,6 +124,7 @@ EffectPreset <- function(name) {
 	if (name == "Multiply") return(function(x, y) {x * y})
 	if (name == "Replace") return(function(x, y) {y})
 	if (name == "Remove") return(function(x, y) {NA})
+	if (name == "Identity") return(function(x, y) {x})
 }
 
 setClass(
