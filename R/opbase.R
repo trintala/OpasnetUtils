@@ -434,7 +434,7 @@ opbase.parse_locations <- function(locs, ident, series_id = NULL, username = NUL
 		query = list()
 		query[['ident']] <- ident
 		query[['index_name']] <- URLencode(i, reserved = TRUE)
-		if (! is.null(series_id)) query[['series_id']] <- series_id
+		if (! is.null(series_id)) query[['series']] <- series_id
 		object <- opbase.query(query, username, password)
 		#ind <- object$index
 		loc_ids = c()

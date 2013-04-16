@@ -19,7 +19,6 @@ setMethod(
 		signature = signature(x = "ovariable"),
 		definition = function(x, show_all = FALSE, sortable = TRUE, ...) {
 			v = FALSE
-			if (exists("verbose") && verbose) v = TRUE # Global verbose definition
 			if (ncol(x@output) == 0) x <- EvalOutput(x, verbose = v)
 			callGeneric(x@output, show_all = show_all, sortable = sortable, ...)
 		}

@@ -169,11 +169,8 @@ objects.latest <- function(page_ident, code_name, verbose = FALSE){
 	
 	for (s in series)
 	{
-		#include = list('Page ident' = page_ident, 'Code name' = code_name)
-		
-		tmp <- tryCatch(opbase.data(ident, series_id = s, verbose = verbose), error = function(e) return(NULL))
-				
-		if (! is.null(tmp)) tmp <- tmp[tmp[['Page ident']] == page_ident & tmp[['Code name']] == code_name,] # tmp filter!
+		tmp <- tryCatch(opbase.data(ident, series_id = s, include = list('Page ident' = page_ident, 'Code name' = code_name), verbose = verbose), error = function(e) return(NULL))
+
 		if (verbose) print(tmp)
 		
 		if (! is.null(tmp))
