@@ -64,8 +64,8 @@ opbase.data <- function(ident, series_id = NULL, subset = NULL, verbose = FALSE,
 	}
 	
 	if (! is.null(samples)) query[['samples']] <- samples
-	if (! is.null(exclude)) query[['exclude']] <- opbase.parse_locations(exclude, ident, series_id, username, password)
-	if (! is.null(include)) query[['include']] <- opbase.parse_locations(include, ident, series_id, username, password)
+	if (! is.null(exclude)) query[['exclude']] <- opbase.parse_locations(exclude, query[['ident']], series_id, username, password)
+	if (! is.null(include)) query[['include']] <- opbase.parse_locations(include, query[['ident']], series_id, username, password)
 	
 	query[['username']] <- username
 	query[['password']] <- password
