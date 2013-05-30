@@ -1,10 +1,8 @@
-opasnet <- function(x, ...)
-UseMethod("opasnet")
-
 # Get data from Opasnet
 #
 # filename - Name of the file
-# wiki - Source Wiki: opasnet_en (default), opasnet_fi
+# wiki - Source Wiki: opasnet_en (default), opasnet_fi, heande (.htaccess protected)
+# unzip - Set true if file is compressed with zip
 #
 # Returns file contents (loaded using curl)
 
@@ -12,6 +10,59 @@ opasnet.data <- function(filename,wiki='', unzip='') {
 
 	now <- Sys.time()
 	
+	file <- opbase.file_url(filename, wiki)
+	
+	if (unzip != '')
+	{
+		f <- paste('/tmp/rtools_',as.numeric(now),'.zip',sep='')
+		bin <- getBinaryURL(file)
+		con <- file(f, open = "wb")
+		writeBin(bin, con)
+		close(con)
+		con <- unz(f, unzip)
+		return(paste(readLines(con),collapse="\n"))
+	}
+	else
+	{	
+		return(getURL(file))
+	}
+}
+
+# Get table data (e.g. csv) from Opasnet
+#
+# filename - Name of the file
+# wiki - Source Wiki: opasnet_en (default), opasnet_fi, heande (.htaccess protected)
+# unzip - Set true if file is compressed with zip
+#
+# Returns file contents in table (loaded using curl)
+
+opasnet.csv <- function(filename, wiki='', unzip = '', ...) {
+
+	now <- Sys.time()
+	
+	file <- opbase.file_url(filename, wiki)
+
+	if (unzip != '')
+	{
+		f <- paste('/tmp/rtools_',as.numeric(now),'.zip',sep='')
+		bin <- getBinaryURL(file)
+		con <- file(f, open = "wb")
+		writeBin(bin, con)
+		close(con)
+		return(read.table(unz(f, unzip), ...))
+	}
+	else
+	{	
+		csv <- getURL(file)
+		return(read.table(file = textConnection(csv), ...))
+	}
+	
+	
+}
+
+# Private function to get file url for given wiki
+opbase.file_url <- function(filename, wiki)
+{
 	# Parse arguments
 	targs <- strsplit(commandArgs(trailingOnly = TRUE),",")
 	args = list()
@@ -41,74 +92,9 @@ opasnet.data <- function(filename,wiki='', unzip='') {
 	{
 		file <- paste("http://",args$ht_username,":",args$ht_password,"@heande.opasnet.org/heande/images/",filename,sep='')
 	}
-	
-	if (unzip != '')
-	{
-		f <- paste('/tmp/rtools_',as.numeric(now),'.zip',sep='')
-		bin <- getBinaryURL(file)
-		con <- file(f, open = "wb")
-		writeBin(bin, con)
-		close(con)
-		con <- unz(f, unzip)
-		return(paste(readLines(con),collapse="\n"))
-	}
-	else
-	{	
-		return(getURL(file))
-	}
+	return(file)
 }
 
-opasnet.csv <- function(filename, wiki='', unzip = '', ...) {
-
-	now <- Sys.time()
-	
-	# Parse arguments
-	targs <- strsplit(commandArgs(trailingOnly = TRUE),",")
-	args = list()
-	if (length(targs) > 0)
-		for(i in targs[[1]])
-		{
-			tmp = strsplit(i,"=")
-			key <- tmp[[1]][1]
-			value <- tmp[[1]][2]
-			args[[key]] <- value
-		}
-	
-	if (wiki == '')
-	{
-		wiki = args$user
-	}
-	
-	if (wiki == 'opasnet_en' || wiki == 'op_en')
-	{
-		file <- paste("http://en.opasnet.org/en-opwiki/images/",filename,sep='')
-	}
-	if (wiki == 'opasnet_fi' || wiki == 'op_fi')
-	{
-		file <- paste("http://fi.opasnet.org/fi_wiki/images/",filename,sep='')
-	}
-	if (wiki == 'heande')
-	{
-		file <- paste("http://",args$ht_username,":",args$ht_password,"@heande.opasnet.org/heande/images/",filename,sep='')
-	}	
-
-	if (unzip != '')
-	{
-		f <- paste('/tmp/rtools_',as.numeric(now),'.zip',sep='')
-		bin <- getBinaryURL(file)
-		con <- file(f, open = "wb")
-		writeBin(bin, con)
-		close(con)
-		return(read.table(unz(f, unzip), ...))
-	}
-	else
-	{	
-		csv <- getURL(file)
-		return(read.table(file = textConnection(csv), ...))
-	}
-	
-	
-}
 
 # OPASNET.DATA #####################################
 ## opasnet.data downloads a file from Finnish Opasnet wiki, English Opasnet wiki, or Opasnet File.

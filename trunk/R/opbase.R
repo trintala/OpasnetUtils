@@ -1,7 +1,5 @@
- #opbase <- function(x, ...)
-#UseMethod("opbase")
 
-# Returns TRUE if object with given ident exists in Opasnet Base
+# Returns TRUE if object with given ident exists in Opasnet Base (WARNING! returns FALSE on any error!!!)
 opbase.obj.exists <- function(ident, username = NULL, password = NULL)
 {
 	q <- list('ident' = ident)
@@ -13,6 +11,7 @@ opbase.obj.exists <- function(ident, username = NULL, password = NULL)
 	}
 }
 
+# Returns locations of index
 opbase.locations <- function(ident, index_name, series_id = NULL, username = NULL, password = NULL)
 {
 	query = list()
@@ -23,7 +22,7 @@ opbase.locations <- function(ident, index_name, series_id = NULL, username = NUL
 	return(ret$locations)
 }
 
-# Fetch all series ids
+# Fetch all series ids of object
 opbase.series <- function(ident, username = NULL, password = NULL, verbose = FALSE)
 {
 	query = list()
@@ -47,7 +46,7 @@ opbase.series <- function(ident, username = NULL, password = NULL, verbose = FAL
 }
 
 # Read data from opasnet base 2
-opbase.data <- function(ident, series_id = NULL, subset = NULL, verbose = FALSE, username = NULL, password = NULL, samples = NULL, exclude = NULL, include = NULL, optim_test = TRUE, ...) {
+opbase.data <- function(ident, series_id = NULL, subset = NULL, verbose = FALSE, username = NULL, password = NULL, samples = NULL, exclude = NULL, include = NULL, range = NULL, optim_test = TRUE, ...) {
 	
 	query = list()
 
@@ -66,6 +65,7 @@ opbase.data <- function(ident, series_id = NULL, subset = NULL, verbose = FALSE,
 	if (! is.null(samples)) query[['samples']] <- samples
 	if (! is.null(exclude)) query[['exclude']] <- opbase.parse_locations(exclude, query[['ident']], series_id, username, password)
 	if (! is.null(include)) query[['include']] <- opbase.parse_locations(include, query[['ident']], series_id, username, password)
+	if (! is.null(range)) query[['range']] <- opbase.parse_range(range, query[['ident']], series_id, username, password)
 	
 	query[['username']] <- username
 	query[['password']] <- password
@@ -453,6 +453,37 @@ opbase.parse_locations <- function(locs, ident, series_id = NULL, username = NUL
 		ret <- c(ret, paste(object$index$ident,paste(loc_ids,collapse=','),sep=','))
 	}
 	#print(ret)
+	return(ret)
+}
+
+# Private function to parse range list and return vector containing corresponding index idents and values
+#
+# range format: list(<index name> = c(<min>,<max>), ...)
+
+opbase.parse_range <- function(range, ident, series_id = NULL, username = NULL, password = NULL) {
+	ret = c()
+	
+	#print(locs)
+	
+	for(i in names(range))
+	{
+		query = list()
+		query[['ident']] <- ident
+		query[['index_name']] <- URLencode(i, reserved = TRUE)
+		if (! is.null(series_id)) query[['series']] <- series_id
+		object <- opbase.query(query, username, password)
+		if (length(range[[i]]) != 2) stop('Invalid range array!')
+		if (! is.na(range[[i]][[1]])) {
+			min = range[[i]][[1]] } else {
+			min = ''
+		}
+		if (! is.na(range[[i]][[2]])) {
+			max = range[[i]][[2]] } else {
+			max = ''
+		}
+		ret <- c(ret, paste(object$index$ident,min,max,sep=';'))
+	}
+	print(ret)
 	return(ret)
 }
 
