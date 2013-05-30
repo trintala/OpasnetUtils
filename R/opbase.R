@@ -483,7 +483,7 @@ opbase.parse_range <- function(range, ident, series_id = NULL, username = NULL, 
 		}
 		ret <- c(ret, paste(object$index$ident,min,max,sep=';'))
 	}
-	print(ret)
+	#print(ret)
 	return(ret)
 }
 
