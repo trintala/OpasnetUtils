@@ -78,8 +78,17 @@ objects.put <- function(..., list = character()){
 # Wrapper for load-method, reads object for given run token
 
 objects.get <- function(token){
+
+	# Try locally first
 	fname <- paste(token,'_objs.RData.gz',sep='')	
-	load(fname, .GlobalEnv)
+	
+	if (file.exists(fname)) {
+		load(fname, .GlobalEnv)
+	} else {
+		# And then via web server
+		fname <- paste('http://cl1.opasnet.org/rtools_server/runs/',token,'_objs.RData.gz',sep='')	
+		load(url(fname), .GlobalEnv)
+	}
 }
 
 # New method for storing objects, writes key to the opasnet base as well
@@ -143,21 +152,7 @@ objects.store <- function(..., list = character(), verbose = FALSE){
 
 objects.latest <- function(page_ident, code_name, verbose = FALSE){
 	
-	# Parse arguments
-	targs <- strsplit(commandArgs(trailingOnly = TRUE),",") 
-	args = list()
-	
-	if (length(targs) == 0) stop('This function can be used within Opasnet only!!!') 
-	
-	for(i in targs[[1]])
-	{
-		tmp = strsplit(i,"=")
-		key <- tmp[[1]][1]
-		value <- tmp[[1]][2]
-		args[[key]] <- value
-	}
-	
-	ident <- objects.page_ident(args$user)
+	ident <- objects.page_ident(page_ident)
 	
 	if (verbose) print(paste('Saved R objects page ident is ', ident, sep=''))
 	
@@ -184,7 +179,7 @@ objects.latest <- function(page_ident, code_name, verbose = FALSE){
 		}
 	}
 	
-	if (verbose) print(res)
+	if (is.null(res)) stop(paste("No stored objects found! Run initiation code first? Page ident: ",page_ident, " Code name: ", code_name, sep=''))
 	
 	k <- max(res$Result)
 	
@@ -194,10 +189,16 @@ objects.latest <- function(page_ident, code_name, verbose = FALSE){
 }
 
 # Private function for getting the ident for page holding the key data
-objects.page_ident <- function(base_user){
-	if (base_user == 'heande') return('Heande3827')
-	if (base_user == 'opasnet_en') return('Op_en5897')
-	if (base_user == 'opasnet_fi') return('Op_fi3382')
-	if (base_user == 'eractest') return('test4228')	
+objects.page_ident <- function(ident){
+	
+	ident <- tolower(ident)
+	
+	# Wiki id
+	if (substr(ident, 1,5)=="op_en") return('Op_en5897')
+	if (substr(ident, 1,5)=="op_fi") return('Op_fi3382')
+	if (substr(ident, 1,6)=="heande")  return('Heande3827')
+	if (substr(ident, 1,4)=="test")  return('test4228')
+	
+	stop(paste("Wiki for ident not determined: ",ident,sep=''))
 }
 
