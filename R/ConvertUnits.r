@@ -62,7 +62,7 @@ setMethod(
 	definition = function(x, tounit)
 	{
 		if("Unit" %in% colnames(x@output) & !is.null(tounit)) {
-			x@output[c("Unit", "Result")] <- convert.units(x = x@output$Result, tounit = tounit, fromunit = x@output$Unit, expo = expo)
+			x@output[c("Unit", "Result")] <- callGeneric(x = x@output$Result, tounit = tounit, fromunit = x@output$Unit, expo = expo)
 		}
 		return(x)
 	}
@@ -74,7 +74,7 @@ setMethod(
 	definition = function(x, tounit = NULL)
 	{
 		if("Unit" %in% colnames(x) & "Result" %in% colnames(x) & !is.null(tounit)) {
-			x[c("Unit", "Result")] <- convert.units(x = x$Result, tounit = tounit, fromunit = x$Unit, expo = expo)
+			x[c("Unit", "Result")] <- callGeneric(x = x$Result, tounit = tounit, fromunit = x$Unit, expo = expo)
 		}
 		return(x)
 	}

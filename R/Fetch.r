@@ -1,15 +1,4 @@
-# FETCH ##################### fetch downloads a variable.
-
-fetch <- function(x, direction = "wide") { # Could think of a version where dependencies table is given as a parameter, and based on Name, Identifier is downloaded from the Base.
-	x <- as.character(x)
-	if(exists(x)) {
-		out <- get(x)
-	} else {
-		out <- tidy(op_baseGetData("opasnet_base", x), direction = "wide")
-	}
-	return(out)
-}
-
+Fetch <- function(...) Fetch2(...)
 
 # Fetch2 #################### loads all given dependencies to global memory
 

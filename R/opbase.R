@@ -109,13 +109,13 @@ opbase.data <- function(ident, series_id = NULL, subset = NULL, verbose = FALSE,
 				}
 				# Using iterator it would be possible to implement multiple results on any column, but since this is not possible
 				# at the moment only res will be checked.
-				iterate = FALSE
+				iterate <- FALSE
 				if (is.null(samples) || (! is.null(samples) && samples > 0)) {
 					if (prod(iterator[["res"]])>1) {
 						for (sarake in names(tmp[names(tmp)!="res"])) {
 							tmp[[sarake]] <- rep(tmp[[sarake]], times = iterator[["res"]])
 						}
-						iterate = TRUE
+						iterate <- TRUE
 					}
 				}
 				tmp <- data.frame(tmp)
@@ -125,7 +125,7 @@ opbase.data <- function(ident, series_id = NULL, subset = NULL, verbose = FALSE,
 				}
 				# This method appears to be slower than the original with heavily iterated data (~15% difference with 5000 samples).
 				# As the number of rows per chunk gets smaller, the difference between per-row and per-column approaches 
-				# diminishes while this method wastes more resources calculating the cell data lengths.
+				# diminishes while this method wastes more resources calculating cell data lengths.
 				out <- rbind(out, tmp)
 			} else {
 				if (verbose) print(paste('JSON parsed',format(Sys.time(), "%H:%M:%OS3"),sep=''))

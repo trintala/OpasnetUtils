@@ -21,7 +21,280 @@ setClass(
 	)
 )
 
+####################
+# Ovariable (constructor)
+#################
+# Constructs an ovariable and optionally downloads ddata and saves the variable for use in other codes on the server. 
+# The point of this constructor is to simplify variable creation: where before many different functions would have to
+# be used to get data into a usable format now a simple call Ovariable(<variable_name>, ddata = <page_ident>, save = TRUE)
+# will do the trick.
+#####################
+Ovariable <- function(
+		name = character(), 
+		data = data.frame(), 
+		formula = function(...){0}, 
+		dependencies = data.frame(), 
+		ddata = character(),
+		subset = NULL,
+		getddata = TRUE, # will dynamic data be immediately be downloaded, as opposed waiting until variable output is Evaluated
+		save = FALSE, # will the variable be saved on the server using objects.put
+		public = TRUE, # will the saved variable be public or private
+		...
+) {
+	if (! is.null(subset)) ddata <- paste(ddata, opbase.sanitize_subset_name(subset), sep='.')
+	
+	out <- new(
+			"ovariable",
+			name = name,
+			data = data,
+			formula = formula,
+			dependencies = dependencies,
+			ddata = ddata
+	)
+	if (getddata) out <- ddata_apply(out)
+	if (save){
+		assign(name, out)
+		if (public) objects.store(list = name, ...) else objects.put(list = name, ...)
+	}
+	return(out)
+}
 
+# SETMETHOD MATH ################### Math defines basic mathematical operations (log, exp, abs, ...) for ovariables
+setMethod(
+		f = "Math", 
+		signature = signature(x = "ovariable"), 
+		definition = function(x) {
+			test <- paste(x@name, "Result", sep = "") %in% colnames(x@output)
+			rescol <- ifelse(test, paste(x@name, "Result", sep = ""), "Result")
+			x@output[[rescol]] <- callGeneric(x@output[[rescol]])
+			return(x)
+		}
+)
+
+# SETMETHOD OPS ##################
+#########################################################################################
+# Arithmetic operations of ovariables: first they are merged by index columns,
+# then the operation is performed for the respective Result columns.
+# If one of the expressions is numeric, it is first converted to an ovariable.
+#########################################################################################
+
+setMethod(
+		f = "Ops", 
+		signature = signature(e1 = "ovariable", e2 = "ovariable"), 
+		definition = function(e1, e2) {
+			# First check presence of name specific Result-columns
+			
+			test1 <- "Result" %in% colnames(e1@output)
+			test2 <- "Result" %in% colnames(e2@output)
+			
+			test3 <- paste(e1@name, "Result", sep = "") %in% colnames(e1@output)
+			test4 <- paste(e2@name, "Result", sep = "") %in% colnames(e2@output)
+			
+			# If found take note
+			
+			rescol1 <- ifelse(!test1, paste(e1@name, "Result", sep = ""), "Result")
+			rescol2 <- ifelse(!test2, paste(e2@name, "Result", sep = ""), "Result")
+			
+			if(!(test1 | test3) | !(test2 | test4)) stop("No result column found while operating mathematically with ovariables!\n")
+			
+			#if (!(test1 & test2)) {
+			#	rescol1 <- "Result.x"
+			#	rescol2 <- "Result.y"
+			#}
+			
+			# If not change prefixless Result to Result.x/y
+			
+			if (test1) {
+				colnames(e1@output)[colnames(e1@output)=="Result"] <- "Result.x"
+				rescol1 <- "Result.x"
+			}
+			
+			if (test2) {
+				colnames(e2@output)[colnames(e2@output)=="Result"] <- "Result.y"
+				rescol2 <- "Result.y"
+			}
+			
+			# Now merging should be possible without any confusion
+			
+			out <- merge(e1, e2)@output
+			
+			# Call generic function on the two Result-columns
+			
+			out$Result <- callGeneric(out[[rescol1]], out[[rescol2]])
+			
+			out <- new(
+					"ovariable",
+					#	dependencies = data.frame(Name = c(e1@name, e2@name)),
+					output = out[
+							!colnames(out) %in% c(
+									ifelse(test1, rescol1, character()), 
+									ifelse(test2, rescol2, character())
+							) | colnames(out) == "Result"
+					]
+			)
+			out <- CheckMarginals(out, deps = list(e1, e2), verbose = FALSE)
+			return(out)
+		}
+)
+
+setMethod(
+		f = "Ops", 
+		signature = signature(e1 = "ovariable", e2 = "numeric"), 
+		definition = function(e1, e2) {
+			e2 <- new("ovariable", output = data.frame(Result = e2))
+			out <- callGeneric(e1, e2) # Call above definition
+			return(out)
+		}
+)
+
+setMethod(
+		f = "Ops", 
+		signature = signature(e1 = "numeric", e2 = "ovariable"), 
+		definition = function(e1, e2) {
+			e1 <- new("ovariable", output = data.frame(Result = e1))
+			out <- callGeneric(e1, e2) # Call above definition
+			return(out)
+		}
+)
+
+# SETMETHOD MERGE ########### merge of ovariables merges the 'output' slot by index columns except 'Unit'.
+setMethod(f = "merge", 
+		signature = signature(x = "ovariable", y = "ovariable"),
+		definition = function(x, y, all = FALSE, ...) {
+			if (nrow(x@output) == 0) stop("X output missing!")
+			if (nrow(y@output) == 0) stop("Y output missing!")
+			#test <- intersect(c(colnames(x@output[x@marginal]), colnames(y@output[y@marginal])))
+			temp <- merge(x@output, y@output, all = all, ...)#, by = test)
+			temp <- new("ovariable", output = temp)
+			#temp <- CheckMarginals(temp, deps = list(x,y))
+			return(temp)
+		}
+)
+
+setMethod(f = "merge", 
+		signature = signature(x = "ovariable", y = "numeric"),
+		definition = function(x, y) {
+			y <- new("ovariable", output = data.frame(Result = y))
+			return(callGeneric(x, y))
+		}
+)
+
+setMethod(f = "merge", 
+		signature = signature(x = "numeric", y = "ovariable"),
+		definition = function(x, y) {
+			x <- new("ovariable", output = data.frame(Result = x))
+			return(callGeneric(x, y))
+		}
+)
+
+setMethod(f = "merge", 
+		signature = signature(x = "ovariable", y = "data.frame"),
+		definition = function(x, y) {
+			y <- new("ovariable", output = y)
+			return(callGeneric(x, y))
+		}
+)
+
+setMethod(f = "merge", 
+		signature = signature(x = "data.frame", y = "ovariable"),
+		definition = function(x, y) {
+			y <- new("ovariable", output = x)
+			return(callGeneric(x, y))
+		}
+)
+
+# SETMETHOD PLOT ################ plot diagrams about ovariable data
+
+setMethod(
+		f = "plot",
+		signature = signature(x = "ovariable"),
+		definition = function(x) {
+			plot(
+					x    = x@output[, paste("Source", x@name, sep = "")], 
+					y    = x@output$Result, 
+					xlab = paste("Source", x@name, sep = ""), 
+					ylab = x@output[x@output[, paste("Source", x@name, sep = "")] == "Data", "Unit"][1], 
+					main = x@name
+			)
+		}
+)
+
+# SETMETHOD summary ################### Summary defines how summaries of ovariables are shown.
+setMethod(
+		f = "summary", 
+		signature = signature(object = "ovariable"), 
+		definition = function(object, function_names = character(), marginals = character(), ...) {
+			test <- paste(object@name, "Result", sep = "") %in% colnames(object@output)
+			rescol <- ifelse(test, paste(object@name, "Result", sep = ""), "Result")
+			#object@output <- object@output[ , -grep("Description|Source", colnames(object@output))] # not a necessary line
+			
+			# If no function names are defined then use defaults which depend on whether the data is probabilistic or not
+			if("Iter" %in% colnames(object@output) && !"Iter" %in% marginals) {
+				if (length(function_names)==0) function_names <- c("mean", "sd", "min", "Q0.025", "median", "Q0.975", "max")
+				#object@output <- object@output[object@output$Iter == 1, ]
+			}
+			else {
+				if (length(function_names)==0) function_names <- c("mean")
+			}
+			function_names <- unique(function_names)
+			
+			functions <- list()
+			for(fname in function_names) {
+				functions <- c(functions, get(fname))
+			}
+			
+			# If marginals are not defined the data is assumed probabilistic and the summary to be about the distribution
+			if(length(marginals)==0) {
+				marginals <- colnames(object@output)[object@marginal & colnames(object@output) != "Iter"]
+			}
+			
+			# Apply the selected functions
+			temp <- list()
+			for(fun in functions){
+				temp[[length(temp)+1]] <- tapply(object@output[[rescol]], object@output[marginals], fun)
+			}
+			#out <- data.frame()
+			
+			# Convert results to data.frames and remove useless rows
+			for(i in 1:length(temp)){
+				temp[[i]] <- as.data.frame(as.table(temp[[i]]))
+				temp[[i]] <- temp[[i]][!is.na(temp[[i]][["Freq"]]),]
+				colnames(temp[[i]])[colnames(temp[[i]])=="Freq"] <- function_names[i]
+			}
+			
+			# Merging
+			if(length(temp)>1) {
+				out <- merge(temp[[1]], temp[[2]], all = TRUE)
+				if(length(temp)>2) {
+					for(i in 3:length(temp)) {
+						out <- merge(out, temp[[i]], all = TRUE)
+					}
+				}
+			}
+			else {
+				out <- temp[[1]]
+			}
+			#if(nrow(object@output) > 200) {
+			#	object@output <- object@output[1:200, ]
+			#}
+			#return(object@output)
+			return(out)
+		}
+)
+
+Q0.025 <- function(x){
+	return(quantile(x, probs = 0.025))
+}
+
+Q0.975 <- function(x){
+	return(quantile(x, probs = 0.975))
+}
+
+
+
+####################
+# result
+######################
 ### result returns a vector that contains the result column of the
 ### output of a given ovariable. The vector contains the original column
 ### name as the attribute comment.
@@ -81,136 +354,4 @@ ddata_apply <- function(
 	return(ovariable)
 }
 
-####################
-# Ovariable (constructor)
-#################
-# Constructs an ovariable and optionally downloads ddata and saves the variable for use in other codes on the server. 
-# The point of this constructor is to simplify variable creation: where before many different functions would have to
-# be used to get data into a usable format now a simple call Ovariable(<variable_name>, ddata = <page_ident>, save = TRUE)
-# will do the trick.
-#####################
-Ovariable <- function(
-		name = character(), 
-		data = data.frame(), 
-		formula = function(...){0}, 
-		dependencies = data.frame(), 
-		ddata = character(),
-		subset = NULL,
-		getddata = TRUE, # will dynamic data be immediately be downloaded, as opposed waiting until variable output is Evaluated
-		save = FALSE, # will the variable be saved on the server using objects.put
-		public = TRUE, # will the saved variable be public or private
-		...
-) {
-	if (! is.null(subset)) ddata <- paste(ddata, opbase.sanitize_subset_name(subset), sep='.')
-	
-	out <- new(
-			"ovariable",
-			name = name,
-			data = data,
-			formula = formula,
-			dependencies = dependencies,
-			ddata = ddata
-	)
-	if (getddata) out <- ddata_apply(out)
-	if (save){
-		assign(name, out)
-		if (public) objects.store(list = name, ...) else objects.put(list = name, ...)
-	}
-	return(out)
-}
 
-# MOVARIABLE ########## movariable takes a data.frame, a function, and a list and makes an ovariable out of them. It is a 
-#####subfunction of make.ovariable and prevents infinite recursion of S4 methods.
-movariable <- function(
-	data, 
-	formula, 
-	dependencies,
-	name
-) {
-	output <- interpret(data)
-	out <- new("ovariable", 
-		name         = name,
-		output       = output, 
-		data         = data,
-		marginal     = ifelse(colnames(output) %in% c("Result", "Unit"), FALSE, TRUE), 
-		formula      = formula, 
-		dependencies = dependencies
-	)
-	out <- update(out)
-	return(out)
-}
-
-# SETMETHOD MAKE.OVARIABLE ################################################################################
-########### make.ovariable takes a vector or data.frame and makes an ovariable out of it.
-make.ovariable <- function(
-	data, 
-	formula = function(dependencies){return(0)}, 
-	dependencies = list(x = 0),
-	name = ""
-) {
-	return(movariable(data, formula, dependencies, name))
-}
-
-setGeneric("make.ovariable") # Makes make.ovariable a generic S4 function.
-
-setMethod(
-	f = "make.ovariable",
-	signature = signature(data = "data.frame"),
-	definition = function(
-		data, 
-		formula = function(dependencies){return(0)}, 
-		dependencies = data.frame(),
-		name = ""
-	) {
-cat("Data frame\n")
-		return(movariable(data, formula, dependencies, name))
-	}
-)
-
-setMethod(
-	f = "make.ovariable",
-	signature = signature(data = "vector"),
-	definition = function(
-		data, 
-		formula = function(dependencies){return(0)}, 
-		dependencies = data.frame(),
-		name = ""
-	) {
-cat("Vector\n")
-		data <- data.frame(Result = data)
-		return(make.ovariable(data, formula, dependencies, name))
-	}
-)
-
-setMethod(
-	f = "make.ovariable",
-	signature = signature(data = "list"),
-	definition = function(
-		data, 
-		formula = function(dependencies){return(0)}, 
-		dependencies = data.frame()
-	) {
-		for(i in 1:length(data)) {
-cat("List", i, "\n")
-			data[[i]] <- make.ovariable(data[[i]], formula, dependencies, name = names(data)[[i]])
-		}
-		return(data)
-	}
-)
-
-setMethod(
-	f = "make.ovariable",
-	signature = signature(data = "ovariable"),
-	definition = function(
-		data, 
-		formula = NULL, 
-		dependencies = NULL,
-		name = NULL
-	) {
-cat("ovariable\n")
-		if(is.null(formula))      {formula      <- data@formula}
-		if(is.null(dependencies)) {dependencies <- data@dependencies}
-		if(is.null(formula))      {name         <- data@name}
-		return(movariable(data@data, formula, dependencies, name))
-	}
-)
