@@ -58,6 +58,6 @@ tidy <- function (data, objname = "", idvar = "Obs", direction = "wide", widecol
 	data <- data[,colnames(data) != "Obs"]
 	colnames(data)[colnames(data)=="Result"] <- paste(objname, "Result", sep = "")
 	colnames(data)[colnames(data)=="Unit"] <- paste(objname, "Unit", sep = "")
-	colnames(data)[colnames(data)=="Yksikkö"] <- paste(objname, "Yksikkö", sep = "")
+	colnames(data)[colnames(data)=="Yksikk\u00f6"] <- paste(objname, "Yksikk\u00f6", sep = "")
 	return(data)
 }

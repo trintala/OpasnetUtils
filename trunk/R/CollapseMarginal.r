@@ -5,11 +5,12 @@
 # Also loses all non-marginal columns except the relevant Result
 #####################################
 
-CollapseTableParser <- function(CTable){ # DTable is a data.frame
+CollapseTableParser <- function(CTable){ # CTable is a data.frame
 	for (i in unique(as.character(CTable$Variable))) {
 		temp <- CTable[CTable$Variable == i,] # c("Decision", "Option")]
 		cols <- temp[["Index"]]
-		probs <- strsplit(temp[["Probs"]], ",") 
+		probs <- strsplit(temp[["Probs"]], ",")
+		probs <- lapply(probs, as.numeric)
 		out <- list(cols, probs)
 		assign(paste("Col", i), out, envir = .GlobalEnv)
 	}
@@ -76,6 +77,5 @@ CollapseMarginal <- function(variable, cols, probs = NULL, ...) { # cols is a ch
 			sep = ""
 		)
 	)
-	
 	return(variable)
 }
