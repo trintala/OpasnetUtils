@@ -1,7 +1,18 @@
 import(methods, rjson, RCurl, xtable, reshape2, triangle, httpRequest, digest)
-export(
+exportClasses(
+	ovariable,
+	odecision
+)
+exportMethods(
+	merge,
 	summary,
+	plot
+)
+export(
 	oprint,
+	oapply,
+	orbind,
+	#summary, 
 	op_baseGetData,
 	op_baseGetLocs,
 	op_baseWrite,
@@ -18,49 +29,31 @@ export(
 	objects.put,
 	objects.encode,
 	objects.decode,
-	apply.decisions,
-	decisions.apply,
 	dropall,
-	fetch,
-	init.assessment,
 	interpret,
-	make.oassessment,
-	movariable,
-	orbind,
-	PTable,
 	convert.units,
-	make.ovariable,
-	summary.bring,
 	tidy,
-	fetch,
+	Fetch,
 	Fetch2,
 	EvalOutput,
 	CheckMarginals,
 	CheckInput,
 	ComputeDependencies,
-	merge,
-	plot,
-	print,
-	update,
+	#merge,
+	#plot,
+	#print, #not in methods
 	Ops,
 	Math,
 	CheckDecisions,
 	DecisionTableParser,
-	oapply,
 	CollapseMarginal,
 	CheckCollapse,
 	CollapseTableParser,
 	GIS.Exposure,
-	#earth.radius,
-	#central.angle,
-	#dtheta.dy,
-	#dphi.dx,
-	#LaPerKm,
-	#LoPerKm,
 	GIS.Concentration.matrix,
 	Ovariable,
 	ddata_apply,
 	fillna,
-	result,
-	xtable
+	result#,
+	#xtable
 )

@@ -1,10 +1,11 @@
 Package: OpasnetUtils
 Type: Package
 Title: Utility functions for dealing with data in www.opasnet.org databases.
-Version: 0.1.11
+Version: 1.0.0
 Author: Teemu Rintala, Einari Happonen
 Maintainer: Einari Happonen <einari.happonen@thl.fi>
 Description: Opasnet extensions and wrappers.
-Imports: methods, rjson, RCurl, xtable, reshape2, triangle, httpRequest, digest
-License: CC BY-SA 3.0
+Imports: methods, rjson, RCurl, reshape2, triangle, httpRequest, digest
+Depends: xtable
+License: gpl
 LazyLoad: yes
