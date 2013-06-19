@@ -51,7 +51,7 @@ Column name (index) whose levels should be returned
 %%     ~~Describe \code{include} here~~
 }
   \item{optim_test}{
-%%     ~~Describe \code{optim_test} here~~
+Generally faster download, slower only when downloading large probability distributions from the database.
 }
   \item{input}{
 %%     ~~Describe \code{input} here~~
