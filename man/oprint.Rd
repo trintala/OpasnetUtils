@@ -2,10 +2,10 @@
 \alias{oprint}
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{
-Print ovariables in html format.
+Print ovariables or data frames in html format.
 }
 \description{
-%%  ~~ A concise (1-5 lines) description of what the function does. ~~
+This function uses xtable library to output ovariables or data frames as html formatted tables.
 }
 \usage{
 oprint(x, show_all = FALSE, sortable = TRUE, ...)
@@ -13,83 +13,40 @@ oprint(x, show_all = FALSE, sortable = TRUE, ...)
 %- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{x}{
-%%     ~~Describe \code{x} here~~
+  An ovariable or data frame.
 }
   \item{show_all}{
-%%     ~~Describe \code{show_all} here~~
+  Flag determining whether all data rows should be printed. If FALSE, only thousand first rows get printed (default). 
 }
   \item{sortable}{
-%%     ~~Describe \code{sortable} here~~
+  Flag determining whether output table should be sortable.
 }
   \item{\dots}{
-%%     ~~Describe \code{\dots} here~~
+  Excess arguments will be passed straight to xtable-function.
 }
 }
 \details{
-%%  ~~ If necessary, more details than the description above ~~
+If argument x is \code{\link{ovariable}} type, its output-slot gets printed.
+If output-slot is empty, \code{\link{EvalOutput}}-function will be automatically executed to generate output.
+This function is aimed for being used within Opasnet only!
 }
 \value{
-%%  ~Describe the value returned
-%%  If it is a LIST, use
-%%  \item{comp1 }{Description of 'comp1'}
-%%  \item{comp2 }{Description of 'comp2'}
-%% ...
+  Input data as html formatted table string
 }
 \references{
-%% ~put references to the literature/web site here ~
+  \url{http://cran.r-project.org/web/packages/xtable/index.html}
 }
 \author{
-%%  ~~who you are~~
-}
-\note{
-%%  ~~further notes~~
+  E. Happonen \email{einari.happonen@thl.fi}
 }
 
 %% ~Make other sections like Warning with \section{Warning }{....} ~
 
 \seealso{
-%% ~~objects to See Also as \code{\link{help}}, ~~~
+  \url{http://en.opasnet.org/}
 }
 \examples{
-##---- Should be DIRECTLY executable !! ----
-##-- ==>  Define data, use random,
-##--	or do  help(data=index)  for the standard data sets.
-
-## The function is currently defined as
-structure(function (x, show_all = FALSE, sortable = TRUE, ...) 
-standardGeneric("oprint"), generic = structure("oprint", package = "OpasnetUtils"), package = "OpasnetUtils", group = list(), valueClass = character(0), signature = c("x", 
-"show_all", "sortable"), default = structure(function (x, show_all = FALSE, 
-    sortable = TRUE, ...) 
-{
-    if (nrow(x) > 1000 && !show_all) {
-        print(paste("Showing first 1000 rows out of ", nrow(x), 
-            ". Set show_all=TRUE to show all rows.", sep = ""))
-        x = x[1:1000, ]
-    }
-    if (sortable) {
-        print(xtable(x, ...), type = "html", html.table.attributes = "class='wikitable sortable'")
-    }
-    else {
-        print(xtable(x, ...), type = "html", html.table.attributes = "class='wikitable'")
-    }
-  }, target = structure("ANY", class = structure("signature", package = "methods"), .Names = "x", package = "methods"), defined = structure("ANY", class = structure("signature", package = "methods"), .Names = "x", package = "methods"), generic = structure("oprint", package = "OpasnetUtils"), class = structure("derivedDefaultMethod", package = "methods")), skeleton = (structure(function (x, 
-    show_all = FALSE, sortable = TRUE, ...) 
-{
-    if (nrow(x) > 1000 && !show_all) {
-        print(paste("Showing first 1000 rows out of ", nrow(x), 
-            ". Set show_all=TRUE to show all rows.", sep = ""))
-        x = x[1:1000, ]
-    }
-    if (sortable) {
-        print(xtable(x, ...), type = "html", html.table.attributes = "class='wikitable sortable'")
-    }
-    else {
-        print(xtable(x, ...), type = "html", html.table.attributes = "class='wikitable'")
-    }
-  }, target = structure("ANY", class = structure("signature", package = "methods"), .Names = "x", package = "methods"), defined = structure("ANY", class = structure("signature", package = "methods"), .Names = "x", package = "methods"), generic = structure("oprint", package = "OpasnetUtils"), class = structure("derivedDefaultMethod", package = "methods")))(x, 
-    show_all, sortable, ...), class = structure("standardGeneric", package = "methods"))
+library(OpasnetUtils)
+x <- data.frame(c(1,2),c(2,4))
+oprint(x)
 }
-% Add one or more standard keywords, see file 'KEYWORDS' in the
-% R documentation directory.
-\keyword{ ~kwd1 }
-\keyword{ ~kwd2 }% __ONLY ONE__ keyword per line
