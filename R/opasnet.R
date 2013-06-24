@@ -2,7 +2,7 @@
 #
 # filename - Name of the file
 # wiki - Source Wiki: opasnet_en (default), opasnet_fi, heande (.htaccess protected)
-# unzip - Set true if file is compressed with zip
+# unzip - File name in package (if compressed)
 #
 # Returns file contents (loaded using curl)
 
@@ -14,7 +14,7 @@ opasnet.data <- function(filename,wiki='', unzip='') {
 	
 	if (unzip != '')
 	{
-		f <- paste('/tmp/rtools_',as.numeric(now),'.zip',sep='')
+		f <- tempfile(pattern = 'opasnet.data.', fileext = '.zip')
 		bin <- getBinaryURL(file)
 		con <- file(f, open = "wb")
 		writeBin(bin, con)
@@ -32,7 +32,7 @@ opasnet.data <- function(filename,wiki='', unzip='') {
 #
 # filename - Name of the file
 # wiki - Source Wiki: opasnet_en (default), opasnet_fi, heande (.htaccess protected)
-# unzip - Set true if file is compressed with zip
+# unzip - File name in package (if compressed)
 #
 # Returns file contents in table (loaded using curl)
 
@@ -44,7 +44,7 @@ opasnet.csv <- function(filename, wiki='', unzip = '', ...) {
 
 	if (unzip != '')
 	{
-		f <- paste('/tmp/rtools_',as.numeric(now),'.zip',sep='')
+		f <- tempfile(pattern = 'opasnet.csv.', fileext = '.zip')
 		bin <- getBinaryURL(file)
 		con <- file(f, open = "wb")
 		writeBin(bin, con)
