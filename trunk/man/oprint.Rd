@@ -34,7 +34,7 @@ This function is aimed for being used within Opasnet only!
   Input data as html formatted table string
 }
 \references{
-  \url{http://cran.r-project.org/web/packages/xtable/index.html}
+  \url{http://en.opasnet.org/}
 }
 \author{
   E. Happonen \email{einari.happonen@thl.fi}
@@ -43,7 +43,7 @@ This function is aimed for being used within Opasnet only!
 %% ~Make other sections like Warning with \section{Warning }{....} ~
 
 \seealso{
-  \url{http://en.opasnet.org/}
+  \code{\link[xtable]{xtable}}
 }
 \examples{
 library(OpasnetUtils)

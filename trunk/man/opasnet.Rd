@@ -6,7 +6,7 @@
 Importing files from Opasnet
 }
 \description{
-%%  ~~ A concise (1-5 lines) description of what the function does. ~~
+Functions for downloading files from Opasnet Media Wiki environments.
 }
 \usage{
 opasnet.data(filename, wiki = "", unzip = "")
@@ -15,47 +15,41 @@ opasnet.csv(filename, wiki = "", unzip = "", ...)
 %- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{filename}{
-%%     ~~Describe \code{filename} here~~
+  Path to file in Opasnet after the "images/" part.
 }
   \item{wiki}{
-%%     ~~Describe \code{wiki} here~~
+  Name of the Opasnet wiki: "opasnet_en" for en.opasnet.org, "opasnet_fi" for fi.opasnet.org or "heande" for heande.opasnet.org (accessible only within Heande wiki).
 }
   \item{unzip}{
-%%     ~~Describe \code{unzip} here~~
+  Name of the file in the package (if compressed using zip). 
 }
   \item{\dots}{
-%%     ~~Describe \code{unzip} here~~
+  Excess arguments will be passed to  \code{read.table} function when downloading csv-file.
 }
 }
 \details{
-%%  ~~ If necessary, more details than the description above ~~
+These functions make it easy to download Opasnet files for being used in R. Required path (filename) for file must be resolved
+using the corresponding Media Wiki. Big data files should always be compressed before uploading to Opasnet. Using the
+\code{unzip}-argument makes it easy to download and directly use any zip-compressed files.
 }
 \value{
-%%  ~Describe the value returned
-%%  If it is a LIST, use
-%%  \item{comp1 }{Description of 'comp1'}
-%%  \item{comp2 }{Description of 'comp2'}
-%% ...
+  \code{opasnet.data} returns the file data as is. \code{opasnet.csv} returns \code{data.frame} parsed from csv file.
 }
 \references{
-%% ~put references to the literature/web site here ~
+  \url{http://en.opasnet.org/}
 }
 \author{
-%%  ~~who you are~~
-}
-\note{
-%%  ~~further notes~~
+  E. Happonen \email{einari.happonen@thl.fi}
 }
 
 %% ~Make other sections like Warning with \section{Warning }{....} ~
 
 \seealso{
-%% ~~objects to See Also as \code{\link{help}}, ~~~
+  \code{\link[utils]{read.table}}
 }
 \examples{
-#
+library(OpasnetUtils)
+opasnet.csv("4/49/Test.zip", wiki = "opasnet_fi", unzip = 'ejpop.csv', sep=';')
+opasnet.data("c/cc/Test_bugs_model.txt", wiki = "opasnet_en")
 }
-% Add one or more standard keywords, see file 'KEYWORDS' in the
-% R documentation directory.
-\keyword{ ~kwd1 }
-\keyword{ ~kwd2 }% __ONLY ONE__ keyword per line
+
