@@ -29,12 +29,12 @@ oprint(x, show_all = FALSE, sortable = TRUE, ...)
 If argument x is \code{\link{ovariable}} type, its output-slot gets printed.
 If output-slot is empty, \code{\link{EvalOutput}}-function will be automatically executed to generate output.
 This function is aimed for being used within Opasnet only!
+
+See also:
+\url{http://en.opasnet.org/}
 }
 \value{
-  Input data as html formatted table string
-}
-\references{
-  \url{http://en.opasnet.org/}
+  Input data as html formatted table string.
 }
 \author{
   E. Happonen \email{einari.happonen@thl.fi}

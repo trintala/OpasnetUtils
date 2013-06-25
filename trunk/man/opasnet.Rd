@@ -31,19 +31,17 @@ opasnet.csv(filename, wiki = "", unzip = "", ...)
 These functions make it easy to download Opasnet files for being used in R. Required path (filename) for file must be resolved
 using the corresponding Media Wiki. Big data files should always be compressed before uploading to Opasnet. Using the
 \code{unzip}-argument makes it easy to download and directly use any zip-compressed files.
+
+See also:
+\url{http://en.opasnet.org/}
 }
 \value{
-  \code{opasnet.data} returns the file data as is. \code{opasnet.csv} returns \code{data.frame} parsed from csv file.
-}
-\references{
-  \url{http://en.opasnet.org/}
+  \item{opasnet.data}{Returns the file data as is.}
+  \item{opasnet.csv}{Returns \code{data.frame} parsed from csv file.}
 }
 \author{
   E. Happonen \email{einari.happonen@thl.fi}
 }
-
-%% ~Make other sections like Warning with \section{Warning }{....} ~
-
 \seealso{
   \code{\link[utils]{read.table}}
 }
