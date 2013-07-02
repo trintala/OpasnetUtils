@@ -7,5 +7,5 @@ Maintainer: Einari Happonen <einari.happonen@thl.fi>
 Description: Opasnet extensions and wrappers.
 Imports: methods, rjson, RCurl, reshape2, triangle, httpRequest, digest
 Depends: xtable
-License: gpl
+License: GPL-3
 LazyLoad: yes
