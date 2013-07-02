@@ -1,64 +1,43 @@
 \name{dropall}
 \alias{dropall}
 \title{
-Drop unused factor levels in data.frames
+Dropall
 }
 \description{
-%%  ~~ A concise (1-5 lines) description of what the function does. ~~
+Drops unused factor levels in data.frames
 }
 \usage{
 dropall(x)
 }
-%- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{x}{
-%%     ~~Describe \code{x} here~~
+  a data.frame
 }
 }
 \details{
-%%  ~~ If necessary, more details than the description above ~~
+This function makes sure that the factor levels in a data.frame do not contain entries that have already been removed from the factor 
+itself. 
+
+See also:
+\url{http://en.opasnet.org/}
 }
 \value{
-%%  ~Describe the value returned
-%%  If it is a LIST, use
-%%  \item{comp1 }{Description of 'comp1'}
-%%  \item{comp2 }{Description of 'comp2'}
-%% ...
+data.frame
 }
-\references{
-%% ~put references to the literature/web site here ~
-}
+
 \author{
-%%  ~~who you are~~
-}
-\note{
-%%  ~~further notes~~
+J. Tuomisto \email{jouni.tuomisto@thl.fi}
 }
 
-%% ~Make other sections like Warning with \section{Warning }{....} ~
-
-\seealso{
-%% ~~objects to See Also as \code{\link{help}}, ~~~
-}
 \examples{
-##---- Should be DIRECTLY executable !! ----
-##-- ==>  Define data, use random,
-##--	or do  help(data=index)  for the standard data sets.
+a <- data.frame(A = c("a", "b"), B = c(1,1))
+levels(a[[1]])
 
-## The function is currently defined as
-function (x) 
-{
-    isFac <- NULL
-    for (i in 1:dim(x)[2]) {
-        isFac[i] = is.factor(x[, i])
-    }
-    for (i in 1:length(isFac)) {
-        x[, i] <- x[, i][, drop = TRUE]
-    }
-    return(x)
-  }
+a <- a[-2 ,]
+levels(a[[1]])
+a[[1]]
+
+a <- dropall(a)
+levels(a[[1]])
+a[[1]]
 }
-% Add one or more standard keywords, see file 'KEYWORDS' in the
-% R documentation directory.
-\keyword{ ~kwd1 }
-\keyword{ ~kwd2 }% __ONLY ONE__ keyword per line

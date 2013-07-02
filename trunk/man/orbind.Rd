@@ -21,6 +21,9 @@ orbind(x, y)
 }
 \details{
 %%  ~~ If necessary, more details than the description above ~~
+
+See also:
+\url{http://en.opasnet.org/}
 }
 \value{
 %%  ~Describe the value returned

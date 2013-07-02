@@ -27,15 +27,15 @@ CollapseMarginal(variable, cols, probs = NULL, ...)
 Samples over a fully defined column index (marginal) treating it as a nuisance parameter. 
 Increases the joint distribution uncertainty (loses information). Used to streamline heavy 
 models (output has fewer rows of data). 
+
+See also:
+\url{http://en.opasnet.org/}
 }
 \value{
   ovariable
 }
 \author{
   T. Rintala \email{teemu.rintala.a@gmail.com}
-}
-\seealso{
-  \url{http://en.opasnet.org/}
 }
 \examples{
 #

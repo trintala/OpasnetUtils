@@ -32,15 +32,15 @@ upstream variables. It is automatically called by \code{\link{EvalOutput}}, but 
 to avoid applying decisions, inputs and optimizations twice in old code the function does nothing by default. This is no 
 problem since users should not be calling this function at all. 
 \code{ComputeDependencies} also does most of the exception handling in the recursive ovariable model.
+
+See also:
+\url{http://en.opasnet.org/}
 }
 \value{
 No return value
 }
 \author{
 T. Rintala \email{teemu.rintala.a@gmail.com}
-}
-\seealso{
-  \url{http://en.opasnet.org/}
 }
 \examples{
 #

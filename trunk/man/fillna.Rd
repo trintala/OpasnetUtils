@@ -4,67 +4,34 @@
 Interpreting empty locations in indices
 }
 \description{
-%%  ~~ A concise (1-5 lines) description of what the function does. ~~
+Copies result rows that have NAs as index values and replaces the index value with all available values of that index.
 }
 \usage{
 fillna(object, marginals)
 }
-%- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{object}{
-%%     ~~Describe \code{object} here~~
+  a \code{data.frame} to be filled
 }
   \item{marginals}{
-%%     ~~Describe \code{marginals} here~~
+  \code{integer}, positions of columns whose locations contain NAs that should be duplicated
 }
 }
 \details{
-%%  ~~ If necessary, more details than the description above ~~
+Runs \code{\link{dropall}} before duplication to avoid unnecessary levels. 
+
+See also:
+\url{http://en.opasnet.org/}
 }
 \value{
-%%  ~Describe the value returned
-%%  If it is a LIST, use
-%%  \item{comp1 }{Description of 'comp1'}
-%%  \item{comp2 }{Description of 'comp2'}
-%% ...
+Returns a \code{data.frame}
 }
-\references{
-%% ~put references to the literature/web site here ~
-}
+
 \author{
-%%  ~~who you are~~
-}
-\note{
-%%  ~~further notes~~
+J. Tuomisto \email{jouni.tuomisto@thl.fi}
 }
 
-%% ~Make other sections like Warning with \section{Warning }{....} ~
-
-\seealso{
-%% ~~objects to See Also as \code{\link{help}}, ~~~
-}
 \examples{
-##---- Should be DIRECTLY executable !! ----
-##-- ==>  Define data, use random,
-##--	or do  help(data=index)  for the standard data sets.
-
-## The function is currently defined as
-function (object, marginals) 
-{
-    a <- dropall(object)
-    for (i in marginals) {
-        a[[i]] <- as.factor(a[[i]])
-        a1 <- a[!is.na(a[[i]]), ]
-        a2 <- a[is.na(a[[i]]), ][-i]
-        addition <- data.frame(A = levels(a[[i]]))
-        colnames(addition) <- colnames(a)[i]
-        a2 <- merge(addition, a2)
-        a <- rbind(a1, a2)
-    }
-    return(a)
-  }
+a <- data.frame(A = c("a", "b", NA), B = c(1, 2, 3))
+fillna(a, 1)
 }
-% Add one or more standard keywords, see file 'KEYWORDS' in the
-% R documentation directory.
-\keyword{ ~kwd1 }
-\keyword{ ~kwd2 }% __ONLY ONE__ keyword per line

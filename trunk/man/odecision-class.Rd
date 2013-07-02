@@ -2,10 +2,11 @@
 \Rdversion{1.1}
 \docType{class}
 \alias{odecision-class}
+\alias{odecision}
 
 \title{Class \code{"odecision"}}
 \description{
-Definition container for \code{\link{CheckDevision}}
+Definition container for \code{\link{CheckDecisions}}
 }
 \section{Objects from the Class}{
 Objects can be created by calls of the form \code{new("odecision", ...)}.
@@ -28,10 +29,9 @@ No methods defined with class "odecision" in the signature.
 T. Rintala \email{teemu.rintala.a@gmail.com}
 }
 \note{
-%%  ~~further notes~~
+See also:
+\url{http://en.opasnet.org/}
 }
-
-%% ~Make other sections like Warning with \section{Warning }{....} ~
 
 \seealso{
 %%  ~~objects to See Also as \code{\link{~~fun~~}}, ~~~

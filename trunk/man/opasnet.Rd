@@ -12,7 +12,6 @@ Functions for downloading files from Opasnet Media Wiki environments.
 opasnet.data(filename, wiki = "", unzip = "")
 opasnet.csv(filename, wiki = "", unzip = "", ...)
 }
-%- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{filename}{
   Path to file in Opasnet after the "images/" part.

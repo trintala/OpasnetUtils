@@ -123,7 +123,5 @@ opbase.data('op_en2949', subset='2012', include = list('KUNTA' = 322), range = l
 input <- matrix(c('male', 12334435.123, 22, 'female', 234345.23423, 33), ncol=3, byrow=TRUE)
 colnames(input) <- c("Sex","Some number","result")
 input <- as.data.frame(input)
-res <- opbase.upload(input, ident="op_en1390", name = "Sandbox TEST", index_types = c('entity','number'), unit = "Age", who='Tester person')
-
-
+#res <- opbase.upload(input, ident="op_en1390", name = "Sandbox TEST", index_types = c('entity','number'), unit = "Age", who='Tester person')
 }

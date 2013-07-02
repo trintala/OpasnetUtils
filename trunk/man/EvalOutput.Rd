@@ -4,144 +4,49 @@
 Evalaute ovariable output
 }
 \description{
-%%  ~~ A concise (1-5 lines) description of what the function does. ~~
+Evaluate the output slot of an \code{\link{ovariable}}, this usually means recursively evaluating all dependent variables as well.
 }
 \usage{
 EvalOutput(variable, fillna = FALSE, indent = 0, verbose = FALSE, ...)
 }
-%- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{variable}{
-%%     ~~Describe \code{variable} here~~
+  an \code{\link{ovariable}}
 }
   \item{fillna}{
-%%     ~~Describe \code{fillna} here~~
+  TRUE to attempt \code{\link{fillna}} at the end
 }
   \item{indent}{
-%%     ~~Describe \code{indent} here~~
+  internal integer argument used in verbose printing
 }
   \item{verbose}{
-%%     ~~Describe \code{verbose} here~~
+  TRUE to print status messages while processing outputs and various checks
 }
   \item{\dots}{
-%%     ~~Describe \code{\dots} here~~
+  arguments are passed on to ovariable formulas and to dependent EvalOutput calls (recursivity), number of iterations (N) is commonly set here
 }
 }
 \details{
-%%  ~~ If necessary, more details than the description above ~~
+\code{EvalOutput} automates most of the other features related to \code{ovariable} handling. It runs \code{\link{ComputeDependencies}} first, 
+produces a \code{data.frame} by combining the return values from \code{\link{interpret}}ing the data slot and running the formula slot function, 
+makes a "Source" -column to distinguish between the two "Results", 
+and lastly \code{\link{CheckMarginals}} is run on the variable (optionally also \code{fillna}). 
+
+Since \code{EvalOutput} is usually run on the end node of a model, there should not be inputs or decisions hence they are not checked for. 
+In contrast \code{ComputeDependencies} runs all \code{Check}s besides \code{CheckMarginals}.
+
+See also:
+\url{http://en.opasnet.org/}
 }
 \value{
-%%  ~Describe the value returned
-%%  If it is a LIST, use
-%%  \item{comp1 }{Description of 'comp1'}
-%%  \item{comp2 }{Description of 'comp2'}
-%% ...
-}
-\references{
-%% ~put references to the literature/web site here ~
+Returns the input ovariable with the output slot (re)defined.
 }
 \author{
 T. Rintala \email{teemu.rintala.a@gmail.com}
 }
-\note{
-%%  ~~further notes~~
-}
 
-%% ~Make other sections like Warning with \section{Warning }{....} ~
-
-\seealso{
-%% ~~objects to See Also as \code{\link{help}}, ~~~
-}
 \examples{
-##---- Should be DIRECTLY executable !! ----
-##-- ==>  Define data, use random,
-##--	or do  help(data=index)  for the standard data sets.
-
-## The function is currently defined as
-function (variable, fillna = FALSE, indent = 0, verbose = FALSE, 
-    ...) 
-{
-    if (verbose) 
-        cat(rep("-", indent), "Evaluating", variable@name, "...")
-    ComputeDependencies(variable@dependencies, fillna = fillna, 
-        indent = indent + 1, verbose = verbose, new_code = TRUE, 
-        ...)
-    variable <- ddata_apply(variable, ...)
-    if (nrow(variable@data) > 0) {
-        colnames(variable@data)[colnames(variable@data) \%in\% 
-            "Result"] <- paste(variable@name, "Result", sep = "")
-        rescol <- paste(variable@name, "Result", sep = "")
-        if (!is.numeric(variable@data[[rescol]]) & !is.null(variable@data[[rescol]])) {
-            a <- interpret(variable@data, rescol = rescol, ...)
-        }
-        else a <- variable@data
-    }
-    else a <- variable@data
-    b <- variable@formula(variable@dependencies, indent = indent, 
-        verbose = verbose, ...)
-    tempmarginals <- character()
-    if (class(b)[1] == "ovariable") {
-        if (length(b@marginal) > 0) {
-            tempmarginals <- c(tempmarginals, colnames(b@output)[b@marginal], 
-                paste(variable@name, "Source", sep = ""))
-        }
-        b <- b@output
-    }
-    if (is.numeric(b) & nrow(a) == 0) {
-        if (verbose) 
-            cat("\n")
-        stop(paste("No proper data nor formula defined for ", 
-            variable@name, "! (Numeric formula return and 0 rows data)\n", 
-            sep = ""))
-    }
-    if (is.numeric(b)) {
-        colnames(a)[colnames(a) == rescol] <- paste(variable@name, 
-            "Result", sep = "")
-        a[, paste(variable@name, "Source", sep = "")] <- "Data"
-        variable@output <- a
-        if (verbose) 
-            cat(" done!\n")
-    }
-    else if (nrow(a) == 0) {
-        colnames(b)[colnames(b) \%in\% "Result"] <- paste(variable@name, 
-            "Result", sep = "")
-        b[, paste(variable@name, "Source", sep = "")] <- "Formula"
-        variable@output <- b
-        if (length(tempmarginals) > 1) 
-            variable@marginal <- colnames(variable@output) \%in\% 
-                tempmarginals
-        if (verbose) 
-            cat(rep("-", indent), " done!\n")
-    }
-    else {
-        colnames(a)[colnames(a) == rescol] <- "FromData"
-        colnames(b)[colnames(b) \%in\% c(paste(variable@name, "Result", 
-            sep = ""), "Result")] <- "FromFormula"
-        temp <- melt(merge(a, b, all = TRUE, ...), measure.vars = c("FromData", 
-            "FromFormula"), variable.name = paste(variable@name, 
-            "Source", sep = ""), value.name = paste(variable@name, 
-            "Result", sep = ""), ...)
-        levels(temp[[paste(variable@name, "Source", sep = "")]]) <- gsub("^From", 
-            "", levels(temp[[paste(variable@name, "Source", sep = "")]]))
-        variable@output <- temp
-        if (length(tempmarginals) > 1) 
-            variable@marginal <- colnames(variable@output) \%in\% 
-                tempmarginals
-        if (verbose) 
-            cat(rep("-", indent), " done!\n")
-    }
-    variable <- CheckMarginals(variable, indent = indent, verbose = verbose, 
-        ...)
-    if (fillna) {
-        ret <- tryCatch(variable@output <- fillna(variable@output, 
-            1:ncol(variable@output)[variable@marginal]), error = function(e) return(NULL))
-        if (is.null(ret)) 
-            warning("Unable to FillNA.")
-    }
-    return(variable)
-  }
+a <- Ovariable("a", data.frame(A = c("a", "b"), Result = c("1-2", "1-4")))
+a <- EvalOutput(a, N = 10)
+a@output
 }
-% Add one or more standard keywords, see file 'KEYWORDS' in the
-% R documentation directory.
-\keyword{ ~kwd1 }
-\keyword{ ~kwd2 }% __ONLY ONE__ keyword per line

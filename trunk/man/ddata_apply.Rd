@@ -24,7 +24,10 @@ ddata_apply(ovariable, ddata_tidy = TRUE, force_ddata = FALSE, ...)
 }
 }
 \details{
-  This function is mostly used internally
+This function is mostly used internally
+  
+See also:
+\url{http://en.opasnet.org/}
 }
 \value{
 Returns the input ovariable, with the data slot defined (if ddata is available or it is already defined).

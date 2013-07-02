@@ -16,15 +16,15 @@ CollapseTableParser(CTable)
 }
 \details{
 Used in the Opasnet modeling environment an endpoint node to produce multiple model relevant Collapse orders. 
+
+See also:
+\url{http://en.opasnet.org/}
 }
 \value{
 No return value
 }
 \author{
 T. Rintala \email{teemu.rintala.a@gmail.com}
-}
-\seealso{
-  \url{http://en.opasnet.org/}
 }
 \examples{
 #

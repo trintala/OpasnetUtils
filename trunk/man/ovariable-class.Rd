@@ -2,14 +2,13 @@
 \Rdversion{1.1}
 \docType{class}
 \alias{ovariable-class}
-\alias{convert.units,ovariable-method}
+\alias{ovariable}
 \alias{Math,ovariable-method}
 \alias{merge,data.frame,ovariable-method}
 \alias{merge,numeric,ovariable-method}
 \alias{merge,ovariable,data.frame-method}
 \alias{merge,ovariable,numeric-method}
 \alias{merge,ovariable,ovariable-method}
-\alias{oprint,ovariable-method}
 \alias{Ops,numeric,ovariable-method}
 \alias{Ops,ovariable,numeric-method}
 \alias{Ops,ovariable,ovariable-method}
@@ -64,7 +63,9 @@ T. Rintala \email{teemu.rintala.a@gmail.com}
 %%  ~~further notes~~
 }
 
-%% ~Make other sections like Warning with \section{Warning }{....} ~
+\section{Website}{
+\url{http://en.opasnet.org/}
+}
 
 \seealso{
 %%  ~~objects to See Also as \code{\link{~~fun~~}}, ~~~

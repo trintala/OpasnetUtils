@@ -12,7 +12,7 @@ Package: \tab OpasnetUtils\cr
 Type: \tab Package\cr
 Version: \tab 1.0.0\cr
 Imports: \tab methods, rjson, RCurl, xtable, reshape2, triangle, httpRequest, digest\cr
-License: \tab gpl\cr
+License: \tab GPL-3\cr
 LazyLoad: \tab yes\cr
 Date: \tab 2013-06-xx\cr
 }
@@ -26,7 +26,7 @@ OpasnetUtils-package    Open Assessors' Network modeling platform
   The operating principle is maximum modularity. Variables are defined publicly on wiki pages using wiki inputs/tables, our database 
   and R code. Using any predefined variable is very easy: fetch the variable from our servers (or your own) and evaluate it. Actual 
   evaluation of variables is done lazily by default: when the evaluation of a variable is explicitly called, all variables it is dependent 
-  on are evaluated recursively. There are also a few impact assessment tools like GIS in the package. 
+  on are evaluated recursively. There are also a few impact assessment tools like a few GIS functions in the package. 
   To learn more go to \url{http://en.opasnet.org/w/Opasnet_wiki-R_modeling_platform}.
 }
 
@@ -39,6 +39,6 @@ Maintainer: E. Happonen <einari.happonen@thl.fi>
 
 \keyword{ package }
 
-\seealso{
+\section{Website}{
   \url{http://en.opasnet.org/}
 }

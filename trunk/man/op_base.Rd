@@ -26,6 +26,9 @@ op_baseWrite(dsn, input, ...)
 }
 \details{
   Obsolete.
+  
+  See also:
+  \url{http://en.opasnet.org/w/Opasnet_Base_Connection_for_R}
 }
 \value{
   \item{op_baseGetData}{Returns data as a data.frame.}

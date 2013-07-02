@@ -1,6 +1,6 @@
 \name{oprint}
 \alias{oprint}
-%- Also NEED an '\alias' for EACH other topic documented here.
+\alias{oprint,ovariable-method}
 \title{
 Print ovariables or data frames in html format.
 }
@@ -10,7 +10,7 @@ This function uses xtable library to output ovariables or data frames as html fo
 \usage{
 oprint(x, show_all = FALSE, sortable = TRUE, ...)
 }
-%- maybe also 'usage' for other objects documented here.
+
 \arguments{
   \item{x}{
   An ovariable or data frame.
@@ -39,8 +39,6 @@ See also:
 \author{
   E. Happonen \email{einari.happonen@thl.fi}
 }
-
-%% ~Make other sections like Warning with \section{Warning }{....} ~
 
 \seealso{
   \code{\link[xtable]{xtable}}

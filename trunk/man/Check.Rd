@@ -48,18 +48,17 @@ Specifically they check objects in \code{.GlobalEnv} with prefixes ("Col", "Dec"
 \code{\link{CollapseMarginal}} collapses marginals by applying sums, means or samples. Also loses all non-marginal columns except 
 the relevant Result. It is mainly used to streamline models by reducing rows in data. 
 
-CheckDecisions checks for and applies decisions for a variable if such exist. 
-The function makes use of a preset of 
-decision effects which match a given string constant (i.e. "Multiply"). 
-Conditions: Constructing a list of logical vectors which correspond to those rows of our new data.frame that we want to apply 
-effects on. This will be done either by the user (as functions that take the data.frame as input and return a logical vector) 
-while defining a custom decision or by parsing the decision table. 
+CheckDecisions checks for and applies decisions on variables. 
+The function makes use of the \code{\link{odecision-class}}, which specifies the target cells as well as the effect. Odecisions are 
+most often produced by \code{\link{DecisionTableParser}}.
 
-CheckInput checks and uses outside input (user inputs in models or decision variables)
+CheckInput checks and uses outside input (user inputs in models or decision variables). Input should be in ovariable format. 
 
 CheckMarginals returns an ovariable with a marginal derived from the data and upstream variable marginals. 
 Assumes that all depended upon variables are in memory, as should be the case.
 
+See also:
+\url{http://en.opasnet.org/}
 }
 \value{
   \code{\link{ovariable}}
@@ -68,11 +67,6 @@ Assumes that all depended upon variables are in memory, as should be the case.
   T. Rintala \email{teemu.rintala.a@gmail.com}
 }
 
-%% ~Make other sections like Warning with \section{Warning }{....} ~
-
-\seealso{
-  \url{http://en.opasnet.org/}
-}
 \examples{
 #
 }
