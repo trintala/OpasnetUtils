@@ -1,5 +1,5 @@
 # EvalOutput #################### evaluates the output slot of ovariables
-##### Marginals should be also checked and updated here or elsewhere
+#### Runs CheckMarginals as well
 
 EvalOutput <- function(variable, fillna = FALSE, indent = 0, verbose = FALSE, ...) { # ... for e.g na.rm 
 	if (verbose) cat(rep("-", indent), "Evaluating", variable@name, "...")

@@ -30,10 +30,14 @@ CheckInput <- function(variable, substitute = FALSE, indent = 0, verbose = TRUE,
 			return(inputvar)
 		}
 		#variable@output[variable@output$Source,]
+		
+		# Make list of sources for this variable
 		j <- unique(as.character(variable@output[[paste(variable@name, "Source", sep = "")]]))
-		temp <- variable@output[
-			variable@output[,paste(variable@name, "Source", sep = "")] == j[1], 
-		]
+		
+		# Make a temporary data.frame containing the first source
+		temp <- variable@output[variable@output[,paste(variable@name, "Source", sep = "")] == j[1], ]
+		
+		# Crop the "VariableSource" column out
 		temp <- temp[!colnames(variable@output) %in% paste(variable@name, "Source", sep = "")]
 		colnames(temp)[colnames(temp) %in% paste(c(variable@name, ""), "Result", sep = "")] <- j[1]
 		for (i in j[!j == j[1]]) {
