@@ -1,5 +1,7 @@
 \name{convert.units}
 \alias{convert.units}
+\alias{convert.units,ovariable-method}
+\alias{convert.units,data.frame-method}
 \title{
 Converting units
 }
@@ -22,17 +24,17 @@ convert.units(x, tounit = c("kg", "s", "m", "m3", "J", "W", "A", "V", "C", "N", 
 }
 \details{
 Units use the table in \url{en.opasnet.org/w/Unit_conversions} for their conversions, so the units used have to be specified there.
+
+See also:
+\url{http://en.opasnet.org/}
 }
 \value{
 data.frame
 }
 \author{
-J. Tuomisto
+J. Tuomisto \email{jouni.tuomisto@thl.fi}
 }
 
-\seealso{
-  \url{http://en.opasnet.org/}
-}
 \examples{
 #
 }
