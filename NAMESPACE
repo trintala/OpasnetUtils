@@ -1,13 +1,8 @@
 import(methods, rjson, RCurl, xtable, reshape2, triangle, httpRequest, digest)
-exportClasses(
-	ovariable,
-	odecision
-)
-exportMethods(
-	merge,
-	summary,
-	plot
-)
+#importFrom("base", merge, summary)
+#importFrom("graphics", plot)
+exportClasses(ovariable, odecision)
+exportMethods(merge, summary, plot)
 export(
 	oprint,
 	oapply,
