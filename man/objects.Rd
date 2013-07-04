@@ -10,7 +10,7 @@
 Server side shared R objects
 }
 \description{
-Fetches R objects from Opasnet. Including most \code{\link{ovariable}}s.
+Library for using R objects (like \code{\link{ovariable}}s.) stored in Opasnet R server. Also includes basic encryption and decryption functionality for R objects.
 }
 \usage{
 objects.encode(obj, key)
@@ -23,83 +23,83 @@ objects.store(..., list = character(), verbose = FALSE)
 %- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{obj}{
-%%     ~~Describe \code{obj} here~~
+ Any R object.
 }
   \item{eobj}{
-%%     ~~Describe \code{eobj} here~~
+  An encoded object returned by \code{objects.encode} function.
 }
   \item{key}{
-%%     ~~Describe \code{key} here~~
+  Key string to encode or decode objects. Must be 16,32 or 64 characters in length.
 }
   \item{token}{
-%%     ~~Describe \code{token} here~~
+  R-tools run token string to identify a stored object on Opasnet R server.
 }
   \item{page_ident}{
-%%     ~~Describe \code{page_ident} here~~
+  Opasnet Media Wiki page identifier (e.g. op_en1390).
 }
   \item{code_name}{
-%%     ~~Describe \code{code_name} here~~
+  Name of the R code block in Opasnet Media Wiki (the \code{name} argument in \code{rcode} tag).
 }
   \item{verbose}{
-%%     ~~Describe \code{verbose} here~~
+  Flag to set more verbose output (for debug purposes).
 }
   \item{\dots}{
-%%     ~~Describe \code{\dots} here~~
+  Objects will be passed straight to R core \code{save} function.
 }
   \item{list}{
-%%     ~~Describe \code{list} here~~
+  List will be passed straight to R core \code{save} function.
 }
-
 }
 \details{
-%%  ~~ If necessary, more details than the description above ~~
+The main purpose of this library is to provide means to store R objects to Opasnet R server for later use. This is specifically useful
+and embraced in Opasnet R ecosystem where this library is mainly used for storing and fetching \code{\link{ovariable}}s. Storing objects
+is currently only possible within Opasnet Media Wiki environments (using R code inside \code{rcode} tags), but reading objects stored
+by running code within public wikis is also possible from local R-installation.
+
+Besides object storing, this library provides basic functionality to encode and decode R objects. This is done by using R base serialization functions
+and \code{digest} library. Objects given to \code{objects.encode} will be encoded by using \code{AES} function in "ECB" mode.
+Longer key (16,32 or 64 characters) obviously means more secured encryption too. Same key must be used for both encryption and decryption.
+
+See also:
+\url{http://en.opasnet.org/}
 }
 \value{
-%%  ~Describe the value returned
-%%  If it is a LIST, use
-%%  \item{comp1 }{Description of 'comp1'}
-%%  \item{comp2 }{Description of 'comp2'}
-%% ...
-}
-\references{
-%% ~put references to the literature/web site here ~
+  \item{objects.encode}{Returns encoded object to be decoded with \code{objects.decode} and given key.}
+  \item{objects.decode}{Returns decoded object, as it was before encoding with \code{objects.encode}.}
+  \item{objects.get}{Returns object or objects stored to Opasnet R server.}
+  \item{objects.latest}{Returns object or objects stored to Opasnet R server.}
+  \item{objects.put}{No return value.}
+  \item{objects.store}{Returns token to identify stored objects on R server.}
 }
 \author{
-E. Happonen 
+  E. Happonen \email{einari.happonen@thl.fi} 
 }
-\note{
-%%  ~~further notes~~
-}
-
-%% ~Make other sections like Warning with \section{Warning }{....} ~
-
 \seealso{
-%% ~~objects to See Also as \code{\link{help}}, ~~~
+  \code{\link[base]{load}}
+  \code{\link[base]{save}}
+  \code{\link[base]{serialize}}
+  \code{\link[base]{unserialize}}
+  \code{\link[digest]{AES}}
 }
 \examples{
-##---- Should be DIRECTLY executable !! ----
-##-- ==>  Define data, use random,
-##--	or do  help(data=index)  for the standard data sets.
+library(OpasnetUtils)
 
-## The function is currently defined as
-function (eobj, key) 
-{
-    key <- charToRaw(key)
-    if (length(key)\%\%16 != 0) 
-        stop("Invalid key length! Must be 16, 32 or 64 ASCII chars!")
-    xtra <- as.integer(eobj[[1]])
-    aes <- AES(key, mode = "ECB")
-    sobj <- aes$decrypt(eobj[-1], raw = TRUE)
-    if (xtra > 0) {
-        l <- length(sobj)
-        tmp <- c((l - xtra + 1):l)
-        sobj <- sobj[-(tmp)]
-    }
-    obj <- unserialize(sobj)
-    return(obj)
-  }
+# Within Opasnet only! Let's assume that the (en.opasnet.org) page identifier - where to code is - would be "Op_en1390" and code name "objs_save_test".
+# x <- stats::runif(20)
+# y <- list(a = 1, b = TRUE, c = "Jeah baby jeah!")
+# objects.store(x, y)
+
+# Fetching can be done also from local R installation.
+objects.latest("Op_en1390","objs_save_test")
+print(x)
+print(y)
+
+# Object encrypt and decrypt
+
+key <- "1234567890abcdef"
+
+eobj <- objects.encode(y, key)
+print(eobj)
+obj <- objects.decode(eobj, key)
+print(obj)
 }
-% Add one or more standard keywords, see file 'KEYWORDS' in the
-% R documentation directory.
-\keyword{ ~kwd1 }
-\keyword{ ~kwd2 }% __ONLY ONE__ keyword per line
