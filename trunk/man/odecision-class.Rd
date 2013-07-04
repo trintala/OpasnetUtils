@@ -10,7 +10,6 @@ Definition container for \code{\link{CheckDecisions}}
 }
 \section{Objects from the Class}{
 Objects can be created by calls of the form \code{new("odecision", ...)}.
-%%  ~~ describe objects here ~~ 
 }
 \section{Slots}{
   \describe{

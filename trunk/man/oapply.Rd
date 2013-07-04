@@ -42,5 +42,6 @@ T. Rintala \email{teemu.rintala.a@gmail.com}
 }
 
 \examples{
-#
+a <- Ovariable("a", output = data.frame(A = c("a", "a", "b", "b"), B = c("1", "2", "1", "2"), C = 1:4), marginal = c(TRUE, TRUE, FALSE))
+oapply(a, 1, sum)
 }

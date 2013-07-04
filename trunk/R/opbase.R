@@ -576,14 +576,14 @@ f.iter <- function(x) {
 	1:x
 }
 
-opbase.objects <- fromJSON(
-	paste(
-		readLines(
-			"http://cl1.opasnet.org/opasnet_base_2/index.php", 
-		), 
-		collapse = ""
-	)
-)
+#opbase.objects <- fromJSON(
+#	paste(
+#		readLines(
+#			"http://cl1.opasnet.org/opasnet_base_2/index.php", 
+#		), 
+#		collapse = ""
+#	)
+#)
 
 # Private function to parse arguments
 opbase.parse_args <- function()
