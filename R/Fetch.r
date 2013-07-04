@@ -1,8 +1,9 @@
-Fetch <- function(...) Fetch2(...)
+# Fetch used to be named Fetch2
+Fetch2 <- function(...) Fetch(...)
 
-# Fetch2 #################### loads all given dependencies to global memory
+# Fetch #################### loads all given dependencies to global memory
 
-Fetch2 <- function(dependencies, evaluate = FALSE, indent = 0, verbose = TRUE, ...) {
+Fetch <- function(dependencies, evaluate = FALSE, indent = 0, verbose = TRUE, ...) {
 	if (nrow(dependencies) > 0) {
 		for (i in 1:nrow(dependencies)) {
 			if(!exists(as.character(dependencies$Name[i]))) {
