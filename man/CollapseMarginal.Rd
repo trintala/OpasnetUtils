@@ -4,7 +4,7 @@
 Collapse marginals
 }
 \description{
-Apply functions (only sample at the moment) over ovaribale indices
+Apply functions (only \code{sample} at the moment) over ovaribale indices
 }
 \usage{
 CollapseMarginal(variable, cols, probs = NULL, ...)
@@ -25,8 +25,9 @@ CollapseMarginal(variable, cols, probs = NULL, ...)
 }
 \details{
 Samples over a fully defined column index (marginal) treating it as a nuisance parameter. 
-Increases the joint distribution uncertainty (loses information). Used to streamline heavy 
-models (output has fewer rows of data). 
+Increases the joint distribution uncertainty (loses information). Weighted sampling is also possible.
+
+Used to streamline heavy models (output has fewer rows of data). 
 
 See also:
 \url{http://en.opasnet.org/}

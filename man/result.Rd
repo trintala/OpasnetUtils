@@ -1,5 +1,6 @@
 \name{result}
 \alias{result}
+\alias{result<-}
 \title{
 Access result vector of an ovariable
 }
@@ -15,8 +16,6 @@ result(e1)
 }
 }
 \details{
-
-
 See also:
 \url{http://en.opasnet.org/}
 }
