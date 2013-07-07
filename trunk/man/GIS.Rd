@@ -72,16 +72,16 @@ T. Rintala \email{teemu.rintala.a@gmail.com}
 # Excerpt from http://en.opasnet.org/w/Health_impacts_of_fine_particles_in_Rauma 
 # (does not evaluate anything)
 
-# Päästö Emissions
+# Paasto Emissions
 
-Päästö <- new(
+Paasto <- new(
 	"ovariable", 
-	name = "Päästö",
-	dependencies = data.frame(Name = "tieliikennepäästöt", Key = "0194s0uuucjxq8Wi"),
+	name = "Paasto",
+	dependencies = data.frame(Name = "tieliikennepaastot", Key = "0194s0uuucjxq8Wi"),
 	formula = function(dependencies, ...) {
 		ComputeDependencies(dependencies, ...)
 
-		out <- tieliikennepäästöt * 365 * 1E-6 # Muutetaan päiväpäästö vuosipäästöksi ja grammat tonneiksi
+		out <- tieliikennepaastot * 365 * 1E-6 # Muutetaan paivapaasto vuosipaastoksi ja grammat tonneiksi
 
 		return(out)
 	}
@@ -102,12 +102,12 @@ Pitoisuus <- new(
 	"ovariable", 
 	name = "Pitoisuus",
 	dependencies = data.frame(
-		Name = c("Päästö", "LO", "LA")
+		Name = c("Paasto", "LO", "LA")
 	),
 	formula =  function(dependencies, ...) {
 		ComputeDependencies(dependencies, ...)
 
-		temp <- GIS.Concentration.matrix(Päästö, LO, LA, ...)
+		temp <- GIS.Concentration.matrix(Paasto, LO, LA, ...)
 
 		return(temp)
 	} 

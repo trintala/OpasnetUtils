@@ -8,7 +8,8 @@ Fetch R objects described in a data.frame
 Download a batch of R objects from Opasnet servers. Input in simple data.frame format.
 }
 \usage{
-Fetch2(dependencies, evaluate = FALSE, indent = 0, verbose = TRUE, ...)
+Fetch(dependencies, evaluate = FALSE, indent = 0, verbose = TRUE, ...)
+Fetch2(...)
 }
 \arguments{
   \item{dependencies}{

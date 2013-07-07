@@ -49,6 +49,7 @@ export(
 	Ovariable,
 	ddata_apply,
 	fillna,
+	"result<-",
 	result#,
 	#xtable
 )

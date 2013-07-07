@@ -8,7 +8,7 @@ oapply = function(X, INDEX = NULL, FUN = NULL, cols = NULL, ..., simplify = TRUE
 	out <- X@output
 	marginals <- colnames(out)[X@marginal]
 	if (is.null(INDEX) & is.null(cols)) stop("No INDEX nor cols defined!\n")
-	if (!is.null(cols)) INDEX <- out[[marginals[!marginals %in% cols]]]
+	if (!is.null(cols)) INDEX <- out[marginals[!marginals %in% cols]]
 	out <- tapply(
 		X = out[[paste(X@name, "Result", sep = "")]], 
 		INDEX = INDEX,
