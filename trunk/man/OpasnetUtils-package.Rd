@@ -2,7 +2,7 @@
 \alias{OpasnetUtils-package}
 \alias{OpasnetUtils}
 \docType{package}
-\title{Open Assessors Network Modeling Utilities}
+\title{Open Assessors Network Modelling Utilities}
 \description{
   This package contains tools made for building stochastic models within Opasnet (\url{http://www.opasnet.org}). 
 }
@@ -14,13 +14,38 @@ Version: \tab 1.0.0\cr
 Imports: \tab methods, rjson, RCurl, xtable, reshape2, triangle, httpRequest, digest\cr
 License: \tab GPL-3\cr
 LazyLoad: \tab yes\cr
-Date: \tab 2013-06-xx\cr
+Date: \tab 2013-07-xx\cr
 }
 
 Index:
 \preformatted{
-OpasnetUtils-package    Open Assessors' Network modeling platform
-                        utilities.
+Check                   Ovariable Checks
+CollapseMarginal        Collapse marginals
+CollapseTableParser     Parsing Collapse orders from a table
+ComputeDependencies     Evaluate ovariable dependencies
+DecisionTableParser     Parse data.frame for decisions
+EvalOutput              Evaluate ovariable output
+Fetch                   Fetch R objects described in a data.frame
+GIS                     Handling spatially distributed variables
+OpasnetUtils-package    Open Assessors Network Modeling Utilities
+Ovariable               Ovariable constructor
+convert.units           Converting units
+ddata_apply             Dynamic data link activation
+dropall                 Dropall
+fillna                  Interpreting empty locations in indices
+interpret               Parse human readable distribution definitions
+oapply                  Apply for ovariables
+objects                 Server side shared R objects
+odecision-class         Class '"odecision"'
+op_base                 Functions for Interaction with the Opasnet Base
+                        (obsolete)
+opasnet                 Importing files from Opasnet
+opbase                  OpasnetBase Access
+oprint                  Print ovariables or data frames in html format.
+orbind                  Rowbinding ovariables
+ovariable-class         Class '"ovariable"'
+result                  Access result vector of an ovariable
+tidy                    Format database output for use in ovariables
 }
 
   The operating principle is maximum modularity. Variables are defined publicly on wiki pages using wiki inputs/tables, our database 
@@ -38,7 +63,3 @@ Maintainer: E. Happonen <einari.happonen@thl.fi>
 }
 
 \keyword{ package }
-
-\section{Website}{
-  \url{http://en.opasnet.org/}
-}

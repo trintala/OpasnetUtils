@@ -4,7 +4,7 @@
 Parsing Collapse orders from a table
 }
 \description{
-Parses data.frames of specific format to produce "Col" prefixed lists as per \code{\link{CollapseMarginal}}
+Parses \code{data.frames} of specific format to produce "Col" prefixed lists for \code{\link{CollapseMarginal}}
 }
 \usage{
 CollapseTableParser(CTable)
