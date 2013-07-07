@@ -1,106 +1,65 @@
 \name{Ovariable}
 \alias{Ovariable}
-%- Also NEED an '\alias' for EACH other topic documented here.
 \title{
-\code{\link{ovariable}} constructor
+Ovariable constructor
 }
 \description{
-%%  ~~ A concise (1-5 lines) description of what the function does. ~~
+Create \code{\link{ovariable}}s more conveniently
 }
 \usage{
-Ovariable(name = character(), data = data.frame(), formula = function(...) {
-    0
-}, dependencies = data.frame(), ddata = character(), subset = NULL, getddata = TRUE, save = FALSE, public = TRUE, ...)
+Ovariable(name = character(), data = data.frame(), formula = function(...) {0}, dependencies = data.frame(), ddata = character(), output = data.frame(), subset = NULL, getddata = TRUE, save = FALSE, public = TRUE, ...)
 }
-%- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{name}{
-%%     ~~Describe \code{name} here~~
+  \code{character} string for the name slot, should match object name
 }
   \item{data}{
-%%     ~~Describe \code{data} here~~
+  \code{data.frame} for the data slot
 }
   \item{formula}{
-%%     ~~Describe \code{formula} here~~
+  \code{function} for the formula slot
 }
   \item{dependencies}{
-%%     ~~Describe \code{dependencies} here~~
+  \code{data.frame} for the dependencies slot
 }
   \item{ddata}{
-%%     ~~Describe \code{ddata} here~~
+  \code{character} string specifying an Opasnet page identifier (Op_enXXXX) for the ddata slot
+}
+  \item{output}{
+  \code{data.frame} for the output slot
 }
   \item{subset}{
-%%     ~~Describe \code{subset} here~~
+  \code{character} string specifying an Opasnet Base subset (See \code{\link{opbase.data}} for details)
 }
   \item{getddata}{
-%%     ~~Describe \code{getddata} here~~
+  if TRUE dynamic data link will be activated immediately, which means that by default data will not be refreshed at model runtime
 }
   \item{save}{
-%%     ~~Describe \code{save} here~~
+  if TRUE resulting \code{ovariable} will be saved on the server 
 }
   \item{public}{
-%%     ~~Describe \code{public} here~~
+  if TRUE \code{\link{objects.store}} is used instead of \code{objects.put} (the former stores the run key in a public database)
 }
   \item{\dots}{
-%%     ~~Describe \code{\dots} here~~
+  more arguments can be passed onto \code{objects.store} and \code{objects.put} in case \code{save == TRUE}.
 }
 }
 \details{
-%%  ~~ If necessary, more details than the description above ~~
+Just a regular constructor with integrated dynamic data link activation and storing options.
 
 See also:
 \url{http://en.opasnet.org/}
 }
 \value{
-%%  ~Describe the value returned
-%%  If it is a LIST, use
-%%  \item{comp1 }{Description of 'comp1'}
-%%  \item{comp2 }{Description of 'comp2'}
-%% ...
-}
-\references{
-%% ~put references to the literature/web site here ~
+Returns an \code{ovariable}.
 }
 \author{
 T. Rintala \email{teemu.rintala.a@gmail.com}
 }
-\note{
-%%  ~~further notes~~
-}
-
-%% ~Make other sections like Warning with \section{Warning }{....} ~
-
 \seealso{
 \code{\link{ovariable-class}}
 }
 \examples{
-##---- Should be DIRECTLY executable !! ----
-##-- ==>  Define data, use random,
-##--	or do  help(data=index)  for the standard data sets.
-
-## The function is currently defined as
-function (name = character(), data = data.frame(), formula = function(...) {
-    0
-  }, dependencies = data.frame(), ddata = character(), subset = NULL, 
-    getddata = TRUE, save = FALSE, public = TRUE, ...) 
-{
-    if (!is.null(subset)) 
-        ddata <- paste(ddata, opbase.sanitize_subset_name(subset), 
-            sep = ".")
-    out <- new("ovariable", name = name, data = data, formula = formula, 
-        dependencies = dependencies, ddata = ddata)
-    if (getddata) 
-        out <- ddata_apply(out)
-    if (save) {
-        assign(name, out)
-        if (public) 
-            objects.store(list = name, ...)
-        else objects.put(list = name, ...)
-    }
-    return(out)
-  }
+Ovariable("A", ddata = "Op_en5674", getddata = TRUE)
+k <- Ovariable("k", output = data.frame(B = "a", Result = 1))
 }
-% Add one or more standard keywords, see file 'KEYWORDS' in the
-% R documentation directory.
-\keyword{ ~kwd1 }
-\keyword{ ~kwd2 }% __ONLY ONE__ keyword per line

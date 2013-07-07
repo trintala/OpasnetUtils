@@ -1,7 +1,7 @@
 \name{EvalOutput}
 \alias{EvalOutput}
 \title{
-Evalaute ovariable output
+Evaluate ovariable output
 }
 \description{
 Evaluate the output slot of an \code{\link{ovariable}}, this usually means recursively evaluating all dependent variables as well.

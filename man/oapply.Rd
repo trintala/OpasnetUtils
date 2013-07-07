@@ -15,13 +15,13 @@ oapply(X, INDEX = NULL, FUN = NULL, cols = NULL, ..., simplify = TRUE)
   an \code{\link{ovariable}}
 }
   \item{INDEX}{
-  a vector of column names from the output slot \code{data.frame} to tapply over
+  list of factors, like \code{\link{tapply}}
 }
   \item{FUN}{
   function to apply
 }
   \item{cols}{
-  columns to be removed (reverse INDEX)
+  names of columns to be removed (reverse INDEX)
 }
   \item{\dots}{
   optional arguments to FUN
@@ -42,6 +42,7 @@ T. Rintala \email{teemu.rintala.a@gmail.com}
 }
 
 \examples{
-a <- Ovariable("a", output = data.frame(A = c("a", "a", "b", "b"), B = c("1", "2", "1", "2"), C = 1:4), marginal = c(TRUE, TRUE, FALSE))
-oapply(a, 1, sum)
+a <- new("ovariable", name = "a", output = data.frame(A = c("a", "a", "b", "b"), B = c("1", "2", "1", "2"), aResult = 1:4), marginal = c(TRUE, TRUE, FALSE))
+oapply(a, FUN = sum, cols = "A")
+oapply(a, a@output[c("A")], sum)
 }

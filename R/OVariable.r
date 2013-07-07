@@ -35,6 +35,7 @@ Ovariable <- function(
 		formula = function(...){0}, 
 		dependencies = data.frame(), 
 		ddata = character(),
+		output = data.frame(),
 		subset = NULL,
 		getddata = TRUE, # will dynamic data be immediately be downloaded, as opposed waiting until variable output is Evaluated
 		save = FALSE, # will the variable be saved on the server using objects.put
@@ -49,7 +50,8 @@ Ovariable <- function(
 			data = data,
 			formula = formula,
 			dependencies = dependencies,
-			ddata = ddata
+			ddata = ddata,
+			output = output
 	)
 	if (getddata) out <- ddata_apply(out)
 	if (save){

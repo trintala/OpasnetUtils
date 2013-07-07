@@ -17,50 +17,44 @@
 
 \title{Class \code{"ovariable"}}
 \description{
-%%  ~~ A concise (1-5 lines) description of what the class is. ~~
+Standard modelling variables for the Opasnet modelling framework
 }
 \section{Objects from the Class}{
 Objects can be created by calls of the form \code{new("ovariable", ...)}.
-%%  ~~ describe objects here ~~ 
+Or by using the \code{\link{Ovariable}}-constructor.
 }
 \section{Slots}{
   \describe{
-    \item{\code{name}:}{Object of class \code{"character"} ~~ }
-    \item{\code{output}:}{Object of class \code{"data.frame"} ~~ }
-    \item{\code{data}:}{Object of class \code{"data.frame"} ~~ }
-    \item{\code{marginal}:}{Object of class \code{"logical"} ~~ }
-    \item{\code{formula}:}{Object of class \code{"function"} ~~ }
-    \item{\code{dependencies}:}{Object of class \code{"data.frame"} ~~ }
-    \item{\code{ddata}:}{Object of class \code{"character"} ~~ }
+    \item{\code{name}:}{Object of class \code{"character"} name of variable, should match object name }
+    \item{\code{output}:}{Object of class \code{"data.frame"} output from formula and/or data operations }
+    \item{\code{data}:}{Object of class \code{"data.frame"} data describing the variable, should have a Result column}
+    \item{\code{marginal}:}{Object of class \code{"logical"} identifies output columns which are considered indices }
+    \item{\code{formula}:}{Object of class \code{"function"} a function that produces a \code{data.frame} that describes this variable }
+    \item{\code{dependencies}:}{Object of class \code{"data.frame"} list of variables that are used in \code{formula}, format is described in details for \code{\link{Fetch}} }
+    \item{\code{ddata}:}{Object of class \code{"character"} specifies an Opasnet page identifier (Op_enXXXX) which will be used to download most recent data on this variable in the Opasnet database }
   }
 }
 \section{Methods}{
   \describe{
-    \item{convert.units}{\code{signature(x = "ovariable")}: ... }
-    \item{Math}{\code{signature(x = "ovariable")}: ... }
-    \item{merge}{\code{signature(x = "data.frame", y = "ovariable")}: ... }
-    \item{merge}{\code{signature(x = "numeric", y = "ovariable")}: ... }
-    \item{merge}{\code{signature(x = "ovariable", y = "data.frame")}: ... }
-    \item{merge}{\code{signature(x = "ovariable", y = "numeric")}: ... }
-    \item{merge}{\code{signature(x = "ovariable", y = "ovariable")}: ... }
-    \item{oprint}{\code{signature(x = "ovariable")}: ... }
-    \item{Ops}{\code{signature(e1 = "numeric", e2 = "ovariable")}: ... }
-    \item{Ops}{\code{signature(e1 = "ovariable", e2 = "numeric")}: ... }
-    \item{Ops}{\code{signature(e1 = "ovariable", e2 = "ovariable")}: ... }
-    \item{plot}{\code{signature(x = "ovariable")}: ... }
-    \item{print}{\code{signature(x = "ovariable")}: ... }
-    \item{summary}{\code{signature(object = "ovariable")}: ... }
-    \item{update}{\code{signature(object = "ovariable")}: ... }
-	 }
+    \item{Math}{\code{signature(x = "ovariable")}: \code{\link{Math}} will be applied on Result column of output }
+    \item{merge}{\code{signature(x = "data.frame", y = "ovariable")}: \code{data.frame} will be converted to \code{ovariable} (with only output slot defined) and then merged }
+    \item{merge}{\code{signature(x = "numeric", y = "ovariable")}: \code{numeric} is converted to \code{data.frame} and then to \code{ovariable} and then merged }
+    \item{merge}{\code{signature(x = "ovariable", y = "data.frame")}: same as above }
+    \item{merge}{\code{signature(x = "ovariable", y = "numeric")}: same as above }
+    \item{merge}{\code{signature(x = "ovariable", y = "ovariable")}: output slots will be merged with all = TRUE, a blank ovariable with only output defined is returned }
+    \item{Ops}{\code{signature(e1 = "numeric", e2 = "ovariable")}: \code{numeric} is converted to \code{data.frame} and then to \code{ovariable} and then operated }
+    \item{Ops}{\code{signature(e1 = "ovariable", e2 = "numeric")}: same as above }
+    \item{Ops}{\code{signature(e1 = "ovariable", e2 = "ovariable")}: the \code{ovariable}s are merged and then the two Result columns are operated unto, the result is saved in another Result column (or the same if they are not named: "Var1Result" vs "Result") }
+    \item{plot}{\code{signature(x = "ovariable")}: plots a simple comparison between sources (data vs formula) }
+    \item{summary}{
+      \code{signature(object = "ovariable")}: returns a \code{data.frame}. Takes \code{function_names} and \code{marginals} as extra arguments. The former matches 
+      \code{character vector} elements into functions which will be \code{tapplied} with. The latter matches \code{character vector} elements to output 
+      \code{data.frame} columns which define INDEX. The default is to \code{tapply} over iterations using \code{mean}, \code{sd}, \code{min}, \code{quantile(probs=0.025)}, \code{median}, \code{quantile(probs=0.975)} and \code{max}. }
+    }
 }
-\references{
-%%  ~~put references to the literature/web site here~~
-}
+
 \author{
 T. Rintala \email{teemu.rintala.a@gmail.com}
-}
-\note{
-%%  ~~further notes~~
 }
 
 \section{Website}{
@@ -68,8 +62,7 @@ T. Rintala \email{teemu.rintala.a@gmail.com}
 }
 
 \seealso{
-%%  ~~objects to See Also as \code{\link{~~fun~~}}, ~~~
-%%  ~~or \code{\linkS4class{CLASSNAME}} for links to other classes ~~~
+\code{\link{Ovariable}}
 }
 \examples{
 showClass("ovariable")

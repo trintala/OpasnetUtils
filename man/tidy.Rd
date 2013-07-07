@@ -1,66 +1,52 @@
 \name{tidy}
 \alias{tidy}
-%- Also NEED an '\alias' for EACH other topic documented here.
+
 \title{
 Format database output for use in ovariables
 }
 \description{
-Various standard operations applied on ovariable data from the OpasnetBase.
+Wrapper for various standard operations applied on ovariable data from the OpasnetBase.
 }
 \usage{
 tidy(data, objname = "", idvar = "Obs", direction = "wide", widecol = NULL, base1 = FALSE)
 }
-%- maybe also 'usage' for other objects documented here.
+
 \arguments{
   \item{data}{
-%%     ~~Describe \code{data} here~~
+  \code{data.frame} to be formatted
 }
   \item{objname}{
-%%     ~~Describe \code{objname} here~~
+  \code{character} prefix to be added to variable specific rows like "Result" and "Unit"
 }
   \item{idvar}{
-%%     ~~Describe \code{idvar} here~~
+  \code{\link{reshape}} idvar
 }
   \item{direction}{
-%%     ~~Describe \code{direction} here~~
+  \code{\link{reshape}} direction
 }
   \item{widecol}{
-%%     ~~Describe \code{widecol} here~~
+  \code{\link{reshape}} timevar, specifiec column to be expanded
 }
   \item{base1}{
-%%     ~~Describe \code{base1} here~~
+  compatibility with obsolete database
 }
 }
 \details{
+Uses reshape, renames "Result" and "Unit" columns and gets rid of unwanted columns from old database merged data. 
+
 See also:
 \url{http://en.opasnet.org/}
 }
 \value{
-%%  ~Describe the value returned
-%%  If it is a LIST, use
-%%  \item{comp1 }{Description of 'comp1'}
-%%  \item{comp2 }{Description of 'comp2'}
-%% ...
+Returns a \code{data.frame}
 }
-\references{
-%% ~put references to the literature/web site here ~
-}
+
 \author{
-%%  ~~who you are~~
-}
-\note{
-%%  ~~further notes~~
+T. Rintala \email{teemu.rintala.a@gmail.com}
 }
 
-%% ~Make other sections like Warning with \section{Warning }{....} ~
-
-\seealso{
-%% ~~objects to See Also as \code{\link{help}}, ~~~
-}
 \examples{
-#
+var1 <- opbase.data("Op_en5674")
+var1 <- tidy(var1, "var1")
+var1
 }
-% Add one or more standard keywords, see file 'KEYWORDS' in the
-% R documentation directory.
-\keyword{ ~kwd1 }
-\keyword{ ~kwd2 }% __ONLY ONE__ keyword per line

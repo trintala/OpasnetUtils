@@ -16,7 +16,7 @@ CheckDecisions(variable, indent = 0, verbose = TRUE, ...)
 CheckInput(variable, substitute = FALSE, indent = 0, verbose = TRUE, ...)
 CheckMarginals(variable, deps = list(), priormarg = TRUE, indent = 0, verbose = TRUE, ...)
 }
-%- maybe also 'usage' for other objects documented here.
+
 \arguments{
   \item{variable}{
   An ovariable to run Check on.
@@ -45,23 +45,27 @@ The Check functions are mainly used internally. They check for orders of externa
 Specifically they check objects in \code{.GlobalEnv} with prefixes ("Col", "Dec", "Inp"). These checks are automated in the normal 
 \code{\link{ovariable}} evaluation routine \code{\link{EvalOutput}}. 
 
-\code{\link{CollapseMarginal}} collapses marginals by applying sums, means or samples. Also loses all non-marginal columns except 
+\code{CheckCollapse}
+\code{\link{CollapseMarginal}} which collapses marginals by applying sums, means or samples. Also loses all non-marginal columns except 
 the relevant Result. It is mainly used to streamline models by reducing rows in data. 
 
-CheckDecisions checks for and applies decisions on variables. 
+\code{CheckDecisions}
+checks for and applies decisions on variables. 
 The function makes use of the \code{\link{odecision-class}}, which specifies the target cells as well as the effect. Odecisions are 
 most often produced by \code{\link{DecisionTableParser}}.
 
-CheckInput checks and uses outside input (user inputs in models or decision variables). Input should be in ovariable format. 
+\code{CheckInput}
+checks and uses outside input (user inputs in models or decision variables). Input should be in ovariable format. 
 
-CheckMarginals returns an ovariable with a marginal derived from the data and upstream variable marginals. 
+\code{CheckMarginals}
+returns an ovariable with a marginal derived from the data and upstream variable marginals. 
 Assumes that all depended upon variables are in memory, as should be the case.
 
 See also:
 \url{http://en.opasnet.org/}
 }
 \value{
-  \code{\link{ovariable}}
+  Original \code{\link{ovariable}} with possible adjustments.
 }
 \author{
   T. Rintala \email{teemu.rintala.a@gmail.com}

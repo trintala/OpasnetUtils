@@ -13,29 +13,27 @@ Objects can be created by calls of the form \code{new("odecision", ...)}.
 }
 \section{Slots}{
   \describe{
-    \item{\code{dectable}:}{Object of class \code{"data.frame"} ~~ }
-    \item{\code{condition}:}{Object of class \code{"list"} ~~ }
-    \item{\code{effect}:}{Object of class \code{"list"} ~~ }
+    \item{\code{dectable}:}{Object of class \code{"data.frame"} describes the decisions and their relevant options. Is merged with the output slot \code{data.frame} of an \code{ovariable}}
+    \item{\code{condition}:}{Object of class \code{"list"} list of functions which return a logical vector which should indicate the relevant rows to be affected by the decision-option combination.}
+    \item{\code{effect}:}{Object of class \code{"list"} lists of functions which describe the effects of the decision on relevant rows of the output.}
   }
 }
 \section{Methods}{
 No methods defined with class "odecision" in the signature.
 }
-\references{
-%%  ~~put references to the literature/web site here~~
-}
 \author{
 T. Rintala \email{teemu.rintala.a@gmail.com}
 }
-\note{
+\details{
+Usually \code{odecision}s are created by \code{\link{DecisionTableParser}} using a full decision table that includes
+condition and effect descriptions in standard form. \code{Odecision}s created by \code{DecisionTableParser} do not have
+condition or effect defined. Instead \code{\link{CheckDecisions}} does the final parsing into preset effects and conditions. 
+For non-standard conditions and effects decisions can be defined using the \code{new("odecision", ...)} call.
+
 See also:
 \url{http://en.opasnet.org/}
 }
 
-\seealso{
-%%  ~~objects to See Also as \code{\link{~~fun~~}}, ~~~
-%%  ~~or \code{\linkS4class{CLASSNAME}} for links to other classes ~~~
-}
 \examples{
 showClass("odecision")
 }

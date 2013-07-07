@@ -27,7 +27,7 @@ ComputeDependencies(dependencies, forceEval = FALSE, indent = 0, new_code = FALS
 }
 }
 \details{
-\code{ComputeDependencies} uses \code{Fetch2}, \code{EvalOutput}, \code{CheckDecisions}, \code{CheckCollapse} and \code{CheckInput} to load and pre-process
+\code{ComputeDependencies} uses \code{Fetch}, \code{EvalOutput}, \code{CheckDecisions}, \code{CheckCollapse} and \code{CheckInput} to load and pre-process
 upstream variables. It is automatically called by \code{\link{EvalOutput}}, but can be seen on the first lines of old \code{ovariable} formula code, 
 to avoid applying decisions, inputs and optimizations twice in old code the function does nothing by default. This is no 
 problem since users should not be calling this function at all. 
