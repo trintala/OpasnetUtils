@@ -8,15 +8,15 @@ convert.units <- function(x, tounit = c("kg", "s", "m", "m3", "J", "W", "A", "V"
 	if(is.null(fromunit)) { # Do nothing if from-units are not defined.
 		out <- data.frame(Unit = fromunit, Result = x)
 	} else {
-		conversions <- fetch("Op_en5475") # Set up a full unit conversion table.
-		conversions$Result <- as.numeric(conversions$Result)
-		colnames(conversions)[colnames(conversions) == "type"] <- "Type"
+		conversions <- tidy(opbase.data("Op_en5475")) # Set up a full unit conversion table.
+		conversions$Result <- suppressWarnings(as.numeric(as.character(conversions$Result)))
+		#colnames(conversions)[colnames(conversions) == "type"] <- "Type"
 		prefixes <- conversions[conversions$Type == "Prefix", ] # Combine all prefixes with all units in From column.
 		colnames(prefixes) <- paste("Prefix.", colnames(prefixes), sep = "")
 		conversions <- merge(prefixes, conversions[conversions$Type == "Unit", ])
 		conversions$From <- paste(conversions$Prefix.From, conversions$From, sep = "")
 		conversions$Result <- conversions$Result * conversions$Prefix.Result
-		conversions <- conversions[c("From", "To", "Result")]
+		conversions <- conversions[,c("From", "To", "Result")]
 		conversions <- merge(conversions, conversions, by = "To") # Create all possible from-to pairs.
 		conversions$Result <- conversions$Result.x / conversions$Result.y
 		conversions <- unique(conversions[c("From.x", "From.y", "Result")])
