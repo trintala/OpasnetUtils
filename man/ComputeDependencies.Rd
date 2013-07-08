@@ -1,26 +1,27 @@
 \name{ComputeDependencies}
 \alias{ComputeDependencies}
 \title{
-Evaluate ovariable dependencies
+Evaluate \code{ovariable} dependencies
 }
 \description{
-Fetches, evaluates and \code{\link{Check}}s ovariable dependencies given in an appropriate data.frame. 
+Fetches, evaluates and \code{\link{Check}}s \code{\link{ovariable}} dependencies given in data.frame format
 }
 \usage{
-ComputeDependencies(dependencies, forceEval = FALSE, indent = 0, new_code = FALSE, ...)
+ComputeDependencies(dependencies, forceEval = FALSE, indent = 0, 
+    new_code = FALSE, ...)
 }
 \arguments{
   \item{dependencies}{
-  data.frame that defines \code{\link{Fetch}} targets, usually taken from an ovariables dependencies slot
+  \code{data.frame} that defines \code{\link{Fetch}} targets, usually taken from an \code{ovariable}'s dependencies slot
 }
   \item{forceEval}{
-  forcibly re-evaluate existing instances of listed dependencies
+  if \code{TRUE}, forcibly re-evaluates existing instances of listed dependencies
 }
   \item{indent}{
-  verbose print assist for the Check family, used internally
+  verbose print assist for the \code{Check} family, used internally
 }
   \item{new_code}{
-  a flag for compatibility with older code, default FALSE nullifies ComputeDependencies usage in \code{\link{ovariable}} formulas
+  a flag for compatibility with older code, default \code{FALSE} nullifies \code{ComputeDependencies} usage in \code{ovariable} formulas
 }
   \item{\dots}{
   arguments to pass on to the various recursive checks and evaluations

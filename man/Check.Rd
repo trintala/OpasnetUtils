@@ -26,7 +26,7 @@ CheckMarginals(variable, deps = list(), priormarg = TRUE, indent = 0,
   the dependency list of a latent ovariable, used by CheckMarginals to keep track of index columns. 
 }
   \item{priormarg}{
-  flag determining whether columns are assumed to be indices by default when Checking marginals.
+  flag determining whether columns are assumed to be indices by default when checking marginals.
 }
   \item{substitute}{
   flag determining whether model inputs should replace or append to current variable values.
@@ -53,7 +53,7 @@ by reducing rows in data.
 \code{CheckDecisions} checks for and applies decisions on variables. The function makes use of the \code{\link{odecision-class}}, 
 which specifies the target cells as well as the effect. Odecisions are most often produced by \code{\link{DecisionTableParser}}.
 
-\code{CheckInput} checks and uses outside input (run specific user inputs in models). Input should be in ovariable format. 
+\code{CheckInput} checks and uses outside input (run specific user inputs in models). Input should be in \code{ovariable} format. 
 
 \code{CheckMarginals} fills the marginal slot of an \code{ovariable} using information from variable data and upstream variable marginals. 
 Assumes that all depended upon variables are loaded, as should be the case.

@@ -4,20 +4,20 @@
 Dynamic data link activation
 }
 \description{
-Fetches the latest data associated with the ovariable from the OpasnetBase
+Fetches the latest data associated with an \code{\link{ovariable}} from the OpasnetBase if available
 }
 \usage{
 ddata_apply(ovariable, ddata_tidy = TRUE, force_ddata = FALSE, ...)
 }
 \arguments{
   \item{ovariable}{
-  an ovariable with the ddata slot defined as page_id i.e. "Op_en1000"
+  an \code{ovariable} with the ddata slot defined as page_id i.e. "Op_en1000"
 }
   \item{ddata_tidy}{
-  flag whether \code{\link{tidy}} should be run on downloaded data
+  \code{TRUE} to run \code{\link{tidy}} on downloaded data
 }
   \item{force_ddata}{
-  use dynamic data links even if the data slot of an ovariable is already defined
+  if \code{TRUE}, dynamic data links are used even if the data slot of an \code{ovariable} is already defined
 }
   \item{\dots}{
   excess parameters are ignored
@@ -30,7 +30,7 @@ See also:
 \url{http://en.opasnet.org/}
 }
 \value{
-Returns the input ovariable, with the data slot defined (if ddata is available or it is already defined).
+Returns the input \code{ovariable}. (Re)defines the data slot if it is not already defined ands ddata is available.
 }
 \author{
 T. Rintala \email{teemu.rintala.a@gmail.com}

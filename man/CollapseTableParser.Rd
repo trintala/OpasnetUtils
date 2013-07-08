@@ -4,29 +4,32 @@
 Parsing Collapse orders from a table
 }
 \description{
-Parses \code{data.frames} of specific format to produce "Col" prefixed lists for \code{\link{CollapseMarginal}}
+Parses \code{data.frames} of specific format to produce "Col" prefixed lists for \code{\link{CheckCollapse}}
 }
 \usage{
 CollapseTableParser(CTable)
 }
 \arguments{
   \item{CTable}{
-  a data.frame with columns "Index" (column names) and "Probs" (propabilities of column levels in joint distribution, comma separated)
+  a data.frame with columns "Variable" (variable names), "Index" (column names) and "Probs" (propabilities of column levels in marginal distribution, comma separated)
 }
 }
 \details{
-Used in the Opasnet modeling environment an endpoint node to produce multiple model relevant Collapse orders. 
+Used in the Opasnet assessments/analyses to produce multiple model specific Collapse instructions. Using other distribution values
+than 1 requires knowledge about the amount and order of unique index values. \code{Probs} values \code{1} and \code{NA} are considered equal weighting. 
 
 See also:
 \url{http://en.opasnet.org/}
 }
 \value{
-No return value
+No return value, "Col" prefixed variables are written straight into \code{.GlobalEnv}.
 }
 \author{
 T. Rintala \email{teemu.rintala.a@gmail.com}
 }
 \examples{
-#
+a <- data.frame(Variable = "test", Index = c("City"), Probs = 1)
+CollapseTableParser(a)
+Coltest
 }
 
