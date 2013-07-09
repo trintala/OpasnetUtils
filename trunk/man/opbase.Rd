@@ -104,10 +104,11 @@ This family of functions provide access to Opasnet Base -database. Opasnet Base 
 Use the \code{opbase.data} function to read data from the database and the \code{opbase.upload} function to upload data to the database.
 Note that uploading data from local R-installation requires Opasnet Base username and password. These can be obtained only by trusted people.
 
-Exclude and include syntax: \code{list = ('<index name 1>' = c('<location value 1>', '<location value 2>',...), 
-'<index name 2>' = c('<location value 1>', '<location value 2>',...), ...)})
+Exclude and include syntax: \code{list = ('<index name 1>' = c('<location value 1>', \cr
+'<location value 2>',...), '<index name 2>' = c('<location value 1>', \cr
+'<location value 2>',...), ...)})
 
-Range syntax: \code{list = ('<index name 1>' = c(<range from>|NA, <range to>|NA), 
+Range syntax: \code{list = ('<index name 1>' = c(<range from>|NA, <range to>|NA), \cr
 '<index name 2>' = c(<range from>|NA, <range to>|NA), ...)}
 
 See also:

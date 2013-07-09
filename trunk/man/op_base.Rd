@@ -35,7 +35,6 @@ op_baseWrite(dsn, input, ...)
   \item{op_baseWrite}{Returns 0 if successful.}
 }
 \author{Teemu Rintala, \email{teemu.rintala@thl.fi}}
-\seealso{\url{http://en.opasnet.org/w/Opasnet_Base_Connection_for_R}}
 \examples{
   \dontrun{op_baseGetLocs("opasnet_base", "Op_en4723")}
   \dontrun{asthma <- op_baseGetData("opasnet_base", "Op_en4723", exclude = 48823)}
