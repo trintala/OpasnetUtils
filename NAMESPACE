@@ -10,7 +10,7 @@ export(
 	#summary, 
 	op_baseGetData,
 	op_baseGetLocs,
-	op_baseWrite,
+	#op_baseWrite,
 	opbase.locations,
 	opbase.obj.exists,
 	opbase.series,
