@@ -14,7 +14,7 @@ Version: \tab 1.0.0\cr
 Imports: \tab methods, rjson, RCurl, xtable, reshape2, triangle, httpRequest, digest\cr
 License: \tab GPL-3\cr
 LazyLoad: \tab yes\cr
-Date: \tab 2013-07-xx\cr
+Date: \tab 2013-07-09\cr
 }
 
 Index:
