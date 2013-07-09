@@ -27,7 +27,7 @@ Or by using the \code{\link{Ovariable}}-constructor.
   \describe{
     \item{\code{name}:}{Object of class \code{"character"} name of variable, should match object name }
     \item{\code{output}:}{Object of class \code{"data.frame"} output from formula and/or data operations }
-    \item{\code{data}:}{Object of class \code{"data.frame"} data describing the variable, should have a Result column}
+    \item{\code{data}:}{Object of class \code{"data.frame"} data describing the variable, should have a "Result" column}
     \item{\code{marginal}:}{Object of class \code{"logical"} identifies output columns which are considered indices }
     \item{\code{formula}:}{Object of class \code{"function"} a function that produces a \code{data.frame} that describes this variable }
     \item{\code{dependencies}:}{Object of class \code{"data.frame"} list of variables that are used in \code{formula}, format is described in details for \code{\link{Fetch}} }
@@ -57,14 +57,10 @@ Or by using the \code{\link{Ovariable}}-constructor.
 T. Rintala \email{teemu.rintala.a@gmail.com}
 }
 
-\section{Website}{
-\url{http://en.opasnet.org/}
-}
-
 \seealso{
 \code{\link{Ovariable}}
 }
 \examples{
-showClass("ovariable")
+%%showClass("ovariable")
 }
 \keyword{classes}

@@ -4,7 +4,7 @@
 Interpreting empty locations in indices
 }
 \description{
-Copies result rows that have NAs as index values and replaces the index value with all available values of that index.
+Copies result rows that have \code{NA}s as index values and replaces the index value with all available values of that index.
 }
 \usage{
 fillna(object, marginals)

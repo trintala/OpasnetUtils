@@ -5,7 +5,7 @@
 Print ovariables or data frames in html format.
 }
 \description{
-This function uses xtable library to output ovariables or data frames as html formatted tables.
+This function uses \code{\link{xtable-package}} to output \code{\link{ovariable}}s or \code{data.frame}s as html formatted tables.
 }
 \usage{
 oprint(x, show_all = FALSE, sortable = TRUE, ...)
@@ -13,22 +13,22 @@ oprint(x, show_all = FALSE, sortable = TRUE, ...)
 
 \arguments{
   \item{x}{
-  An ovariable or data frame.
+  \code{ovariable} or \code{data frame}.
 }
   \item{show_all}{
-  Flag determining whether all data rows should be printed. If FALSE, only thousand first rows get printed (default). 
+  if \code{TRUE} all data rows are printed, else only first thousand rows get printed (default). 
 }
   \item{sortable}{
-  Flag determining whether output table should be sortable.
+  if \code{TRUE} output table is made sortable.
 }
   \item{\dots}{
-  Excess arguments will be passed straight to xtable-function.
+  arguments can be passed to \code{xtable}
 }
 }
 \details{
-If argument x is \code{\link{ovariable}} type, its output-slot gets printed.
-If output-slot is empty, \code{\link{EvalOutput}}-function will be automatically executed to generate output.
-This function is aimed for being used within Opasnet only!
+If argument x is an \code{\link{ovariable}}, its output-slot gets printed.
+If output-slot is empty, \code{\link{EvalOutput}} will be automatically executed to generate output.
+This function is aimed for being used within Opasnet only! R console will print out html markup. 
 
 See also:
 \url{http://en.opasnet.org/}

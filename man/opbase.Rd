@@ -12,13 +12,19 @@ OpasnetBase Access
 Function family for interacting with the Opasnet database.
 }
 \usage{
-opbase.data(ident, series_id = NULL, subset = NULL, verbose = FALSE, username = NULL, password = NULL, samples = NULL, exclude = NULL, include = NULL,  range = NULL, optim_test = TRUE, ...)
-opbase.locations(ident, index_name, series_id = NULL, username = NULL, password = NULL)
+opbase.data(ident, series_id = NULL, subset = NULL, verbose = FALSE, 
+    username = NULL, password = NULL, samples = NULL, exclude = NULL, 
+    include = NULL,  range = NULL, optim_test = TRUE, ...)
+opbase.locations(ident, index_name, series_id = NULL, username = NULL, 
+    password = NULL)
 opbase.obj.exists(ident, username = NULL, password = NULL)
 opbase.series(ident, username = NULL, password = NULL, verbose = FALSE)
-opbase.upload(input, ident = NULL, name = NULL, subset = NULL, obj_type = "variable", act_type = "replace", language = "eng", unit = "", who = NULL, rescol = NULL, chunk_size = NULL, verbose = FALSE, username = NULL, password = NULL, index_units = NULL, index_types = NULL)
+opbase.upload(input, ident = NULL, name = NULL, subset = NULL, 
+    obj_type = "variable", act_type = "replace", language = "eng", 
+    unit = "", who = NULL, rescol = NULL, chunk_size = NULL, verbose = FALSE, 
+    username = NULL, password = NULL, index_units = NULL, index_types = NULL)
 }
-%- maybe also 'usage' for other objects documented here.
+
 \arguments{
   \item{ident}{
   Object ident as string (e.g. "op_en1390"). Optional when uploading within Opasnet; page ident will be taken from the page where the code is.
@@ -45,13 +51,13 @@ opbase.upload(input, ident = NULL, name = NULL, subset = NULL, obj_type = "varia
   Limit the number of samples in result. Default is to get them all.
 }
   \item{exclude}{
-  Filter result by excluding rows that contain locations defined here as list (syntax: \code{list = ('<index name 1>' = c('<location value 1>', '<location value 2>',...), '<index name 2>' = c('<location value 1>', '<location value 2>',...), ...)}). Works only with entity type indices!
+  Filter result by excluding rows that contain locations defined here as list. Works only with entity type indices!
 }
   \item{include}{
-  Filter result by only including rows that contain locations defined here as list (syntax: \code{list = ('<index name 1>' = c('<location value 1>', '<location value 2>',...), '<index name 2>' = c('<location value 1>', '<location value 2>',...), ...)}). Works only with entity type indices!
+  Filter result by only including rows that contain locations defined here as list. Works only with entity type indices!
 }
   \item{range}{
-  Filter result by setting ranges for index location values (syntax: \code{list = ('<index name 1>' = c(<range from>|NA, <range to>|NA), '<index name 2>' = c(<range from>|NA, <range to>|NA), ...)}). Works only with number and time type indices!
+  Filter result by setting ranges for index location values. Works only with number and time type indices!
 }
   \item{optim_test}{
   Generally faster download, slower only when downloading large probability distributions from the database.
@@ -98,8 +104,14 @@ This family of functions provide access to Opasnet Base -database. Opasnet Base 
 Use the \code{opbase.data} function to read data from the database and the \code{opbase.upload} function to upload data to the database.
 Note that uploading data from local R-installation requires Opasnet Base username and password. These can be obtained only by trusted people.
 
+Exclude and include syntax: \code{list = ('<index name 1>' = c('<location value 1>', '<location value 2>',...), 
+'<index name 2>' = c('<location value 1>', '<location value 2>',...), ...)})
+
+Range syntax: \code{list = ('<index name 1>' = c(<range from>|NA, <range to>|NA), 
+'<index name 2>' = c(<range from>|NA, <range to>|NA), ...)}
+
 See also:
-\url{http://www.loc.gov/standards/iso639-2/php/code_list.php}
+\url{http://www.loc.gov/standards/iso639-2/php/code_list.php} \cr
 \url{http://en.opasnet.org/}
 }
 \value{
@@ -117,11 +129,15 @@ library(OpasnetUtils)
 
 # Read
 opbase.data('op_en1390')
-opbase.data('op_en2949', subset='2012', include = list('KUNTA' = 322), range = list('ID_NRO' = c(20000, 30000), 'XKOORD' = c(NA,244000)))
+opbase.data('op_en2949', subset='2012', include = list('KUNTA' = 322), 
+    range = list('ID_NRO' = c(20000, 30000), 'XKOORD' = c(NA,244000)))
 
 # Write (works only within Opasnet when username nor password is given)
-input <- matrix(c('male', 12334435.123, 22, 'female', 234345.23423, 33), ncol=3, byrow=TRUE)
+input <- matrix(c('male', 12334435.123, 22, 'female', 234345.23423, 33), 
+    ncol=3, byrow=TRUE)
 colnames(input) <- c("Sex","Some number","result")
 input <- as.data.frame(input)
-#res <- opbase.upload(input, ident="op_en1390", name = "Sandbox TEST", index_types = c('entity','number'), unit = "Age", who='Tester person')
+#res <- opbase.upload(input, ident="op_en1390", name = "Sandbox TEST", 
+    index_types = c('entity','number'), unit = "Age", who='Tester person')
 }
+\keyword{database}

@@ -8,7 +8,7 @@
   A collection of functions used in Opasnet for database interaction. Includes functions for fetching
   datasets, exploring the dimensions of Opasnet variables and writing objects into the database.
   
-  This function family has been replaced by the opbase family
+  This function family has been replaced by the \code{\link{opbase}} family
 }
 \usage{
 op_baseGetData(dsn, ident, ...)
@@ -19,10 +19,9 @@ op_baseWrite(dsn, input, ...)
   \item{dsn}{a defined Data Service Name (in ODBC) to use}
   \item{ident}{object identifier in Opasnet (or other)}
   \item{input}{
-    data.frame, if array is converted using \code{as.data.frame(as.table())},
-    correct structure described elsewhere
+    \code{data.frame}; \code{array} is converted using \code{as.data.frame(as.table())}
   }
-  \item{...}{Check \link{opbase} docs for more arguments.}
+  \item{...}{arguments for \code{opbase}}
 }
 \details{
   Obsolete.

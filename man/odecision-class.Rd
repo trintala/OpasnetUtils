@@ -13,9 +13,9 @@ Objects can be created by calls of the form \code{new("odecision", ...)}.
 }
 \section{Slots}{
   \describe{
-    \item{\code{dectable}:}{Object of class \code{"data.frame"} describes the decisions and their relevant options. Is merged with the output slot \code{data.frame} of an \code{ovariable}}
-    \item{\code{condition}:}{Object of class \code{"list"} list of functions which return a logical vector which should indicate the relevant rows to be affected by the decision-option combination.}
-    \item{\code{effect}:}{Object of class \code{"list"} lists of functions which describe the effects of the decision on relevant rows of the output.}
+    \item{\code{dectable}:}{Object of class \code{"data.frame"} describes the decisions and their relevant options. It is merged with the output slot \code{data.frame} of an \code{\link{ovariable}}}
+    \item{\code{condition}:}{Object of class \code{"list"} contains functions which return a logical vector that should indicate the relevant rows to be affected by a decision-option combination.}
+    \item{\code{effect}:}{Object of class \code{"list"} contains functions which describe the effects of the decision on relevant rows of the output.}
   }
 }
 \section{Methods}{
@@ -35,6 +35,6 @@ See also:
 }
 
 \examples{
-showClass("odecision")
+%%showClass("odecision")
 }
 \keyword{classes}

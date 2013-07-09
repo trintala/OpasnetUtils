@@ -6,12 +6,14 @@
 Handling spatially distributed variables
 }
 \description{
-Currently there are only GIS functions for producing spatial concentration maps (GIS.Concentration.matrix) and using (closed) spatial 
-population data to calculate exposure (GIS.Exposure). 
+Currently there are only GIS functions for producing spatial concentration maps (\code{GIS.Concentration.matrix}) and using (closed) spatial 
+population data to calculate exposure (\code{GIS.Exposure}). 
 }
 \usage{
-GIS.Concentration.matrix(Emission, LO, LA, distx = 10.5, disty = 10.5, resolution = 1, N = 1000, dbug = FALSE, ...)
-GIS.Exposure(Concentration.matrix, LO = NULL, LA = NULL, distx = 10.5, disty = 10.5, resolution = 1, dbug = FALSE, ...)
+GIS.Concentration.matrix(Emission, LO, LA, distx = 10.5, disty = 10.5, 
+    resolution = 1, N = 1000, dbug = FALSE, ...)
+GIS.Exposure(Concentration.matrix, LO = NULL, LA = NULL, distx = 10.5, 
+    disty = 10.5, resolution = 1, dbug = FALSE, ...)
 }
 
 \arguments{
@@ -19,7 +21,7 @@ GIS.Exposure(Concentration.matrix, LO = NULL, LA = NULL, distx = 10.5, disty = 1
   \code{numeric}, emission in any units; can be an \code{ovariable} as well
 }
   \item{Concentration.matrix}{
-  \code{\link{ovariable}}, a concentration matrix, usually produced by GIS.Concentration.matrix
+  \code{\link{ovariable}} concentration matrix, usually produced by \code{GIS.Concentration.matrix}
 }
   \item{LO}{
   \code{numeric}, longitude corresponding to the center of the considered area (emission source)
@@ -40,28 +42,29 @@ GIS.Exposure(Concentration.matrix, LO = NULL, LA = NULL, distx = 10.5, disty = 1
   \code{integer}, number of iterations to run
 }
   \item{dbug}{
-  TRUE to turn debug prints on
+  use \code{TRUE} to turn debug prints on
 }
   \item{\dots}{
   excess arguments are ignored or passed to \code{\link{tidy}} on data download
 }
 }
 \details{
-The concentration matrix is computed using PILTTI source-receiver-matrices (see \url{http://en.opasnet.org/w/Piltti_source-receptor_matrix}). 
+The concentration matrix is computed using PILTTI source-receiver-matrices (\url{http://en.opasnet.org/w/Piltti_source-receptor_matrix}). 
 They are originally for modeling PM2.5 distributions in a few Finnish cities between the years 2000 and 2003. To produce a rudimentary probability distribution 
 these matrices are randomized between iterations. 
 
 Exposure is calculated by matching a concentration matrix to Finnish population data. Currently used data is closed and its usage hard coded, 
-but open data exists (see \url{http://en.opasnet.org/w/Special:Opasnet_Base?id=op_en2949.2012}) and this function should be updated to be more adaptable. 
+but open data exists (\url{http://en.opasnet.org/w/Special:Opasnet_Base?id=op_en2949.2012}) and this function should be updated to be more adaptable. 
 
-LA and LO are not required for Exposure, but speed the computation significantly.
+LA and LO are not required arguments for exposure, but speed the computation significantly.
 
 See also:
 \url{http://en.opasnet.org/}
 }
 \value{
-GIS.Concentration.matrix returns an \code{ovariable} whose output is a grid defined as bins for coordinates. 
-GIS.Exposure returns an \code{ovariable} whose output is concentration * population, with spatial information stripped to keep the data closed.
+\code{GIS.Concentration.matrix} returns an \code{ovariable} whose output is a grid defined as bins for coordinates. 
+
+\code{GIS.Exposure} returns an \code{ovariable} whose output is concentration * population, with spatial information stripped to keep the data closed.
 }
 
 \author{
@@ -70,7 +73,7 @@ T. Rintala \email{teemu.rintala.a@gmail.com}
 
 \examples{
 # Excerpt from http://en.opasnet.org/w/Health_impacts_of_fine_particles_in_Rauma 
-# (does not evaluate anything)
+# (not evaluated)
 
 # Paasto Emissions
 
@@ -80,8 +83,9 @@ Paasto <- new(
 	dependencies = data.frame(Name = "tieliikennepaastot", Key = "0194s0uuucjxq8Wi"),
 	formula = function(dependencies, ...) {
 		ComputeDependencies(dependencies, ...)
-
-		out <- tieliikennepaastot * 365 * 1E-6 # Muutetaan paivapaasto vuosipaastoksi ja grammat tonneiksi
+		
+		# Muutetaan paivapaasto vuosipaastoksi ja grammat tonneiksi
+		out <- tieliikennepaastot * 365 * 1E-6 
 
 		return(out)
 	}
@@ -91,7 +95,9 @@ Paasto <- new(
 
 bg.mort <- 45182 / 5203826 # same values as used in PILTTI
 
-erf <- 0.0097 # J. T. Tuomisto, A. Wilson, et al. Uncertainty in mortality response to airborne fine particulate matter... 2008
+## J. T. Tuomisto, A. Wilson, et al. Uncertainty in mortality response to 
+## airborne fine particulate matter... 2008
+erf <- 0.0097 
 # unit: m^3 /ug
 
 # Ovariablet

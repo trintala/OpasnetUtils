@@ -5,10 +5,11 @@
 Format database output for use in ovariables
 }
 \description{
-Wrapper for various standard operations applied on ovariable data from the OpasnetBase.
+Wrapper for various standard operations applied on \code{ovariable} data from the OpasnetBase.
 }
 \usage{
-tidy(data, objname = "", idvar = "Obs", direction = "wide", widecol = NULL, base1 = FALSE)
+tidy(data, objname = "", idvar = "Obs", direction = "wide", 
+    widecol = NULL, base1 = FALSE)
 }
 
 \arguments{
