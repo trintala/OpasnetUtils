@@ -20,7 +20,7 @@ objects.latest(page_ident, code_name, verbose = FALSE)
 objects.put(..., list = character())
 objects.store(..., list = character(), verbose = FALSE)
 }
-%- maybe also 'usage' for other objects documented here.
+
 \arguments{
   \item{obj}{
  Any R object.
@@ -58,7 +58,7 @@ by running code within public wikis is also possible from local R-installation.
 
 Besides object storing, this library provides basic functionality to encode and decode R objects. This is done by using R base serialization functions
 and \code{digest} library. Objects given to \code{objects.encode} will be encoded by using \code{AES} function in "ECB" mode.
-Longer key (16,32 or 64 characters) obviously means more secured encryption too. Same key must be used for both encryption and decryption.
+Longer key (16, 32 or 64 characters) obviously means more secured encryption too. Same key must be used for both encryption and decryption.
 
 See also:
 \url{http://en.opasnet.org/}
@@ -75,16 +75,17 @@ See also:
   E. Happonen \email{einari.happonen@thl.fi} 
 }
 \seealso{
-  \code{\link[base]{load}}
-  \code{\link[base]{save}}
-  \code{\link[base]{serialize}}
-  \code{\link[base]{unserialize}}
+  \code{\link[base]{load}} \cr
+  \code{\link[base]{save}} \cr
+  \code{\link[base]{serialize}} \cr
+  \code{\link[base]{unserialize}} \cr
   \code{\link[digest]{AES}}
 }
 \examples{
 library(OpasnetUtils)
 
-# Within Opasnet only! Let's assume that the (en.opasnet.org) page identifier - where to code is - would be "Op_en1390" and code name "objs_save_test".
+# Within Opasnet only! Let's assume that the (en.opasnet.org) page identifier - 
+# where to code is - would be "Op_en1390" and code name "objs_save_test".
 # x <- stats::runif(20)
 # y <- list(a = 1, b = TRUE, c = "Jeah baby jeah!")
 # objects.store(x, y)

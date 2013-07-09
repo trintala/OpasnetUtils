@@ -5,7 +5,7 @@
 Fetch R objects described in a data.frame
 }
 \description{
-Download a batch of R objects from Opasnet servers. Input in simple data.frame format.
+Download a batch of R objects from Opasnet servers.
 }
 \usage{
 Fetch(dependencies, evaluate = FALSE, indent = 0, verbose = TRUE, ...)
@@ -13,23 +13,23 @@ Fetch2(...)
 }
 \arguments{
   \item{dependencies}{
-  data.frame which defines variable names and "locations"
+  \code{data.frame} which defines variable names and "locations"
 }
   \item{evaluate}{
-  TRUE to run \code{\link{EvalOutput}} on each variable (non-\code{ovariables} are ignored)
+  \code{TRUE} to run \code{\link{EvalOutput}} on each variable (non-\code{ovariables} are ignored)
 }
   \item{indent}{
-  integer internal argument for verbose printing
+  \code{integer} internal argument for verbose printing
 }
   \item{verbose}{
-  TRUE to print status messages in between fetches
+  use \code{TRUE} to enable status messages in between fetches
 }
   \item{\dots}{
-  excess arguments are ignored or passed to \code{EvalOutput} if evaluate is TRUE
+  excess arguments are ignored or passed to \code{EvalOutput} if evaluate is \code{TRUE}
 }
 }
 \details{
-The input data.frame should have columns "Name" and at least one of "Key" and "Ident".
+The input \code{data.frame} should have columns "Name" and at least one of "Key" and "Ident".
 
 Key is the R-tools session identifier (shown at the end of the url).
 Ident should be in format <page_id>/<code_name>.
@@ -49,7 +49,12 @@ No return value. Fetched variables are written in \code{.GlobalEnv}.
 T. Rintala \email{teemu.rintala.a@gmail.com}
 }
 \examples{
-#deps <- data.frame(Name = "testvar1", Key = "6WYTFxiZUIxiY8tw")
+deps <- data.frame(Name = "exposure", Key = "6WYTFxiZUIxiY8tw")
 #Fetch(deps)
 #exposure
+
+# If variable exists
+exposure <- 1
+Fetch(deps)
+exposure # by default nothing is changed
 }

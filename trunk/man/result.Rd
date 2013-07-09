@@ -2,10 +2,10 @@
 \alias{result}
 \alias{result<-}
 \title{
-Access result vector of an ovariable
+Access result vector of an \code{ovariable}
 }
 \description{
-A shortcut to the Result column of the data.frame in the output slot of an ovariable.
+A shortcut to the Result column of the \code{data.frame} in the output slot of an \code{ovariable}.
 }
 \usage{
 result(e1)

@@ -11,18 +11,18 @@ dropall(x)
 }
 \arguments{
   \item{x}{
-  a data.frame
+  a \code{data.frame}
 }
 }
 \details{
-This function makes sure that the factor levels in a data.frame do not contain entries that have already been removed from the factor 
+This function makes sure that the \code{factor} \code{levels} in a \code{data.frame} do not contain entries that have already been removed from the \code{factor} 
 itself. 
 
 See also:
 \url{http://en.opasnet.org/}
 }
 \value{
-data.frame
+\code{data.frame}
 }
 
 \author{

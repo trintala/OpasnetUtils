@@ -69,5 +69,5 @@ See also:
 }
 
 \examples{
-#
+%%
 }

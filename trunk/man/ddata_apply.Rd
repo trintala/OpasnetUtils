@@ -39,5 +39,5 @@ T. Rintala \email{teemu.rintala.a@gmail.com}
 \code{\link{ovariable}}
 }
 \examples{
-#
+%%
 }

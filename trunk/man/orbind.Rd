@@ -11,14 +11,14 @@ orbind(x, y)
 }
 \arguments{
   \item{x}{
-  first ovariable
+  first object
 }
   \item{y}{
-  second ovariable
+  second object
 }
 }
 \details{
-Missing columns from each \code{\link{ovariable}} are added to the other and filled with NA. 
+Missing columns from each \code{\link{ovariable}} are added to the other and filled with \code{NA}. 
 
 See also:
 \url{http://en.opasnet.org/}
@@ -32,5 +32,5 @@ J. Tuomisto \email{jouni.tuomisto@thl.fi}
 }
 
 \examples{
-#
+%%s#
 }

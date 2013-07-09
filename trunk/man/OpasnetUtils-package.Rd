@@ -48,7 +48,7 @@ result                  Access result vector of an ovariable
 tidy                    Format database output for use in ovariables
 }
 
-  The operating principle is maximum modularity. Variables are defined publicly on wiki pages using wiki inputs/tables, our database 
+  The operating principle of this package is maximum modularity. Variables are defined publicly on wiki pages using wiki inputs/tables, our database 
   and R code. Using any predefined variable is very easy: fetch the variable from our servers (or your own) and evaluate it. Actual 
   evaluation of variables is done lazily by default: when the evaluation of a variable is explicitly called, all variables it is dependent 
   on are evaluated recursively. There are also a few impact assessment tools like a few GIS functions in the package. 

@@ -7,7 +7,10 @@ Ovariable constructor
 Create \code{\link{ovariable}}s more conveniently
 }
 \usage{
-Ovariable(name = character(), data = data.frame(), formula = function(...) {0}, dependencies = data.frame(), ddata = character(), output = data.frame(), subset = NULL, getddata = TRUE, save = FALSE, public = TRUE, ...)
+Ovariable(name = character(), data = data.frame(), 
+    formula = function(...) {0}, dependencies = data.frame(), 
+    ddata = character(), output = data.frame(), subset = NULL, 
+    getddata = TRUE, save = FALSE, public = TRUE, ...)
 }
 \arguments{
   \item{name}{
@@ -60,6 +63,6 @@ T. Rintala \email{teemu.rintala.a@gmail.com}
 \code{\link{ovariable-class}}
 }
 \examples{
-Ovariable("A", ddata = "Op_en5674", getddata = TRUE)
-k <- Ovariable("k", output = data.frame(B = "a", Result = 1))
+\dontrun{Ovariable("A", ddata = "Op_en5674", getddata = TRUE)}
+\dontrun{k <- Ovariable("k", output = data.frame(B = "a", Result = 1))}
 }
