@@ -5,7 +5,7 @@
 Print ovariables or data frames in html format.
 }
 \description{
-This function uses \code{\link{xtable-package}} to output \code{\link{ovariable}}s or \code{data.frame}s as html formatted tables.
+This function uses \code{\link[xtable]{xtable}} to output \code{\link{ovariable}}s or \code{data.frame}s as html formatted tables.
 }
 \usage{
 oprint(x, show_all = FALSE, sortable = TRUE, ...)
