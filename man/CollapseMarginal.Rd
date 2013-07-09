@@ -39,6 +39,7 @@ See also:
   T. Rintala \email{teemu.rintala.a@gmail.com}
 }
 \examples{
-test <- Ovariable("test", output = data.frame(City = c("Helsinki", "Espoo"), Iter = 1, testResult = 1:2))
+test <- Ovariable("test", output = data.frame(City = c("Helsinki", "Espoo"), 
+    Iter = 1, testResult = 1:2))
 CollapseMarginal(test, "City", NA)
 }
