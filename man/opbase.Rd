@@ -138,6 +138,6 @@ input <- matrix(c('male', 12334435.123, 22, 'female', 234345.23423, 33),
 colnames(input) <- c("Sex","Some number","result")
 input <- as.data.frame(input)
 #res <- opbase.upload(input, ident="op_en1390", name = "Sandbox TEST", 
-    index_types = c('entity','number'), unit = "Age", who='Tester person')
+#    index_types = c('entity','number'), unit = "Age", who='Tester person')
 }
 \keyword{database}
