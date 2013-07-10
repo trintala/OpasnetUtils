@@ -8,7 +8,7 @@ Fetches, evaluates and \code{\link{Check}}s \code{\link{ovariable}} dependencies
 }
 \usage{
 ComputeDependencies(dependencies, forceEval = FALSE, indent = 0, 
-    new_code = FALSE, ...)
+    verbose = FALSE, new_code = FALSE, ...)
 }
 \arguments{
   \item{dependencies}{
@@ -19,6 +19,9 @@ ComputeDependencies(dependencies, forceEval = FALSE, indent = 0,
 }
   \item{indent}{
   verbose print assist for the \code{Check} family, used internally
+}
+  \item{verbose}{
+  TRUE to enable status message printing assists (line breaks) and status messages for other function calls
 }
   \item{new_code}{
   a flag for compatibility with older code, default \code{FALSE} nullifies \code{ComputeDependencies} usage in \code{ovariable} formulas

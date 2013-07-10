@@ -5,10 +5,10 @@
 # '...' can be used for input substitution, na.rm, number of iterations (N) and others
 # new_code is a parameter for old codes where ComputeDependencies was not automated
 
-ComputeDependencies <- function(dependencies, forceEval = FALSE, indent = 0, new_code = FALSE, ...) { 
+ComputeDependencies <- function(dependencies, forceEval = FALSE, indent = 0, verbose = FALSE, new_code = FALSE, ...) { 
 	if (new_code) {
-		cat("\n")
-		Fetch2(dependencies, indent = indent, ...)
+		if (verbose) cat("\n")
+		Fetch2(dependencies, indent = indent, verbose = verbose, ...)
 		for (i in as.character(dependencies$Name)) {
 			# First check if dependency exists at all
 			ret <- tryCatch(get(i), error = function(e) return(NULL))
@@ -16,29 +16,29 @@ ComputeDependencies <- function(dependencies, forceEval = FALSE, indent = 0, new
 			# If dependency is ovariable
 			if (class(get(i)) == "ovariable") {
 				if (nrow(get(i)@output) == 0 | forceEval) {
-					#assign(i, EvalOutput(get(i), indent = indent, ...), envir = .GlobalEnv)
+					#assign(i, EvalOutput(get(i), indent = indent, verbose = verbose, ...), envir = .GlobalEnv)
 					ret1 <- tryCatch(
-						assign(i, EvalOutput(get(i), indent = indent, ...), envir = .GlobalEnv), 
+						assign(i, EvalOutput(get(i), indent = indent, verbose = verbose, ...), envir = .GlobalEnv), 
 						error = function(e) return(NULL)
 					)
 					if (is.null(ret1)) stop(paste("Evaluating", get(i)@name, "failed!"))
 				}
-				#assign(i, CheckMarginals(get(i), indent = indent, ...), envir = .GlobalEnv) # moved to EvalOutput
+				#assign(i, CheckMarginals(get(i), indent = indent, verbose = verbose, ...), envir = .GlobalEnv) # moved to EvalOutput
 				ret2 <- tryCatch(
-					assign(i, CheckInput(get(i), indent = indent, ...), envir = .GlobalEnv), 
+					assign(i, CheckInput(get(i), indent = indent, verbose = verbose, ...), envir = .GlobalEnv), 
 					error = function(e) return(NULL)
 				)
 				if (is.null(ret2)) warning(paste("Input checking", get(i)@name, "failed!"))
-				ret3 <- tryCatch(assign(i, CheckDecisions(get(i), indent = indent, ...), envir = .GlobalEnv), 
+				ret3 <- tryCatch(assign(i, CheckDecisions(get(i), indent = indent, verbose = verbose, ...), envir = .GlobalEnv), 
 						error = function(e) return(NULL)
 				)
 				if (is.null(ret3)) warning(paste("Decision checking", get(i)@name, "failed!"))
-				ret4 <- tryCatch(assign(i, CheckCollapse(get(i), indent = indent, ...), envir = .GlobalEnv), 
+				ret4 <- tryCatch(assign(i, CheckCollapse(get(i), indent = indent, verbose = verbose, ...), envir = .GlobalEnv), 
 						error = function(e) return(NULL)
 				)
 				if (is.null(ret4)) warning(paste("Collapse checking", get(i)@name, "failed!"))
 			}
 		}
-		cat("\n")
+		if (verbose) cat("\n")
 	}
 }
