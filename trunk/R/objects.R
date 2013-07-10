@@ -126,7 +126,7 @@ objects.store <- function(..., list = character(), verbose = FALSE){
 	obj_name <- "Saved R objects"
 	unit <- "#"
 	who <- 'RTools'
-	ident <- objects.page_ident(args$user)
+	ident <- objects.page_ident(args$wiki_page_id)
 	
 	if (verbose) paste('Objects page ident:',print(ident),sep=' ')
 	if (verbose) paste('Data to insert:',print(data),sep=' ')
