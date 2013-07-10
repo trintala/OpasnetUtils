@@ -78,7 +78,6 @@ See also:
   \code{\link[base]{load}} \cr
   \code{\link[base]{save}} \cr
   \code{\link[base]{serialize}} \cr
-  \code{\link[base]{unserialize}} \cr
   \code{\link[digest]{AES}}
 }
 \examples{
