@@ -57,7 +57,8 @@ tidy                    Format database output for use in ovariables
 
 \author{
 T. Rintala, \email{teemu.rintala.a@gmail.com}\cr
-E. Happonen, \email{einari.happonen@thl.fi}
+E. Happonen, \email{einari.happonen@thl.fi}\cr
+J. Tuomisto, \email{jouni.tuomisto@thl.fi}
 
 Maintainer: E. Happonen <einari.happonen@thl.fi>
 }
