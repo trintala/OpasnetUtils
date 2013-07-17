@@ -22,7 +22,7 @@ Fetch <- function(dependencies, evaluate = FALSE, indent = 0, verbose = TRUE, ..
 				if (evaluate) assign(
 						as.character(dependencies$Name[i]), 
 						EvalOutput(get(as.character(dependencies$Name[i])), ...), 
-						envir = .GlobalEnv
+						envir = as.environment(find(dependencies$Name[i]))
 				)
 				if (verbose) cat("\n", rep("-", indent), as.character(dependencies$Name[i]), "fetched successfully!\n")
 			}

@@ -7,11 +7,14 @@ Parsing Collapse orders from a table
 Parses \code{data.frames} of specific format to produce "Col" prefixed lists for \code{\link{CheckCollapse}}
 }
 \usage{
-CollapseTableParser(CTable)
+CollapseTableParser(CTable, env = .GlobalEnv)
 }
 \arguments{
   \item{CTable}{
   a data.frame with columns "Variable" (variable names), "Index" (column names) and "Probs" (propabilities of column levels in marginal distribution, comma separated)
+}
+  \item{env}{
+  target \code{environment}, default is \code{.GlobalEnv}
 }
 }
 \details{
@@ -22,7 +25,7 @@ See also:
 \url{http://en.opasnet.org/}
 }
 \value{
-No return value, "Col" prefixed variables are written straight into \code{.GlobalEnv}.
+No return value, "Col" prefixed variables are written straight into specified \code{environment}.
 }
 \author{
 T. Rintala \email{teemu.rintala.a@gmail.com}
