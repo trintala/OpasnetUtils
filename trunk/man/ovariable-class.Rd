@@ -60,7 +60,7 @@ T. Rintala \email{teemu.rintala.a@gmail.com}
 \seealso{
 \code{\link{Ovariable}}
 }
-\examples{
+%\examples{
 %%showClass("ovariable")
-}
+%}
 \keyword{classes}

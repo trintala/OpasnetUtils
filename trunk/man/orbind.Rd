@@ -31,6 +31,6 @@ Returns a \code{data.frame}
 J. Tuomisto \email{jouni.tuomisto@thl.fi}
 }
 
-\examples{
+%\examples{
 %%s#
-}
+%}
