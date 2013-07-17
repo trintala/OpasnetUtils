@@ -5,14 +5,14 @@
 # Also loses all non-marginal columns except the relevant Result
 #####################################
 
-CollapseTableParser <- function(CTable){ # CTable is a data.frame
+CollapseTableParser <- function(CTable, env = .GlobalEnv){ # CTable is a data.frame
 	for (i in unique(as.character(CTable$Variable))) {
 		temp <- CTable[CTable$Variable == i,] # c("Decision", "Option")]
 		cols <- temp[["Index"]]
 		probs <- strsplit(as.character(temp[["Probs"]]), ",")
 		probs <- lapply(probs, as.numeric)
 		out <- list(cols = cols, probs = probs)
-		assign(paste("Col", i, sep = ""), out, envir = .GlobalEnv)
+		assign(paste("Col", i, sep = ""), out, envir = env)
 	}
 }
 

@@ -141,11 +141,11 @@ setClass(
 	)
 )
 
-DecisionTableParser <- function(DTable){ # DTable is a data.frame
+DecisionTableParser <- function(DTable, env = .GlobalEnv){ # DTable is a data.frame
 	for (i in unique(as.character(DTable$Variable))) {
 		temp <- DTable[DTable$Variable == i,] # c("Decision", "Option")]
 		out <- new("odecision", dectable = temp)
-		assign(paste("Dec", i, sep = ""), out, envir = .GlobalEnv)
+		assign(paste("Dec", i, sep = ""), out, envir = env)
 	}
 }
 
