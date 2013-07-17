@@ -46,6 +46,6 @@ No return value
 \author{
 T. Rintala \email{teemu.rintala.a@gmail.com}
 }
-\examples{
+%\examples{
 %%
-}
+%}

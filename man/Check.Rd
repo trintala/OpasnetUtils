@@ -68,6 +68,6 @@ See also:
   T. Rintala \email{teemu.rintala.a@gmail.com}
 }
 
-\examples{
+%\examples{
 %%
-}
+%}

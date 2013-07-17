@@ -34,7 +34,7 @@ See also:
 \url{http://en.opasnet.org/}
 }
 
-\examples{
+%\examples{
 %%showClass("odecision")
-}
+%}
 \keyword{classes}
