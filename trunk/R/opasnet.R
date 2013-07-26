@@ -60,6 +60,38 @@ opasnet.csv <- function(filename, wiki='', unzip = '', ...) {
 	
 }
 
+# Get R data from Opasnet
+#
+# filename - Name of the file
+# wiki - Source Wiki: opasnet_en (default), opasnet_fi, heande (.htaccess protected)
+# unzip - File name in package (if compressed)
+#
+# Loads file contents to .GlobalEnv
+
+opasnet.R <- function(filename,wiki='', unzip='') {
+	
+	now <- Sys.time()
+	
+	file <- opbase.file_url(filename, wiki)
+	
+	if (unzip != '')
+	{
+		f <- tempfile(pattern = 'opasnet.R.', fileext = '.zip')
+		bin <- getBinaryURL(file)
+		con <- file(f, open = "wb")
+		writeBin(bin, con)
+		close(con)
+		con <- unz(f, unzip)
+		load(con, .GlobalEnv)
+		#return(paste(readLines(con),collapse="\n"))
+	}
+	else
+	{
+		load(getURL(file), .GlobalEnv)
+		#return(getURL(file))
+	}
+}
+
 # Private function to get file url for given wiki
 opbase.file_url <- function(filename, wiki)
 {

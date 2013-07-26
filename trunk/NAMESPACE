@@ -50,6 +50,8 @@ export(
 	ddata_apply,
 	fillna,
 	"result<-",
-	result#,
-	#xtable
+	result,
+	Optimize,
+	Minimize,
+	opasnet.R
 )
