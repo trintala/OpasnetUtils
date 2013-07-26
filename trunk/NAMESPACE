@@ -52,6 +52,6 @@ export(
 	"result<-",
 	result,
 	Optimize,
-	Minimize,
-	opasnet.R
+	Minimize#,
+	#opasnet.R
 )

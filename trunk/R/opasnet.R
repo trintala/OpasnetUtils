@@ -68,29 +68,29 @@ opasnet.csv <- function(filename, wiki='', unzip = '', ...) {
 #
 # Loads file contents to .GlobalEnv
 
-opasnet.R <- function(filename,wiki='', unzip='') {
-	
-	now <- Sys.time()
-	
-	file <- opbase.file_url(filename, wiki)
-	
-	if (unzip != '')
-	{
-		f <- tempfile(pattern = 'opasnet.R.', fileext = '.zip')
-		bin <- getBinaryURL(file)
-		con <- file(f, open = "wb")
-		writeBin(bin, con)
-		close(con)
-		con <- unz(f, unzip)
-		load(con, .GlobalEnv)
-		#return(paste(readLines(con),collapse="\n"))
-	}
-	else
-	{
-		load(getURL(file), .GlobalEnv)
-		#return(getURL(file))
-	}
-}
+#opasnet.R <- function(filename,wiki='', unzip='') {
+#	
+#	now <- Sys.time()
+#	
+#	file <- opbase.file_url(filename, wiki)
+#	
+#	if (unzip != '')
+#	{
+#		f <- tempfile(pattern = 'opasnet.R.', fileext = '.zip')
+#		bin <- getBinaryURL(file)
+#		con <- file(f, open = "wb")
+#		writeBin(bin, con)
+#		close(con)
+#		con <- unz(f, unzip)
+#		load(con, .GlobalEnv)
+#		#return(paste(readLines(con),collapse="\n"))
+#	}
+#	else
+#	{
+#		load(getURL(file), .GlobalEnv)
+#		#return(getURL(file))
+#	}
+#}
 
 # Private function to get file url for given wiki
 opbase.file_url <- function(filename, wiki)
