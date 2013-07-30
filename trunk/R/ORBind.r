@@ -45,7 +45,7 @@ combine <- function(..., name = character()) {
 	for (i in 1:length(variable_list)) {
 		
 		var <- variable_list[[i]]
-		old_source_col <- paste(var@name, "Source")
+		old_source_col <- paste(var@name, "Source", sep = "")
 		
 		# Get index column names (excluding own source)
 		temp <- colnames(var@output)[var@marginal & colnames(var@output) != old_source_col]
