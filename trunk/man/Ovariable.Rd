@@ -9,8 +9,8 @@ Create \code{\link{ovariable}}s more conveniently
 \usage{
 Ovariable(name = character(), data = data.frame(), 
     formula = function(...) {0}, dependencies = data.frame(), 
-    ddata = character(), output = data.frame(), subset = NULL, 
-    getddata = TRUE, save = FALSE, public = TRUE, ...)
+    ddata = character(), output = data.frame(), marginal = logical(), 
+    subset = NULL, getddata = TRUE, save = FALSE, public = TRUE, ...)
 }
 \arguments{
   \item{name}{
@@ -30,6 +30,9 @@ Ovariable(name = character(), data = data.frame(),
 }
   \item{output}{
   \code{data.frame} for the output slot
+}
+  \item{output}{
+  \code{logical} for the marginal slot
 }
   \item{subset}{
   \code{character} string specifying an Opasnet Base subset (See \code{\link{opbase.data}} for details)
