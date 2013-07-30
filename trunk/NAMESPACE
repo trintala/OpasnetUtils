@@ -7,10 +7,8 @@ export(
 	oprint,
 	oapply,
 	orbind,
-	#summary, 
 	op_baseGetData,
 	op_baseGetLocs,
-	#op_baseWrite,
 	opbase.locations,
 	opbase.obj.exists,
 	opbase.series,
@@ -34,9 +32,6 @@ export(
 	CheckMarginals,
 	CheckInput,
 	ComputeDependencies,
-	#merge,
-	#plot,
-	#print, #not in methods
 	Ops,
 	Math,
 	CheckDecisions,
@@ -52,6 +47,6 @@ export(
 	"result<-",
 	result,
 	Optimize,
-	Minimize#,
-	#opasnet.R
+	Minimize,
+	combine
 )

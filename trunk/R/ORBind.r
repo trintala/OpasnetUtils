@@ -27,13 +27,54 @@ addmissingcol <- function(e1, e2) { #Adds all missing columns. Merges Iter if th
 	return(cbind(e1, col))
 }
 
-# Combine
+##############
+# Combine 
+################
+# Combine ovariables, similar to orbind but has a different operating principle and allows multiple ovariables
+# at once. 
+# ... - any number of ovariables separated by commas
+# name - of the resulting ovariable
+#############
 
-combine <- function(...) {
+
+combine <- function(..., name = character()) {
 	variable_list <- list(...)
+	new_source_col <- paste(name, "Source", sep = "")
+	new_res_col <- paste(name, "Result", sep = "")
 	marginals <- character()
-	for (i in variable_list) {
-		marginals <- c(marginals, colnames(i@output)[i@marginal])
+	for (i in 1:length(variable_list)) {
+		
+		var <- variable_list[[i]]
+		old_source_col <- paste(var@name, "Source")
+		
+		# Get index column names (excluding own source)
+		temp <- colnames(var@output)[var@marginal & colnames(var@output) != old_source_col]
+		marginals <- c(marginals, as.character(temp))
+		
+		# Reformat source columns
+		temp <- var@output[[old_source_col]]
+		colnames(var@output)[colnames(var@output) == old_source_col] <- new_source_col
+		var@output[[new_source_col]] <- paste(var@name, temp, sep = "") # XFormula, XData, X, etc.
+		
+		# Rename individual result columns to common name
+		
+		colnames(var@output)[colnames(var@output) == paste(var@name, "Result", sep = "")] <- new_res_col
+		
+		# Overwrite existing variable in list
+		variable_list[[i]] <- var
 	}
 	
+	marginals <- unique(marginals)
+	out <- data.frame()
+	for (i in variable_list) {
+		temp <- i@output
+		missing <- marginals[!marginals %in% colnames(temp)]
+		for (j in missing) {
+			temp[[j]] <- NA
+		}
+		out <- rbind(out, temp[c(marginals, new_source_col, new_res_col)])
+	}
+	
+	out <- Ovariable(name, output = out, marginal = c(rep(TRUE, ncol(out) - 1), FALSE))
+	return(out)
 }
