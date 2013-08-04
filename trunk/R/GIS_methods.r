@@ -42,8 +42,56 @@ GIS.Exposure <- function(
 	disty = 10.5, 
 	resolution = 1,
 	dbug = FALSE,
+	test = FALSE, 
 	...
 ) {
+	if (test) {
+		bounds = unique(Concentration.matrix@output[c("LAbin", "LObin")])
+		LAlower = NA
+		LAupper = NA
+		LOlower = NA
+		LOupper = NA
+		
+		Population <- data.frame()
+		for (i in 1:nrow(bounds)) {
+			tmp <- strsplit(as.character(bounds$LAbin[i]), ",")[[1]]
+			LAlower[i] <- substring(tmp[1], 2, nchar(tmp[1]))
+			LAupper[i] <- substring(tmp[2], 1, nchar(tmp[2])-1)
+			tmp <- strsplit(as.character(bounds$LObin[i]), ",")[[1]]
+			LOlower[i] <- substring(tmp[1], 2, nchar(tmp[1]))
+			LOupper[i] <- substring(tmp[2], 1, nchar(tmp[2])-1)
+			
+			pop <- tidy(
+				opbase.data(
+					"Op_en2949", 
+					subset = "2012",
+					range = list(
+						XKOORD = c(LOlower, LOupper),
+						YKOORD = c(LAlower, LAupper)
+					)
+				)
+			)
+			
+			pop <- merge(bounds[i,], pop)
+			
+			Population <- rbind(Population, pop)
+		}
+		
+		if (is.null(Population)) stop('No population data at these coordinates.')
+		if (dbug) print(nrow(Population))
+		
+		Population <- Ovariable(output = Population, marginal = colnames(Population) %in% c("Iter", "LObin", "LAbin"))
+		
+		if(dbug) {
+			cat(colnames(Concentration.matrix@output), "\n")
+			cat(colnames(Population@output), "\n")
+		}
+		
+		# Calculating exposure. 
+		out <- Population * Concentration.matrix
+		
+		return(out)
+	}
 	if (is.null(LO)|is.null(LA)) {
 		bounds = unique(Concentration.matrix@output[c("LAbin", "LObin")])
 		LAlower = NA
@@ -73,12 +121,12 @@ GIS.Exposure <- function(
 			else {
 				inc = list(Latitude = LAlocs, Longitude = LOlocs)
 				pop <- tidy(
-					opbase.data(
-						'Heande3182', 
-						username='heande', 
-						password=opbase.read_auth('heande'), 
-						include = inc
-					)
+						opbase.data(
+								'Heande3182', 
+								username='heande', 
+								password=opbase.read_auth('heande'), 
+								include = inc
+						)
 				)
 				if (first) {
 					Population <- pop
@@ -154,7 +202,7 @@ GIS.Exposure <- function(
 			#	pop.locs$ind == "Longitude" &
 			#	!pop.locs$loc_id %in% pop.slice.lo
 			#]
-		
+			
 			if (length(pop.slice.lo) == 0 || length(pop.slice.la) == 0) stop('No population on selected LA + LO')
 			
 			if(dbug) {
@@ -179,8 +227,8 @@ GIS.Exposure <- function(
 		Population$LAbin <- cut(Population$Latitude, breaks = LA + seq(-disty, disty, resolution) * LaPerKm)
 	}
 	Population <- new(
-		"ovariable",
-		output = Population
+			"ovariable",
+			output = Population
 	)
 	# Define population marginal. 
 	Population@marginal <- colnames(Population@output) %in% c("Iter", "LObin", "LAbin")
@@ -197,10 +245,10 @@ GIS.Exposure <- function(
 	#temp <- oapply(temp, cols = c("LObin", "LAbin"), sum)
 	# Sum over spatial data.
 	out <- tapply(
-		temp@output$Result, 
-		temp@output[,colnames(temp@output)[temp@marginal & !colnames(temp@output) %in% c("LObin", "LAbin")]], 
-		sum,
-		na.rm = TRUE
+			temp@output$Result, 
+			temp@output[,colnames(temp@output)[temp@marginal & !colnames(temp@output) %in% c("LObin", "LAbin")]], 
+			sum,
+			na.rm = TRUE
 	)
 	
 	out <- as.data.frame(as.table(out))
