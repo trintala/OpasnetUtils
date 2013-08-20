@@ -171,7 +171,9 @@ fillna <- function(object, marginals) {
 		a[[i]] <- as.factor(a[[i]])
 		a1 <- a[!(is.na(a[[i]]) | a[[i]] == ""), ]
 		a2 <- a[(is.na(a[[i]]) | a[[i]] == ""), ][-i]
-		addition <- data.frame(A = levels(a[[i]]))
+		set <- levels(a[[i]])
+		set <- set[set != ""]
+		addition <- data.frame(A = set)
 		colnames(addition) <- colnames(a)[i]
 		a2 <- merge(addition, a2)
 		a <- rbind(a1, a2)
