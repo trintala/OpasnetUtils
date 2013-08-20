@@ -31,7 +31,7 @@ addmissingcol <- function(e1, e2) { #Adds all missing columns. Merges Iter if th
 # Combine 
 ################
 # Combine ovariables, similar to orbind but has a different operating principle and allows multiple ovariables
-# at once. 
+# at once. Source is preserved but it is no longer a full marginal. 
 # ... - any number of ovariables separated by commas
 # name - of the resulting ovariable
 #############
@@ -45,6 +45,8 @@ combine <- function(..., name = character()) {
 	for (i in 1:length(variable_list)) {
 		
 		var <- variable_list[[i]]
+		if (class(var) != "ovariable") stop(paste("Variable #", i, "not ovariable."))
+		if (nrow(var@output) == 0) stop(paste(var@name, "not evaluated."))
 		old_source_col <- paste(var@name, "Source", sep = "")
 		
 		# Get index column names (excluding own source)
@@ -75,6 +77,6 @@ combine <- function(..., name = character()) {
 		out <- rbind(out, temp[c(marginals, new_source_col, new_res_col)])
 	}
 	
-	out <- Ovariable(name, output = out, marginal = c(rep(TRUE, ncol(out) - 1), FALSE))
+	out <- Ovariable(name, output = out, marginal = c(rep(TRUE, ncol(out) - 2), FALSE, FALSE)) # all marginals except new source and res
 	return(out)
 }
