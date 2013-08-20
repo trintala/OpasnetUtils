@@ -227,7 +227,7 @@ setMethod(
 setMethod(
 		f = "summary", 
 		signature = signature(object = "ovariable"), 
-		definition = function(object, function_names = character(), marginals = character(), ...) {
+		definition = function(object, function_names = character(), marginals = character(), hide_source = TRUE, ...) {
 			test <- paste(object@name, "Result", sep = "") %in% colnames(object@output)
 			rescol <- ifelse(test, paste(object@name, "Result", sep = ""), "Result")
 			#object@output <- object@output[ , -grep("Description|Source", colnames(object@output))] # not a necessary line
@@ -250,6 +250,16 @@ setMethod(
 			# If marginals are not defined the data is assumed probabilistic and the summary to be about the distribution
 			if(length(marginals)==0) {
 				marginals <- colnames(object@output)[object@marginal & colnames(object@output) != "Iter"]
+				
+				# Hide single source source-columns if hide_source is TRUE.
+				if (hide_source == TRUE) {
+					source_cols <- marginals[grep("Source$", marginals)]
+					for (i in source_cols) {
+						if (length(unique(object@output[[i]])) == 1) {
+							marginals <- marginals[marginals != i]
+						}
+					}
+				}
 			}
 			
 			# Apply the selected functions

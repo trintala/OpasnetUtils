@@ -169,8 +169,8 @@ fillna <- function(object, marginals) {
 	a <- dropall(object)
 	for(i in marginals) {
 		a[[i]] <- as.factor(a[[i]])
-		a1 <- a[!is.na(a[[i]]), ]
-		a2 <- a[is.na(a[[i]]), ][-i]
+		a1 <- a[!(is.na(a[[i]]) | a[[i]] == ""), ]
+		a2 <- a[(is.na(a[[i]]) | a[[i]] == ""), ][-i]
 		addition <- data.frame(A = levels(a[[i]]))
 		colnames(addition) <- colnames(a)[i]
 		a2 <- merge(addition, a2)
