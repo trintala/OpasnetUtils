@@ -255,7 +255,9 @@ setMethod(
 				if (hide_source == TRUE) {
 					source_cols <- marginals[grep("Source$", marginals)]
 					for (i in source_cols) {
-						if (length(unique(object@output[[i]])) == 1) {
+						locs <- unique(object@output[[i]])
+						locs <- locs[!is.na(locs)]
+						if (length(locs) == 1) {
 							marginals <- marginals[marginals != i]
 						}
 					}
