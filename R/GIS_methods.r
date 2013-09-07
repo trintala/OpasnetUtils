@@ -36,230 +36,73 @@ dphi.dx <- function(r, theta) 1 / (cos(theta * pi / 180) * r) * 180 / pi
 
 GIS.Exposure <- function(
 	Concentration.matrix, 
-	LO = NULL, 
-	LA = NULL, 
-	distx = 10.5, 
-	disty = 10.5, 
-	resolution = 1,
 	dbug = FALSE,
-	test = FALSE, 
 	...
 ) {
-	if (test) {
-		bounds = unique(Concentration.matrix@output[c("LAbin", "LObin")])
-		LAlower = NA
-		LAupper = NA
-		LOlower = NA
-		LOupper = NA
+	bounds <- unique(Concentration.matrix@output[c("LAbin", "LObin")])
+	LAlower <- NA
+	LAupper <- NA
+	LOlower <- NA
+	LOupper <- NA
+	koord_lower <- list()
+	koord_upper <- list()
+	a <- 1
+	
+	Population <- data.frame()
+	for (i in 1:nrow(bounds)) {
+		if (dbug) {
+			cat("Internal loop", a, "start time:", as.character(Sys.time()), ".\n")
+			a <- a+1
+		}
+		tmp <- strsplit(as.character(bounds$LAbin[i]), ",")[[1]]
+		LAlower[i] <- as.numeric(substring(tmp[1], 2, nchar(tmp[1])))
+		LAupper[i] <- as.numeric(substring(tmp[2], 1, nchar(tmp[2])-1))
+		tmp <- strsplit(as.character(bounds$LObin[i]), ",")[[1]]
+		LOlower[i] <- as.numeric(substring(tmp[1], 2, nchar(tmp[1])))
+		LOupper[i] <- as.numeric(substring(tmp[2], 1, nchar(tmp[2])-1))
 		
-		Population <- data.frame()
-		for (i in 1:nrow(bounds)) {
-			tmp <- strsplit(as.character(bounds$LAbin[i]), ",")[[1]]
-			LAlower[i] <- substring(tmp[1], 2, nchar(tmp[1]))
-			LAupper[i] <- substring(tmp[2], 1, nchar(tmp[2])-1)
-			tmp <- strsplit(as.character(bounds$LObin[i]), ",")[[1]]
-			LOlower[i] <- substring(tmp[1], 2, nchar(tmp[1]))
-			LOupper[i] <- substring(tmp[2], 1, nchar(tmp[2])-1)
-			
-			pop <- tidy(
+		koord_lower[[i]] <- koordGT(LAlower[i], LOlower[i])
+		koord_upper[[i]] <- koordGT(LAupper[i], LOupper[i])
+		
+		# Use error handling in case no data found within bounds
+		pop <- tryCatch(
+			tidy(
 				opbase.data(
 					"Op_en2949", 
 					subset = "2012",
 					range = list(
-						XKOORD = c(LOlower, LOupper),
-						YKOORD = c(LAlower, LAupper)
+						XKOORD = c(koord_lower[[i]]$E, koord_upper[[i]]$E), #XKOORD = c(LOlower, LOupper),
+						YKOORD = c(koord_lower[[i]]$N, koord_upper[[i]]$N)#YKOORD = c(LAlower, LAupper)
 					)
 				)
-			)
-			
+			), 
+			error = function(...) return(NULL)
+		)
+		if (!is.null(pop)) {
 			pop <- merge(bounds[i,], pop)
 			
 			Population <- rbind(Population, pop)
 		}
-		
-		if (is.null(Population)) stop('No population data at these coordinates.')
-		if (dbug) print(nrow(Population))
-		
-		Population <- Ovariable(output = Population, marginal = colnames(Population) %in% c("Iter", "LObin", "LAbin"))
-		
-		if(dbug) {
-			cat(colnames(Concentration.matrix@output), "\n")
-			cat(colnames(Population@output), "\n")
-		}
-		
-		# Calculating exposure. 
-		out <- Population * Concentration.matrix
-		
-		return(out)
 	}
-	if (is.null(LO)|is.null(LA)) {
-		bounds = unique(Concentration.matrix@output[c("LAbin", "LObin")])
-		LAlower = NA
-		LAupper = NA
-		LOlower = NA
-		LOupper = NA
-		
-		PopLocs.la <- opbase.locations('Heande3182', 'Latitude', username='heande', password=opbase.read_auth('heande'))
-		PopLocs.la <- unlist(PopLocs.la)
-		PopLocs.lo <- opbase.locations('Heande3182', 'Longitude', username='heande', password=opbase.read_auth('heande'))
-		PopLocs.lo <- unlist(PopLocs.lo)
-		
-		Population <- NULL
-		first <- TRUE
-		for (i in 1:nrow(bounds)) {
-			tmp <- strsplit(as.character(bounds$LAbin[i]), ",")[[1]]
-			LAlower[i] <- substring(tmp[1], 2, nchar(tmp[1]))
-			LAupper[i] <- substring(tmp[2], 1, nchar(tmp[2])-1)
-			tmp <- strsplit(as.character(bounds$LObin[i]), ",")[[1]]
-			LOlower[i] <- substring(tmp[1], 2, nchar(tmp[1]))
-			LOupper[i] <- substring(tmp[2], 1, nchar(tmp[2])-1)
-			LAlocs <- PopLocs.la[as.numeric(PopLocs.la) > as.numeric(LAlower) & as.numeric(PopLocs.la) <= as.numeric(LAupper)]
-			LOlocs <- PopLocs.lo[as.numeric(PopLocs.lo) > as.numeric(LOlower) & as.numeric(PopLocs.lo) <= as.numeric(LOupper)]
-			if (length(LAlocs) == 0 || length(LOlocs) == 0) {
-				warning(paste('Population data missing in LA', LAlower[i], 'to', LAupper[i], 'LO', LOlower[i], 'to', LOupper[i]))
-			}
-			else {
-				inc = list(Latitude = LAlocs, Longitude = LOlocs)
-				pop <- tidy(
-						opbase.data(
-								'Heande3182', 
-								username='heande', 
-								password=opbase.read_auth('heande'), 
-								include = inc
-						)
-				)
-				if (first) {
-					Population <- pop
-					first <- FALSE
-				}
-				else {
-					Population <- rbind(Population, pop)
-				}
-			}
-		}
-		if (is.null(Population)) stop('No population data at these coordinates.')
-		if (dbug) print(nrow(Population))
-		
-		LAcuts <- unique(c(-Inf, as.numeric(LAlower), as.numeric(LAupper), Inf))
-		LOcuts <- unique(c(-Inf, as.numeric(LOlower), as.numeric(LOupper), Inf))
-		
-		Population$LAbin <- cut(as.numeric(as.character(Population$Latitude)), LAcuts)
-		Population$LObin <- cut(as.numeric(as.character(Population$Longitude)), LOcuts)
-	}
-	else { # Old implementation
-		# Ideally Longitude per kilometer would be calculated for each horizontal gridline separately, but satisfactory accuracy is achieved
-		# by just approximating it at the center. 
-		LaPerKm <- dtheta.dy(earth.radius)
-		LoPerKm <- dphi.dx(earth.radius, LA)
-		
-		if(dbug) {
-			cat("LaPerKm = ", LaPerKm, "\n")
-			cat("LoPerKm = ", LoPerKm, "\n")
-		}
-		
-		
-		# Population. A function that searches and returns only relevant data from the database. Defined inside of GIS.Exposure to make it 
-		# inaccessible outside of this function as the data involved is protected. Parameters are self explanatory or have been discussed above. 
-		
-		Population <- function(LO, LA, LaPerKm, LoPerKm, distx = 10.5, disty = 10.5, dbug = FALSE) {
-			# Small wrapper functions used inside this function
-			#GetPopLocs <- function(...) {
-			#	return(opbase.old.locations.read("heande_base", "Heande3182", use.utf8 = TRUE, apply.utf8 = FALSE, ...))
-			#}
-			GetPopLocs <- function(index_name)
-			{
-				return(opbase.locations('Heande3182', index_name, username='heande', password=opbase.read_auth('heande')))
-			}
-			
-			GetPopData <- function(...) {
-				#return(opbase.old.read("heande_base", "Heande3182", use.utf8 = TRUE, apply.utf8 = FALSE, ...))
-				return(opbase.data('Heande3182', username='heande', password=opbase.read_auth('heande'), ...))
-			}
-			# Download list of locations in data. 
-			#pop.locs <- GetPopLocs()
-			if (dbug) print("Fetching latitudes and longitudes...")
-			locs.la <- GetPopLocs('Latitude')
-			locs.lo <- GetPopLocs('Longitude')
-			if (dbug) print('Done!')
-			
-			# Define selection where latitude falls within disty km of given coordinates.
-			pop.slice.la <- locs.la[locs.la < LA + disty * LaPerKm & locs.la > LA - disty * LaPerKm]
-			#pop.slice.la <- pop.locs$loc_id[
-			#	pop.locs$ind == "Latitude" & 
-			#	pop.locs$loc < LA + disty * LaPerKm & 
-			#	pop.locs$loc > LA - disty * LaPerKm
-			#]
-			# Define selection where longitude is beyond distx.
-			pop.slice.lo <- locs.lo[locs.lo < LO + distx * LoPerKm & locs.lo > LO - distx * LoPerKm]
-			#]
-			#pop.slice.lo <- pop.locs$loc_id[
-			#	pop.locs$ind == "Longitude" &
-			#	pop.locs$loc < LO + distx * LoPerKm &
-			#	pop.locs$loc > LO - distx * LoPerKm
-			#]
-			# Define inverse of that because of the current database structure. 
-			#pop.slice.lo.inverse <- pop.locs$loc_id[
-			#	pop.locs$ind == "Longitude" &
-			#	!pop.locs$loc_id %in% pop.slice.lo
-			#]
-			
-			if (length(pop.slice.lo) == 0 || length(pop.slice.la) == 0) stop('No population on selected LA + LO')
-			
-			if(dbug) {
-				cat("Matching LA locations in population data: ", paste(pop.slice.la, collapse = ", "), ".\n")
-				cat("Matching LO locations in population data: ", paste(pop.slice.lo, collapse = ", "), ".\n")
-			}
-			# Download data within defined selection.
-			#Population <- tidy(GetPopData(include = pop.slice.la, exclude = pop.slice.lo.inverse))
-			if (dbug) print('Fetching the population data...')
-			Population <- tidy(GetPopData(include = list('Latitude' = pop.slice.la, 'Longitude' = pop.slice.lo))) 
-			if (dbug) print('Done!')
-			# Convert textual values into numbers. 
-			Population$Longitude <- as.numeric(as.character(Population$Longitude))
-			Population$Latitude <- as.numeric(as.character(Population$Latitude))
-			return(Population)
-		}
-		# Use function defined above
-		Population <- Population(LO, LA, LaPerKm, LoPerKm, dbug = dbug)
-		if (dbug) print(nrow(Population))
-		# Bin Population data into the defined grid. 
-		Population$LObin <- cut(Population$Longitude, breaks = LO + seq(-distx, distx, resolution) * LoPerKm)
-		Population$LAbin <- cut(Population$Latitude, breaks = LA + seq(-disty, disty, resolution) * LaPerKm)
-	}
-	Population <- new(
-			"ovariable",
-			output = Population
-	)
-	# Define population marginal. 
-	Population@marginal <- colnames(Population@output) %in% c("Iter", "LObin", "LAbin")
+	
+	if (nrow(Population) == 0) stop('No population data at these coordinates.')
+	if (dbug) print(nrow(Population))
+	
+	colnames(Population)[colnames(Population)=="Result"] <- "PopulationResult"
+	
+	Population$PopulationResult <- ifelse(Population$PopulationResult < 0, 0, Population$PopulationResult)
+	
+	Population <- Ovariable("Population", output = Population, marginal = colnames(Population) %in% c("Iter", "LObin", "LAbin", "HAVAINTO"))
 	
 	if(dbug) {
 		cat(colnames(Concentration.matrix@output), "\n")
 		cat(colnames(Population@output), "\n")
 	}
+	
 	# Calculating exposure. 
-	temp <- Population * Concentration.matrix
+	out <- Population * Concentration.matrix
 	
-	if(dbug) cat(colnames(temp@output), "\n")
-	
-	#temp <- oapply(temp, cols = c("LObin", "LAbin"), sum)
-	# Sum over spatial data.
-	out <- tapply(
-			temp@output$Result, 
-			temp@output[,colnames(temp@output)[temp@marginal & !colnames(temp@output) %in% c("LObin", "LAbin")]], 
-			sum,
-			na.rm = TRUE
-	)
-	
-	out <- as.data.frame(as.table(out))
-	
-	colnames(out)[colnames(out) == "Freq"] <- "Result"
-	
-	temp@marginal <- colnames(out) %in% colnames(temp@output)[temp@marginal] & !colnames(out) %in% c("LObin", "LAbin")
-	
-	temp@output <- out
-	
-	return(temp)
+	return(out)
 }
 
 ######################################################
