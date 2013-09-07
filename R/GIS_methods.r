@@ -61,32 +61,75 @@ GIS.Exposure <- function(
 		LOlower[i] <- as.numeric(substring(tmp[1], 2, nchar(tmp[1])))
 		LOupper[i] <- as.numeric(substring(tmp[2], 1, nchar(tmp[2])-1))
 		
-		koord_lower[[i]] <- koordGT(LAlower[i], LOlower[i])
-		koord_upper[[i]] <- koordGT(LAupper[i], LOupper[i])
+		# Multiple database reads --> extremely slow
+		
+		#koord_lower[[i]] <- koordGT(LAlower[i], LOlower[i])
+		#koord_upper[[i]] <- koordGT(LAupper[i], LOupper[i])
 		
 		# Use error handling in case no data found within bounds
-		pop <- tryCatch(
-			tidy(
-				opbase.data(
-					"Op_en2949", 
-					subset = "2012",
-					range = list(
-						XKOORD = c(koord_lower[[i]]$E, koord_upper[[i]]$E), #XKOORD = c(LOlower, LOupper),
-						YKOORD = c(koord_lower[[i]]$N, koord_upper[[i]]$N)#YKOORD = c(LAlower, LAupper)
-					)
-				)
-			), 
-			error = function(...) return(NULL)
-		)
-		if (!is.null(pop)) {
-			pop <- merge(bounds[i,], pop)
-			
-			Population <- rbind(Population, pop)
-		}
+		#pop <- tryCatch(
+		#	tidy(
+		#		opbase.data(
+		#			"Op_en2949", 
+		#			subset = "2012",
+		#			range = list(
+		#				XKOORD = c(koord_lower[[i]]$E, koord_upper[[i]]$E), #XKOORD = c(LOlower, LOupper),
+		#				YKOORD = c(koord_lower[[i]]$N, koord_upper[[i]]$N)#YKOORD = c(LAlower, LAupper)
+		#			)
+		#		)
+		#	), 
+		#	error = function(...) return(NULL)
+		#)
+		#if (!is.null(pop)) {
+		#	pop <- merge(bounds[i,], pop)
+		#	
+		#	Population <- rbind(Population, pop)
+		#}
 	}
 	
+	koord_lower <- koordGT(LAlower, LOlower)
+	koord_upper <- koordGT(LAupper, LOupper)
+	XKOORD <- c(min(c(koord_lower$E, koord_upper$E)), max(c(koord_lower$E, koord_upper$E)))
+	YKOORD <- c(min(c(koord_lower$N, koord_upper$N)), max(c(koord_lower$N, koord_upper$N)))
+	
+	if (dbug) cat(XKOORD, YKOORD, "\n")
+	
+	Population <- tryCatch(
+		tidy(
+			opbase.data(
+				"Op_en2949", 
+				subset = "2012",
+				range = list(
+					XKOORD = XKOORD, #XKOORD = c(LOlower, LOupper),
+					YKOORD = YKOORD #YKOORD = c(LAlower, LAupper)
+				)
+			)
+		), 
+		error = function(...) return(NULL)
+	)
+	
 	if (nrow(Population) == 0) stop('No population data at these coordinates.')
-	if (dbug) print(nrow(Population))
+	if (dbug) cat(nrow(Population), "\n")
+	
+	Population$LObin <- NA
+	Population$LAbin <- NA
+	
+	a <- 1
+	
+	for (i in 1:nrow(bounds)) {
+		cond <- (
+			Population$XKOORD > koord_lower$E[i] & 
+			Population$XKOORD <= koord_upper$E[i] &
+			Population$YKOORD > koord_lower$N[i] & 
+			Population$YKOORD <= koord_upper$N[i]
+		)
+		if (dbug) {
+			cat("Bound", a, "matching rows:", sum(cond), "\n")
+			a <- a+1
+		}
+		Population[cond, "LObin"] <- as.character(bounds[i, "LObin"])
+		Population[cond, "LAbin"] <- as.character(bounds[i, "LAbin"])
+	}
 	
 	colnames(Population)[colnames(Population)=="Result"] <- "PopulationResult"
 	
