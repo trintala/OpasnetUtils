@@ -102,7 +102,8 @@ GIS.Exposure <- function(
 				range = list(
 					XKOORD = XKOORD, #XKOORD = c(LOlower, LOupper),
 					YKOORD = YKOORD #YKOORD = c(LAlower, LAupper)
-				)
+				),
+				...
 			)
 		), 
 		error = function(...) return(NULL)
