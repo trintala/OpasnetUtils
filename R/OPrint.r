@@ -48,6 +48,6 @@ html_output <- function() {
 		args[[key]] <- value
 	}
 	
-	if (is.null(args@user)) return(FALSE)
+	if (is.null(args$user)) return(FALSE)
 	return(TRUE)
 }
