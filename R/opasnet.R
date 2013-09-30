@@ -10,7 +10,7 @@ opasnet.data <- function(filename,wiki='', unzip='') {
 
 	now <- Sys.time()
 	
-	file <- opbase.file_url(filename, wiki)
+	file <- opasnet.file_url(filename, wiki)
 	
 	if (unzip != '')
 	{
@@ -40,7 +40,7 @@ opasnet.csv <- function(filename, wiki='', unzip = '', ...) {
 
 	now <- Sys.time()
 	
-	file <- opbase.file_url(filename, wiki)
+	file <- opasnet.file_url(filename, wiki)
 
 	if (unzip != '')
 	{
@@ -93,7 +93,7 @@ opasnet.csv <- function(filename, wiki='', unzip = '', ...) {
 #}
 
 # Private function to get file url for given wiki
-opbase.file_url <- function(filename, wiki)
+opasnet.file_url <- function(filename, wiki)
 {
 	# Parse arguments
 	targs <- strsplit(commandArgs(trailingOnly = TRUE),",")
