@@ -1,14 +1,21 @@
 oprint <- function(x, show_all = FALSE, sortable = TRUE, ...) {
+	
 	if (nrow(x) > 1000 && !show_all)
 	{
 		print(paste('Showing first 1000 rows out of ',nrow(x),'. Set show_all=TRUE to show all rows.',sep=''))
 		x = x[1:1000,]
 	}
 	
-	if (sortable){
-		print(xtable(x, ...), type = 'html', html.table.attributes="class='wikitable sortable'")
-	} else {
-		print(xtable(x, ...), type = 'html', html.table.attributes="class='wikitable'")
+	if (! html_output())
+	{
+		print(x)
+	}
+	else
+	{
+		if (sortable)
+			print(xtable(x, ...), type = 'html', html.table.attributes="class='wikitable sortable'")
+		else
+			print(xtable(x, ...), type = 'html', html.table.attributes="class='wikitable'")
 	}
 }
 
@@ -23,3 +30,24 @@ setMethod(
 			callGeneric(x@output, show_all = show_all, sortable = sortable, ...)
 		}
 )
+
+# Returns true if HTML output, false if not
+html_output <- function() {
+
+	# Parse arguments
+	targs <- strsplit(commandArgs(trailingOnly = TRUE),",")
+	args = list()
+	
+	if (length(targs) == 0) return(FALSE)
+	
+	for(i in targs[[1]])
+	{
+		tmp = strsplit(i,"=")
+		key <- tmp[[1]][1]
+		value <- tmp[[1]][2]
+		args[[key]] <- value
+	}
+	
+	if (is.null(args@user)) return(FALSE)
+	return(TRUE)
+}
