@@ -1,6 +1,6 @@
 oprint <- function(x, show_all = FALSE, sortable = TRUE, ...) {
 
-	args <- opbase.parse_args
+	args <- opbase.parse_args()
 	
 	if (nrow(x) > 1000 && !show_all)
 	{
