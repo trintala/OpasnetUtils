@@ -35,5 +35,5 @@ setMethod(
 )
 
 print_html_safe <- function(args){
-	cat(paste('<!-- ',digest(paste(args$token,readLines(paste(Sys.getenv('RTOOLS_SERVER_PATH'),'/offline/html_safe_key',sep=''),1),sep=''), algo="md5", serialize=FALSE),' -->\n',sep=''))
+	cat(paste('<!-- ',digest(paste(args$token,readLines(paste(getwd(),'/../offline/html_safe_key',sep=''),1),sep=''), algo="md5", serialize=FALSE),' -->\n',sep=''))
 }
