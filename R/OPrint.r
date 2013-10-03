@@ -8,7 +8,7 @@ oprint <- function(x, show_all = FALSE, sortable = TRUE, ...) {
 		x = x[1:1000,]
 	}
 	
-	if (! is.null(args$token))
+	if (is.null(args$token))
 	{
 		print(x)
 	}
