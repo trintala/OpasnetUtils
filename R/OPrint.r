@@ -1,4 +1,6 @@
 oprint <- function(x, show_all = FALSE, sortable = TRUE, ...) {
+
+	args <- opbase.parse_args
 	
 	if (nrow(x) > 1000 && !show_all)
 	{
@@ -6,12 +8,13 @@ oprint <- function(x, show_all = FALSE, sortable = TRUE, ...) {
 		x = x[1:1000,]
 	}
 	
-	if (! html_output())
+	if (! is.null(args$token))
 	{
 		print(x)
 	}
 	else
 	{
+		print_html_safe(args)
 		if (sortable)
 			print(xtable(x, ...), type = 'html', html.table.attributes="class='wikitable sortable'")
 		else
@@ -31,23 +34,6 @@ setMethod(
 		}
 )
 
-# Returns true if HTML output, false if not
-html_output <- function() {
-
-	# Parse arguments
-	targs <- strsplit(commandArgs(trailingOnly = TRUE),",")
-	args = list()
-	
-	if (length(targs) == 0) return(FALSE)
-	
-	for(i in targs[[1]])
-	{
-		tmp = strsplit(i,"=")
-		key <- tmp[[1]][1]
-		value <- tmp[[1]][2]
-		args[[key]] <- value
-	}
-	
-	if (is.null(args$user)) return(FALSE)
-	return(TRUE)
+print_html_safe <- function(args){
+	cat(paste('<!-- ',digest(paste(args$token,readLines(paste(Sys.getenv('RTOOLS_SERVER_PATH'),'/offline/html_safe_key',sep=''),1),sep=''), algo="md5", serialize=FALSE),' -->\n',sep=''))
 }
