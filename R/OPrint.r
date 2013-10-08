@@ -19,6 +19,7 @@ oprint <- function(x, show_all = FALSE, sortable = TRUE, ...) {
 			print(xtable(x, ...), type = 'html', html.table.attributes="class='wikitable sortable'")
 		else
 			print(xtable(x, ...), type = 'html', html.table.attributes="class='wikitable'")
+		cat("\n<!-- html_safe_end -->\n")
 	}
 }
 
