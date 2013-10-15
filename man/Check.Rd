@@ -68,6 +68,21 @@ See also:
   T. Rintala \email{teemu.rintala.a@gmail.com}
 }
 
-%\examples{
-%%
-%}
+\examples{
+Deca <- new(
+	"odecision", 
+	dectable = data.frame(
+		Decision = "Dec1", 
+		Option = c("do it", "BAU"), 
+		Cell = c("A:A",""), 
+		Change = c("Multiply", "Identity"), 
+		Result = c("1-4", "1")
+	)
+)
+a <- Ovariable("a", data = data.frame(A = c("A", "B"), Result = 1:2))
+a <- EvalOutput(a)
+
+a <- CheckDecisions(a)
+
+tapply(a@output$aResult, a@output[c("Dec1", "A")], mean) 
+}
