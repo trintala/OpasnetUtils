@@ -98,20 +98,35 @@ CheckDecisions <- function(variable, indent = 0, verbose = TRUE, ...) {
 		
 		# Applying effects
 		
-
+		out <- Ovariable(variable@name, output = out)
+		
 		for (j in 1:nrow(dectable)) {
-			out[
-				cond[[j]], 
-				paste(variable@name, "Result", sep = "")
-			] <- eff[[j]](
-				out[
-					cond[[j]], 
-					paste(variable@name, "Result", sep = "")
-				], 
-				dectable[["Result"]][j]
-			)
+			# We need a slice of the ovariable to feed to the effect function
+			temp <- Ovariable(variable@name, output = out@output[cond[[j]],])
+			arg <- Ovariable(output = interpret(as.character(dectable[["Result"]][j]), ...))
+			if (!"Iter" %in% colnames(temp@output) & "Iter" %in% colnames(arg@output)) {
+				new_values <- eff[[j]](temp, arg)
+				new_values@output[[paste(variable@name, "Result", sep = "")]] <- new_values@output[["Result"]]
+				if (nchar(variable@name) > 0) new_values@output$Result <- NULL
+				#colnames(new_values@output)[colnames(new_values@output) == "Result"] <- "new_values_dummy"
+				#out <- merge(out, new_values, all = TRUE)
+				#result(out) <- ifelse(
+				#	is.na(out@output$new_values_dummy), 
+				#	result(out),
+				#	out@output$new_values_dummy
+				#)
+				#out@output$new_values_dummy <- NULL
+				
+				# Take un-updated rows and combine with updated ones
+				
+				out@output <- out@output[!cond[[j]],]
+				out@output <- orbind(out, new_values)
+			} else {
+				result(out)[cond[[j]]] <- result(eff[[j]](temp, arg))
+			}
 		}
 		
+		out <- out@output
 		variable@marginal <- colnames(out) %in% c(colnames(variable@output)[variable@marginal], colnames(temp2))
 		variable@output <- out
 		if (verbose) cat(" done!\n")
@@ -148,10 +163,6 @@ DecisionTableParser <- function(DTable, env = .GlobalEnv){ # DTable is a data.fr
 		assign(paste("Dec", i, sep = ""), out, envir = env)
 	}
 }
-
-
-
-
 
 
 

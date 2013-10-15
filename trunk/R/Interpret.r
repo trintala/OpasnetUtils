@@ -155,6 +155,14 @@ setMethod(
 	}
 )
 
+setMethod(
+	f = "interpret",
+	signature = signature(idata = "numeric"),
+	definition = function(idata, N = 1000, dbug = FALSE) {
+		return(data.frame(Iter = 1:length(idata), Result = idata))
+	}
+)
+
 #setMethod(
 #		f = "interpret",
 #		signature = signature(idata = "interpret"),
