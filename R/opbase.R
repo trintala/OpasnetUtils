@@ -156,9 +156,11 @@ opbase.data <- function(ident, series_id = NULL, subset = NULL, verbose = FALSE,
 
 	if (is.null(samples) || samples > 0) {
 		out <- out[,!colnames(out) %in% c("sid", "aid", "mean", "sd")]
-		colnames(out)[colnames(out) == "res"] <- "Result"	
-		a <- suppressWarnings(as.numeric(as.character(out$Result)))
-		if (sum(is.na(a)) == 0) out$Result <- a
+		if ('res' %in% colnames(out)) {
+			colnames(out)[colnames(out) == "res"] <- "Result"	
+			a <- suppressWarnings(as.numeric(as.character(out$Result)))
+			if (sum(is.na(a)) == 0) out$Result <- a
+		}
 	} else {
 		out <- out[,!colnames(out) %in% c("sid", "aid")]
 		colnames(out)[colnames(out) == "mean"] <- "Mean"	
