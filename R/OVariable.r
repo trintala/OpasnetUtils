@@ -228,8 +228,8 @@ setMethod(
 		f = "summary", 
 		signature = signature(object = "ovariable"), 
 		definition = function(object, function_names = character(), marginals = character(), hide_source = TRUE, ...) {
-			test <- paste(object@name, "Result", sep = "") %in% colnames(object@output)
-			rescol <- ifelse(test, paste(object@name, "Result", sep = ""), "Result")
+			#test <- paste(object@name, "Result", sep = "") %in% colnames(object@output)
+			#rescol <- ifelse(test, paste(object@name, "Result", sep = ""), "Result")
 			#object@output <- object@output[ , -grep("Description|Source", colnames(object@output))] # not a necessary line
 			
 			# If no function names are defined then use defaults which depend on whether the data is probabilistic or not
@@ -264,10 +264,13 @@ setMethod(
 				}
 			}
 			
+			# Remove NA results to reduce problems
+			object@output <- object@output[!is.na(result(object)),]
+			
 			# Apply the selected functions
 			temp <- list()
 			for(fun in functions){
-				temp[[length(temp)+1]] <- tapply(object@output[[rescol]], object@output[marginals], fun)
+				temp[[length(temp)+1]] <- tapply(result(object), object@output[marginals], fun)
 			}
 			#out <- data.frame()
 			
