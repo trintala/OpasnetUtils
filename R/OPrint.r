@@ -1,5 +1,7 @@
 oprint <- function(x, show_all = FALSE, sortable = TRUE, ...) {
-
+	
+	if (is.vector(x)) x <- as.data.frame(x)
+	
 	args <- opbase.parse_args()
 	
 	if (nrow(x) > 1000 && !show_all)
@@ -31,15 +33,6 @@ setMethod(
 		definition = function(x, show_all = FALSE, sortable = TRUE, ...) {
 			if (ncol(x@output) == 0) x <- EvalOutput(x, verbose = FALSE)
 			callGeneric(x@output, show_all = show_all, sortable = sortable, ...)
-		}
-)
-
-setMethod(
-		f = "oprint",
-		signature = signature(x = "vector"),
-		definition = function(x, ...) {
-			x <- as.data.frame(x)
-			callGeneric(x, ...)
 		}
 )
 
