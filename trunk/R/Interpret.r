@@ -11,7 +11,6 @@ interpf <- function(
 	res.char, 
 	brackets.pos, 
 	brackets.length, 
-	minus, 
 	minus.length, 
 	minus.exists, 
 	plusminus, 
@@ -100,6 +99,10 @@ input.interp <- function(res.char, n = 1000, dbug = FALSE) {
 	plusminus.length <- as.numeric(unlist(sapply(plusminus, attributes)))
 	plusminus.pos <- unlist(plusminus)
 	minus <- gregexpr("-", res.char)
+	e <- gregexpr("e-|E-", res.char) # ignore negative signs in exponents when data is given in form 1e-27
+	for (i in 1:length(minus)){
+		minus[[i]] <- minus[[i]][!(minus[[i]] %in% (e[[i]] + 1))]
+	}
 	minus.length <- sapply(minus, length)
 	minus.exists <- unlist(minus)[cumsum(c(0, minus.length[-length(minus.length)])) + 1] > 0
 	brackets <- gregexpr("\\(.*\\)", res.char) # matches for brackets "(...)"
@@ -112,7 +115,7 @@ input.interp <- function(res.char, n = 1000, dbug = FALSE) {
 		val <- suppressWarnings(as.numeric(res.char[i]))
 		if(is.na(val)) {
 			minus.relevant <- unlist(minus)[(cumsum(c(0, minus.length)) + 1)[i]:cumsum(minus.length)[i]]
-			out[[i]] <- interpf(n, res.char[i], brackets.pos[i], brackets.length[i], minus[i], minus.length[i], minus.exists[i], plusminus[[i]], 
+			out[[i]] <- interpf(n, res.char[i], brackets.pos[i], brackets.length[i], minus.length[i], minus.exists[i], plusminus[[i]], 
 				plusminus.length[i], plusminus.pos[i], doublePoint[[i]], minus.relevant, fromzero[i], dbug
 			)
 		} else out[[i]] <- rep(val, n)
