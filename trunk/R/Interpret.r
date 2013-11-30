@@ -114,14 +114,15 @@ input.interp <- function(res.char, n = 1000, dbug = FALSE) {
 	for(i in 1:length(res.char)) {
 		if(res.char[i] %in% c("NA") | nchar(gsub(" ", "", res.char[i])) == 0) {
 			out[[i]] <- rep(NA, n)
+		} else {
+			val <- suppressWarnings(as.numeric(res.char[i]))
+			if(is.na(val)) {
+				minus.relevant <- unlist(minus)[(cumsum(c(0, minus.length)) + 1)[i]:cumsum(minus.length)[i]]
+				out[[i]] <- interpf(n, res.char[i], brackets.pos[i], brackets.length[i], minus.length[i], minus.exists[i], plusminus[[i]], 
+					plusminus.length[i], plusminus.pos[i], doublePoint[[i]], minus.relevant, fromzero[i], dbug
+				)
+			} else out[[i]] <- rep(val, n)
 		}
-		val <- suppressWarnings(as.numeric(res.char[i]))
-		if(is.na(val)) {
-			minus.relevant <- unlist(minus)[(cumsum(c(0, minus.length)) + 1)[i]:cumsum(minus.length)[i]]
-			out[[i]] <- interpf(n, res.char[i], brackets.pos[i], brackets.length[i], minus.length[i], minus.exists[i], plusminus[[i]], 
-				plusminus.length[i], plusminus.pos[i], doublePoint[[i]], minus.relevant, fromzero[i], dbug
-			)
-		} else out[[i]] <- rep(val, n)
 	}
 	out
 }
