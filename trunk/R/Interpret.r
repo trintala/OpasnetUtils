@@ -95,7 +95,7 @@ interpf <- function(
 input.interp <- function(res.char, n = 1000, dbug = FALSE) {
 	res.char <- gsub(" ", "", res.char)
 	res.char <- gsub(",", ".", res.char)
-	plusminus <- gregexpr(paste("\\+-|", rawToChar(as.raw(177)), sep = ""), res.char) # saattaa osoittautua ongelmaksi enkoodauksen vuoksi
+	plusminus <- gregexpr(paste("\\+-|", rawToChar(as.raw(177)), sep = ""), res.char)
 	plusminus.length <- as.numeric(unlist(sapply(plusminus, attributes)))
 	plusminus.pos <- unlist(plusminus)
 	minus <- gregexpr("-", res.char)

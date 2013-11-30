@@ -29,9 +29,17 @@ setMethod(
 		f = "oprint",
 		signature = signature(x = "ovariable"),
 		definition = function(x, show_all = FALSE, sortable = TRUE, ...) {
-			v = FALSE
-			if (ncol(x@output) == 0) x <- EvalOutput(x, verbose = v)
+			if (ncol(x@output) == 0) x <- EvalOutput(x, verbose = FALSE)
 			callGeneric(x@output, show_all = show_all, sortable = sortable, ...)
+		}
+)
+
+setMethod(
+		f = "oprint",
+		signature = signature(x = "vector"),
+		definition = function(x, ...) {
+			x <- as.data.frame(x)
+			callGeneric(x, ...)
 		}
 )
 
