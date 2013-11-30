@@ -86,6 +86,12 @@ setMethod(
 		f = "Ops", 
 		signature = signature(e1 = "ovariable", e2 = "ovariable"), 
 		definition = function(e1, e2) {
+			
+			# EvalOutput if not done yet
+			
+			if(nrow(e1@output) == 0) e1 <- EvalOutput(e1)
+			if(nrow(e2@output) == 0) e2 <- EvalOutput(e2)
+			
 			# First check presence of name specific Result-columns
 			
 			test1 <- "Result" %in% colnames(e1@output)
