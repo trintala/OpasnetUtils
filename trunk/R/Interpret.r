@@ -196,8 +196,70 @@ fillna <- function(object, marginals) {
 	return(a)
 }
 
+is.na.ext <- function(x){
+	a <- is.na(x) | x == "NA" | nchar(gsub(" ", "", x)) == 0 | x == "*"
+	return(a)
+}
+
+# Fill NAs in matching columns in x with union of locations in x and y
+# Compare to fill.na which replaces NA with own 
+
+fill.na.merge <- function(x, y) {
+	common <- intersect(colnames(x@output), colnames(y@output))
+	testx <- lapply(x@output[common], is.na.ext)
+	testy <- lapply(y@output[common], is.na.ext)
+	locs <- list()
+	# Loop through common columns
+	for (i in common) {
+		# For x
+		if (any(testx[[i]])) {
+			locs[[i]] <- union(levels(as.factor(x@output[[i]])), levels(as.factor(y@output[[i]])))
+			
+			if (length(locs[[i]]) > 1) {
+				# Duplicate rows with wildcards
+				temp <- ifelse(testx[[i]], length(locs[[i]]), 1)
+				ind <- rep(1:length(temp), temp)
+				x@output <- x@output[ind,]
+				# Insert locations to duplicated rows
+				duplicates <- rep(testx[[i]], temp)
+				temp <- as.character(x@output[[i]])
+				temp[duplicates] <- locs[[i]]
+				x@output[[i]] <- factor(temp)
+			}
+		}
+		# For y
+		if (any(testy[[i]])) {
+			if (length(locs[[i]]) == 0) {
+				locs[[i]] <- union(levels(as.factor(x@output[[i]])), levels(as.factor(y@output[[i]])))
+			}
+			
+			if (length(locs[[i]]) > 1) {
+				# Duplicate rows with wildcards
+				temp <- ifelse(testy[[i]], length(locs[[i]]), 1)
+				ind <- rep(1:length(temp), temp)
+				y@output <- y@output[ind,]
+				# Insert locations to duplicated rows
+				duplicates <- rep(testy[[i]], temp)
+				temp <- as.character(y@output[[i]])
+				temp[duplicates] <- locs[[i]]
+				y@output[[i]] <- factor(temp)
+			}
+		}
+	}
+	return(list(x, y))
+}
+
 #interpret("500(490-5000)", N = 2, dbug= TRUE)
 
 #interpret("1;2;3;4", N = 20, dbug = TRUE)
 
 #interpret("<9", N = 4, dbug = TRUE)
+
+library(OpasnetUtils)
+objects.latest("Op_fi3942", "muuttuja")
+objects.latest("Op_fi3939", "muuttuja")
+mu <- EvalOutput(mu, N = 2)
+c_0 <- EvalOutput(c_0, N = 2)
+test <- merge(mu, c_0)
+
+

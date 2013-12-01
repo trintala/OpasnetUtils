@@ -168,12 +168,17 @@ setMethod(
 )
 
 # SETMETHOD MERGE ########### merge of ovariables merges the 'output' slot by index columns except 'Unit'.
+
 setMethod(f = "merge", 
 		signature = signature(x = "ovariable", y = "ovariable"),
 		definition = function(x, y, all = FALSE, ...) {
 			if (nrow(x@output) == 0) stop("X output missing!")
 			if (nrow(y@output) == 0) stop("Y output missing!")
-			#test <- intersect(c(colnames(x@output[x@marginal]), colnames(y@output[y@marginal])))
+			
+			temp <- fill.na.merge(x, y)
+			x <- temp[[1]]
+			y <- temp[[2]]
+			
 			temp <- merge(x@output, y@output, all = all, ...)#, by = test)
 			temp <- new("ovariable", output = temp)
 			#temp <- CheckMarginals(temp, deps = list(x,y))
