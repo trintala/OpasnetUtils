@@ -255,11 +255,4 @@ fill.na.merge <- function(x, y) {
 
 #interpret("<9", N = 4, dbug = TRUE)
 
-library(OpasnetUtils)
-objects.latest("Op_fi3942", "muuttuja")
-objects.latest("Op_fi3939", "muuttuja")
-mu <- EvalOutput(mu, N = 2)
-c_0 <- EvalOutput(c_0, N = 2)
-test <- merge(mu, c_0)
-
 
