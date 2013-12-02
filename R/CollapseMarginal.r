@@ -44,55 +44,34 @@ CollapseMarginal <- function(variable, cols, fun = "mean", probs = NULL, ...) { 
 	out <- variable@output
 	marginals <- colnames(out)[variable@marginal]
 	
+	if (!is.list(probs) & is.numeric(probs)) probs <- list(probs)
+	if (!is.null(probs) & length(probs) != length(cols)) stop("Number of columns does not match number of probability vectors given!\n")
 	if ("Iter" %in% colnames(out)) {
-		if (!is.list(probs) & is.numeric(probs)) probs <- list(probs)
-		if (!is.null(probs) & length(probs) != length(cols)) stop("Length of cols and probs do not match!\n")
 		N <- max(out$Iter)
-		lengths <- list()
-		a <- 0
-		for (i in cols) {
-			a <- a + 1
-			b <- probs[[a]]
-			if(is.null(b)) b <- rep(1, length(unique(as.character(out[[i]]))))
-			if(is.na(b)) b <- rep(1, length(unique(as.character(out[[i]]))))
-			if(b == 1) b <- rep(1, length(unique(as.character(out[[i]]))))
-			#selection <- tapply( # For each iteration, sample from available locations. All locations should exist for
-			#	out[[i]], # all iterations, but tapply is the most efficient way of doing the sampling and it adds
-			#	out[["Iter"]], # extra robustness. Not going to work with given probabilities, since the input would 
-			#	sample, # vary in length depending on the number of other marginals etc.
-			#	size = 1, 
-			#	prob = b
-			#)
-			#temp <- rownames(selection)
-			#selection <- data.frame(selection, Iter = temp)
-			selection <- data.frame(
-				sample(
-					unique(
-						as.character(
-							out[[i]]
-						)
-					), 
-					size = N, 
-					replace = TRUE, 
-					prob = b
-				), 
-				Iter = 1:N
-			)
-			colnames(selection)[1] <- i
-			out <- merge(out, selection)
+	} else {
+		N <- get("N", openv)
+	}
+	for (i in 1:length(cols)) {
+		b <- probs[[i]]
+		locs <- levels(out[[cols[i]]])
+		if (is.null(b)) b <- rep(1, length(locs))
+		if (any(is.na(b))) b <- rep(1, length(locs)) # dont see why NA would turn up here, but hey lets just be sure
+		if (length(b) != length(locs)) {
+			stop(paste("Number of locations does not match number of probabilities given for ", cols[i], "!\n", sep = ""))
 		}
-		variable@output <- out
-		variable@marginal <- colnames(out) %in% marginals & ! colnames(out) %in% cols
-	} else warning(
-		paste(
-			"Unable to collapse columns \"", 
-			paste(cols, collapse = "\",\""), 
-			"\" in ", 
-			variable@name, 
-			" using sampling.\n", 
-			"Reason: non-probabilistic data!\n", 
-			sep = ""
+		selection <- data.frame(
+			Iter = 1:N, 
+			sample(
+				locs, 
+				size = N, 
+				replace = TRUE, 
+				prob = b
+			)
 		)
-	)
+		colnames(selection)[2] <- cols[i]
+		out <- merge(selection, out)
+	}
+	variable@output <- out
+	variable@marginal <- colnames(out) %in% c(marginals, "Iter") & ! colnames(out) %in% cols
 	return(variable)
 }
