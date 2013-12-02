@@ -243,6 +243,10 @@ setMethod(
 			#rescol <- ifelse(test, paste(object@name, "Result", sep = ""), "Result")
 			#object@output <- object@output[ , -grep("Description|Source", colnames(object@output))] # not a necessary line
 			
+			# EvalOutput if not done yet
+			
+			if(nrow(object@output) == 0) object <- EvalOutput(e1)
+			
 			# If no function names are defined then use defaults which depend on whether the data is probabilistic or not
 			if("Iter" %in% colnames(object@output) && !"Iter" %in% marginals) {
 				if (length(function_names)==0) function_names <- c("mean", "sd", "min", "Q0.025", "median", "Q0.975", "max")

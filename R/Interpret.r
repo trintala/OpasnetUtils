@@ -133,7 +133,8 @@ f.iter <- function(x) {
 }
 
 # Data.frame wrapper for the functions.
-interpret <- function(idata, N = 1000, rescol = "Result", dbug = FALSE, ...) {
+interpret <- function(idata, N = NULL, rescol = "Result", dbug = FALSE, ...) {
+	if (length(N) == 0) N <- get("N", envir = openv) # use custom environment variable N if not given
 	if (!is.data.frame(idata)) idata <- as.data.frame(idata)
 	if (ncol(idata) == 0) stop("Empty data.frame!")
 	if (!rescol %in% colnames(idata)) stop(paste("No \"", rescol, "\" column found", sep = ""))
@@ -157,7 +158,7 @@ setGeneric("interpret")
 setMethod(
 	f = "interpret",
 	signature = signature(idata = "character"),
-	definition = function(idata, N = 1000, dbug = FALSE) {
+	definition = function(idata, N = NULL, dbug = FALSE) {
 		callGeneric(data.frame(Result = idata), N = N, dbug = dbug)
 	}
 )
@@ -165,7 +166,7 @@ setMethod(
 setMethod(
 	f = "interpret",
 	signature = signature(idata = "numeric"),
-	definition = function(idata, N = 1000, dbug = FALSE) {
+	definition = function(idata, N = NULL, dbug = FALSE) {
 		return(data.frame(Iter = 1:length(idata), Result = idata))
 	}
 )
