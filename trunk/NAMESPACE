@@ -44,9 +44,12 @@ export(
 	Ovariable,
 	ddata_apply,
 	fillna,
+	fill.na.merge,
 	"result<-",
 	result,
 	Optimize,
 	Minimize,
-	combine
+	combine,
+	openv,
+	openv.setN
 )
