@@ -245,7 +245,7 @@ setMethod(
 			
 			# EvalOutput if not done yet
 			
-			if(nrow(object@output) == 0) object <- EvalOutput(e1)
+			if(nrow(object@output) == 0) object <- EvalOutput(object)
 			
 			# If no function names are defined then use defaults which depend on whether the data is probabilistic or not
 			if("Iter" %in% colnames(object@output) && !"Iter" %in% marginals) {
