@@ -59,7 +59,7 @@ setMethod(
 				cat("<!-- html_safe_end -->\n")
 				print(x)
 				print_html_safe(args)
-				cat("<pre>\n")
+				cat("</pre>\n")
 				cat("<!-- html_safe_end -->\n")
 			}else{
 				print(x)
