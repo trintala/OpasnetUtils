@@ -27,12 +27,43 @@ oprint <- function(x, show_all = FALSE, sortable = TRUE, ...) {
 
 setGeneric("oprint")
 
+# OVariable print
 setMethod(
 		f = "oprint",
 		signature = signature(x = "ovariable"),
 		definition = function(x, show_all = FALSE, sortable = TRUE, ...) {
 			if (ncol(x@output) == 0) x <- EvalOutput(x, verbose = FALSE)
 			callGeneric(x@output, show_all = show_all, sortable = sortable, ...)
+		}
+)
+
+# Character print
+setMethod(
+		f = "oprint",
+		signature = signature(x = "character"),
+		definition = function(x, pre = TRUE, ...) {
+			print(x)
+		}
+)
+
+
+# Character print
+setMethod(
+		f = "oprint",
+		signature = signature(x = "summary.lm"),
+		definition = function(x, pre = TRUE, ...) {
+			args <- opbase.parse_args()
+			if (pre == TRUE && ! is.null(args$token)){
+				print_html_safe(args)
+				cat("<pre>\n")
+				cat("<!-- html_safe_end -->\n")
+				print(x)
+				print_html_safe(args)
+				cat("<pre>\n")
+				cat("<!-- html_safe_end -->\n")
+			}else{
+				print(x)
+			}
 		}
 )
 
