@@ -1,6 +1,6 @@
 # DROPALL #####################################
 ## dropall pudottaa data.framesta pois kaikki faktorien sellaiset levelit, joita ei käytetä.
-## parametrit: x = data.frame 
+## parametrit: x = data.frame   
 
 dropall <- function(x){
 	isFac <- NULL
