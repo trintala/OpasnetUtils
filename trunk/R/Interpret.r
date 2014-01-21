@@ -207,40 +207,42 @@ is.na.ext <- function(x){
 
 fill.na.merge <- function(x, y) {
 	common <- intersect(colnames(x@output), colnames(y@output))
-	testx <- lapply(x@output[common], is.na.ext)
-	testy <- lapply(y@output[common], is.na.ext)
 	locs <- list()
 	# Loop through common columns
 	for (i in common) {
+		testx <- is.na.ext(x@output[i])
+		testy <- is.na.ext(y@output[i])
 		# For x
-		if (any(testx[[i]])) {
+		if (any(testx)) {
 			locs[[i]] <- union(levels(as.factor(x@output[[i]])), levels(as.factor(y@output[[i]])))
 			
 			if (length(locs[[i]]) > 1) {
 				# Duplicate rows with wildcards
-				temp <- ifelse(testx[[i]], length(locs[[i]]), 1)
+				temp <- ifelse(testx, length(locs[[i]]), 1)
 				ind <- rep(1:length(temp), temp)
 				x@output <- x@output[ind,]
 				# Insert locations to duplicated rows
-				duplicates <- rep(testx[[i]], temp)
+				duplicates <- rep(testx, temp)
 				temp <- as.character(x@output[[i]])
+				# Since number of duplicates is fixed to length of locs this essentially repeats locs 
+				# as many times as there are wildcards in this particular index at the moment. 
 				temp[duplicates] <- locs[[i]]
 				x@output[[i]] <- factor(temp)
 			}
 		}
 		# For y
-		if (any(testy[[i]])) {
+		if (any(testy)) {
 			if (length(locs[[i]]) == 0) {
 				locs[[i]] <- union(levels(as.factor(x@output[[i]])), levels(as.factor(y@output[[i]])))
 			}
 			
 			if (length(locs[[i]]) > 1) {
 				# Duplicate rows with wildcards
-				temp <- ifelse(testy[[i]], length(locs[[i]]), 1)
+				temp <- ifelse(testy, length(locs[[i]]), 1)
 				ind <- rep(1:length(temp), temp)
 				y@output <- y@output[ind,]
 				# Insert locations to duplicated rows
-				duplicates <- rep(testy[[i]], temp)
+				duplicates <- rep(testy, temp)
 				temp <- as.character(y@output[[i]])
 				temp[duplicates] <- locs[[i]]
 				y@output[[i]] <- factor(temp)
