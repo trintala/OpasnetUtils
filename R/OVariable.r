@@ -175,6 +175,9 @@ setMethod(f = "merge",
 			if (nrow(x@output) == 0) stop("X output missing!")
 			if (nrow(y@output) == 0) stop("Y output missing!")
 			
+			x@output <- dropall(x@output)
+			y@output <- dropall(y@output)
+			
 			temp <- fill.na.merge(x, y)
 			x <- temp[[1]]
 			y <- temp[[2]]
