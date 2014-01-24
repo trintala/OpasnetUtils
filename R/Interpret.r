@@ -113,7 +113,7 @@ input.interp <- function(res.char, n = 1000, dbug = FALSE) {
 	out <- list()
 	for(i in 1:length(res.char)) {
 		if(res.char[i] %in% c("NA") | nchar(gsub(" ", "", res.char[i])) == 0) {
-			out[[i]] <- rep(NA, n)
+			out[[i]] <- NA
 		} else {
 			val <- suppressWarnings(as.numeric(res.char[i]))
 			if(is.na(val)) {
@@ -121,7 +121,14 @@ input.interp <- function(res.char, n = 1000, dbug = FALSE) {
 				out[[i]] <- interpf(n, res.char[i], brackets.pos[i], brackets.length[i], minus.length[i], minus.exists[i], plusminus[[i]], 
 					plusminus.length[i], plusminus.pos[i], doublePoint[[i]], minus.relevant, fromzero[i], dbug
 				)
-			} else out[[i]] <- rep(val, n)
+			} else out[[i]] <- val
+		}
+	}
+	if (any(sapply(out, length) > 1)) {
+		for(i in 1:length(res.char)) {
+			if (length(out[[i]]) == 1) {
+				out[[i]] <- rep(out[[i]], n)
+			}
 		}
 	}
 	out
@@ -148,9 +155,11 @@ interpret <- function(idata, N = NULL, rescol = "Result", dbug = FALSE, ...) {
 		out <- data.frame(idata[rep(1:nrow(idata), times = temp.lengths),])
 		out[[rescol]] <- unlist(temp)
 	}
-	dim(temp.lengths) <- length(temp.lengths)
-	out$Iter<- c(apply(temp.lengths, 1, f.iter))
-	out
+	if (prod(temp.lengths) > 1) {
+		dim(temp.lengths) <- length(temp.lengths)
+		out$Iter<- c(apply(temp.lengths, 1, f.iter))
+	}
+	return(out)
 }
 
 setGeneric("interpret")

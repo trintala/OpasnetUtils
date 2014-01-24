@@ -26,20 +26,32 @@ CheckDecisions <- function(variable, indent = 0, verbose = TRUE, ...) {
 		temp2 <- temp2[!colnames(temp2) %in% "ignoremeiamadummy"] # remove dummy column
 		out <- merge(variable@output, temp2) # Merge decisions with output. 
 		
+		out <- Ovariable(variable@name, output = out)
+		
+		# Effects
+		
+		if (length(dec@effect) == 1 & dec@effect[[1]](variable@output) == 0) {
+			eff <- list()
+			for (j in 1:nrow(dectable)) { 
+				eff[[j]] <- EffectPreset(dectable[["Change"]][j]) # Returns a standard function from presets defined below.
+			}
+		} else {
+			eff <- dec@effect
+		}
+		
 		# Conditions: Constructing a list of logical vectors which correspond to those rows of our new data.frame that we want to apply 
 		# effects on. This will be done either by the user (as functions that take the data.frame as input and return a logical vector) 
 		# while defining a custom decision or by parsing the decision table. 
 		
-		cond <- list()
+		#cond <- list()
 		
-		# First check if condition functions have been given. The default for the condition slot of an ovariable is a function that returns 0.
+		# Build multiple condition vectors that correspond to a unique decision - option combination
 		
-		if (length(dec@condition) == 1 & dec@condition[[1]](variable@output) == 0) { 
+		for (j in 1:nrow(dectable)) { 
 			
-			# Build multiple condition vectors that correspond to a unique decision - option combination
+			# First check if condition functions have been given. The default for the condition slot of an ovariable is a function that returns 0.
 			
-			for (j in 1:nrow(dectable)) { 
-				
+			if (length(dec@condition) == 1 & dec@condition[[1]](variable@output) == 0) { 
 				# In the decision table format conditions are given in the "Cell"-column separated by ";".
 				
 				sel1 <- strsplit(as.character(dectable[j, "Cell"]), split = ";")[[1]] 
@@ -55,54 +67,31 @@ CheckDecisions <- function(variable, indent = 0, verbose = TRUE, ...) {
 					for (k in 1:length(sel1)) { # For each condition separated by ";"
 						if (length(sel2[[k]]) > 1) { # If ":" has been used for condition k
 							locs <- strsplit(sel2[[k]][2], split = ",")[[1]] # Split by "," for multiple locs per given index
-							selection[[k]] <- out[, sel2[[k]][1]] %in% locs # Match our data.frame to the condition
-						} #else { # Unimplemented code for (in)equality checks for numeric variables
-							#if(grepl(">=")) {
-								#a <- strsplit(sel1[[k]])
-								#b <-  <- out[, sel2[[k]][1]]
-								#selection[[k]]
-							#}
-						#}
+							selection[[k]] <- out@output[, sel2[[k]][1]] %in% locs # Match our data.frame to the condition
+						}
 					}
 					
 					# Match all conditions given for this decision - option combination.
 					
 					selection <- as.data.frame(selection)
-					selection$optslice <- out[[as.character(dectable[["Decision"]][j])]] == dectable[["Option"]][j] # We only want rows where the relevant option is in use to be affected
+					# We only want rows where the relevant option is in use to be affected
+					selection[["optslice"]] <- out@output[[as.character(dectable[["Decision"]][j])]] == as.character(dectable[["Option"]][j]) 
 					selection <- as.matrix(selection)
-					cond[[j]] <- apply(
-						selection,
-						1,
-						all
+					cond <- apply(
+							selection,
+							1,
+							all
 					)
 				} else { # For empty Cell
-					cond[[j]] <- TRUE
+					cond <- out@output[[as.character(dectable[["Decision"]][j])]] == as.character(dectable[["Option"]][j])
 				}
+			} else { # Otherwise use given condition functions.
+				cond <- dec@condition[[j]](variable@output)
 			}
-		} else { # Otherwise use given condition functions.
-			for (j in 1:length(dec@condition)) {
-				cond[[j]] <- dec@condition[[j]](variable@output)
-			}
-		}
-		
-		# Effects
-		
-		if (length(dec@effect) == 1 & dec@effect[[1]](variable@output) == 0) {
-			eff <- list()
-			for (j in 1:nrow(dectable)) { 
-				eff[[j]] <- EffectPreset(dectable[["Change"]][j]) # Returns a standard function from presets defined below.
-			}
-		} else {
-			eff <- dec@effect
-		}
-		
-		# Applying effects
-		
-		out <- Ovariable(variable@name, output = out)
-		
-		for (j in 1:nrow(dectable)) {
+			
+			# Applying effects
 			# We need a slice of the ovariable to feed to the effect function
-			temp <- Ovariable(variable@name, output = out@output[cond[[j]],])
+			temp <- Ovariable(variable@name, output = out@output[cond,])
 			arg <- Ovariable(output = interpret(as.character(dectable[["Result"]][j]), ...))
 			if (!"Iter" %in% colnames(temp@output) & "Iter" %in% colnames(arg@output)) {
 				new_values <- eff[[j]](temp, arg)
@@ -119,10 +108,10 @@ CheckDecisions <- function(variable, indent = 0, verbose = TRUE, ...) {
 				
 				# Take un-updated rows and combine with updated ones
 				
-				out@output <- out@output[!cond[[j]],]
+				out@output <- out@output[!cond,]
 				out@output <- orbind(out, new_values)
 			} else {
-				result(out)[cond[[j]]] <- result(eff[[j]](temp, arg))
+				result(out)[cond] <- result(eff[[j]](temp, arg))
 			}
 		}
 		
