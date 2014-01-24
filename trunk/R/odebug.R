@@ -16,7 +16,9 @@ odebug <- function(x, variance = FALSE) {
 	
 	if (nrow(x@dependencies)>0) {
 		for (i in x@dependencies$Name){
-			out[["output_rows"]][[i]] <- nrow(get(i)@output)
+			if (class(get(i)) == "ovariable") {
+				out[["output_rows"]][[i]] <- nrow(get(i)@output)
+			}
 		}
 	}
 	
@@ -29,7 +31,9 @@ odebug <- function(x, variance = FALSE) {
 	if (nrow(x@dependencies)>0) {
 		for (i in x@dependencies$Name){
 			out[["NAs"]][[i]] <- list()
-			out[["NAs"]][[i]][["total"]] <- sum(is.na(result(get(i))))
+			if (class(get(i)) == "ovariable") {
+				out[["NAs"]][[i]][["total"]] <- sum(is.na(result(get(i))))
+			}
 		}
 	}
 	
@@ -40,7 +44,9 @@ odebug <- function(x, variance = FALSE) {
 	
 	if (nrow(x@dependencies)>0) {
 		for (i in x@dependencies$Name){
-			out[["marginals"]][[i]] <- colnames(get(i)@output)[get(i)@marginal]
+			if (class(get(i)) == "ovariable") {
+				out[["marginals"]][[i]] <- colnames(get(i)@output)[get(i)@marginal]
+			}
 		}
 		
 		common_marginals <- NULL
@@ -67,10 +73,14 @@ odebug <- function(x, variance = FALSE) {
 		for (i in common_marginals) {
 			locs[[i]] <- NULL
 			for (j in x@dependencies$Name){
-				locs[[i]] <- union(locs[[i]], get(j)@output[[i]])
+				if (class(get(j)) == "ovariable") {
+					locs[[i]] <- union(locs[[i]], get(j)@output[[i]])
+				}
 			}
 			for (j in x@dependencies$Name){
-				missing[[j]][[i]] <- setdiff(locs[[i]], get(j)@output[[i]])
+				if (class(get(j)) == "ovariable") {
+					missing[[j]][[i]] <- setdiff(locs[[i]], get(j)@output[[i]])
+				}
 			}
 		}
 		
