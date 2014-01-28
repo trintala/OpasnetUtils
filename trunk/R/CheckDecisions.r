@@ -52,13 +52,14 @@ CheckDecisions <- function(variable, indent = 0, verbose = TRUE, ...) {
 			# First check if condition functions have been given. The default for the condition slot of an ovariable is a function that returns 0.
 			
 			if (length(dec@condition) == 1 & dec@condition[[1]](variable@output) == 0) { 
-				# In the decision table format conditions are given in the "Cell"-column separated by ";".
-				
-				sel1 <- strsplit(as.character(dectable[j, "Cell"]), split = ";")[[1]] 
-				
-				if (length(sel1)>0){ # Check for non-empty Cell
-					# ":" defines index - location matches as a condition.
+				# Check for non-empty Cell
+				if (is.null(dectable[j, "Cell"]) | is.na.ext(dectable[j, "Cell"])) { 
+					cond <- out@output[[as.character(dectable[["Decision"]][j])]] == as.character(dectable[["Option"]][j])
+				} else { 
+					# In the decision table format conditions are given in the "Cell"-column separated by ";".
+					sel1 <- strsplit(as.character(dectable[j, "Cell"]), split = ";")[[1]] 
 					
+					# ":" defines index - location matches as a condition.
 					sel2 <- strsplit(sel1, split = ":") # No need for lapply, since strsplit is a vectorized function and current list depth is 1.
 					
 					# Create a list of conditions which the decision and option specific condition vector consists of. 
@@ -82,9 +83,7 @@ CheckDecisions <- function(variable, indent = 0, verbose = TRUE, ...) {
 							1,
 							all
 					)
-				} else { # For empty Cell
-					cond <- out@output[[as.character(dectable[["Decision"]][j])]] == as.character(dectable[["Option"]][j])
-				}
+				} 
 			} else { # Otherwise use given condition functions.
 				cond <- dec@condition[[j]](variable@output)
 			}
@@ -92,7 +91,7 @@ CheckDecisions <- function(variable, indent = 0, verbose = TRUE, ...) {
 			# Applying effects
 			# We need a slice of the ovariable to feed to the effect function
 			temp <- Ovariable(variable@name, output = out@output[cond,])
-			arg <- Ovariable(output = interpret(as.character(dectable[["Result"]][j]), ...))
+			arg <- Ovariable(output = interpret(as.character(dectable[["Result"]][j])))
 			if (!"Iter" %in% colnames(temp@output) & "Iter" %in% colnames(arg@output)) {
 				new_values <- eff[[j]](temp, arg)
 				new_values@output[[paste(variable@name, "Result", sep = "")]] <- new_values@output[["Result"]]
@@ -152,6 +151,7 @@ DecisionTableParser <- function(DTable, env = .GlobalEnv){ # DTable is a data.fr
 		assign(paste("Dec", i, sep = ""), out, envir = env)
 	}
 }
+
 
 
 
