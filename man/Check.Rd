@@ -69,20 +69,26 @@ See also:
 }
 
 \examples{
+#library(OpasnetUtils)
+#
 Deca <- new(
-	"odecision", 
-	dectable = data.frame(
-		Decision = "Dec1", 
-		Option = c("do it", "BAU"), 
-		Cell = c("A:A",""), 
-		Change = c("Multiply", "Identity"), 
-		Result = c("1-4", "1")
-	)
+		"odecision",
+		dectable = data.frame(
+				Decision = "Dec1",
+				Option = c("do it", "BAU"),
+				Cell = c("",""),
+				Change = c("Multiply", "Identity"),
+				Result = c("2", "1")
+		)
 )
-a <- Ovariable("a", data = data.frame(A = c("A", "B"), Result = 1:2))
-a <- EvalOutput(a)
+openv.setN(10)
+a <- Ovariable("a", data = data.frame(A = c("A", "B"), Result = c("1-2","2-4")))
 
-a <- CheckDecisions(a)
+b <- Ovariable("b", formula = function(...){2*a}, dependencies = data.frame(Name = "a"))
 
-tapply(a@output$aResult, a@output[c("Dec1", "A")], mean) 
+b <- EvalOutput(b)
+
+b
+oapply(a, a@output[c("A", "Dec1")], mean)
+
 }

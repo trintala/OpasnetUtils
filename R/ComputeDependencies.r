@@ -21,22 +21,24 @@ ComputeDependencies <- function(dependencies, forceEval = FALSE, indent = 0, ver
 						assign(i, EvalOutput(get(i), indent = indent, verbose = verbose, ...), envir = as.environment(find(i))), 
 						error = function(e) return(NULL)
 					)
-					if (is.null(ret1)) stop(paste("Evaluating", get(i)@name, "failed!"))
+					if (is.null(ret1)) stop(paste("Evaluating", get(i)@name, "failed! Error:", geterrmessage()))
 				}
 				#assign(i, CheckMarginals(get(i), indent = indent, verbose = verbose, ...), envir = as.environment(find(i))) # moved to EvalOutput
 				ret2 <- tryCatch(
 					assign(i, CheckInput(get(i), indent = indent, verbose = verbose, ...), envir = as.environment(find(i))), 
 					error = function(e) return(NULL)
 				)
-				if (is.null(ret2)) warning(paste("Input checking", get(i)@name, "failed!"))
-				ret3 <- tryCatch(assign(i, CheckDecisions(get(i), indent = indent, verbose = verbose, ...), envir = as.environment(find(i))), 
+				if (is.null(ret2)) warning(paste("Input checking", get(i)@name, "failed! Error:", geterrmessage()))
+				ret3 <- tryCatch(
+						assign(i, CheckDecisions(get(i), indent = indent, verbose = verbose, ...), envir = as.environment(find(i))), 
 						error = function(e) return(NULL)
 				)
-				if (is.null(ret3)) warning(paste("Decision checking", get(i)@name, "failed!"))
-				ret4 <- tryCatch(assign(i, CheckCollapse(get(i), indent = indent, verbose = verbose, ...), envir = as.environment(find(i))), 
+				if (is.null(ret3)) warning(paste("Decision checking", get(i)@name, "failed! Error:", geterrmessage()))
+				ret4 <- tryCatch(
+						assign(i, CheckCollapse(get(i), indent = indent, verbose = verbose, ...), envir = as.environment(find(i))), 
 						error = function(e) return(NULL)
 				)
-				if (is.null(ret4)) warning(paste("Collapse checking", get(i)@name, "failed!"))
+				if (is.null(ret4)) warning(paste("Collapse checking", get(i)@name, "failed! Error:", geterrmessage()))
 			}
 		}
 		if (verbose) cat("\n")
