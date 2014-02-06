@@ -189,16 +189,18 @@ setMethod(
 #)
 
 # Interpreting empty locations in indices
+# fillna takes a data.frame and fills the cells with NA with each level in that column.
+# object is the data.frame, marginals is a vector of columns (either column names or positions) that are to be filled.
+# This version of fillna accepts column positions (as the previous version) and also column names in marginals.
 
-fillna <- function(object, marginals) {
+fillna <- function (object, marginals) {
 	a <- dropall(object)
-	for(i in marginals) {
+	if(!is.numeric(marginals)) marginals <- match(marginals, colnames(object))
+	for (i in marginals) {
 		a[[i]] <- as.factor(a[[i]])
-		a1 <- a[!(is.na(a[[i]]) | a[[i]] == ""), ]
-		a2 <- a[(is.na(a[[i]]) | a[[i]] == ""), ][-i]
-		set <- levels(a[[i]])
-		set <- set[set != ""]
-		addition <- data.frame(A = set)
+		a1 <- a[!is.na(a[[i]]), ]
+		a2 <- a[is.na(a[[i]]), ][-i]
+		addition <- data.frame(A = levels(a[[i]]))
 		colnames(addition) <- colnames(a)[i]
 		a2 <- merge(addition, a2)
 		a <- rbind(a1, a2)
