@@ -52,5 +52,6 @@ export(
 	combine,
 	openv,
 	openv.setN,
-	odebug
+	odebug,
+	continuousOps
 )
