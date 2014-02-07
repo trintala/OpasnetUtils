@@ -392,43 +392,52 @@ ddata_apply <- function(
 }
 
 
-continuousOps <- function(O1, O2, fun)
+# continuousOps merges two ovariables by continuous indices and performs an operation.
+# O1, O2 are ovariables. O1 is of main interest, while O2 has information that links to O2 via continuous index or indices.
+# All locations in these continuous indices of O1 are created for O2 assuming that the value in the previous location of cols applies.
+# Note that this is asymmetric. Locations in O2 that are missing from O1 are omitted.
+# continuousOps assumes that all continuous indices are in the same dimension, the first one being the main index.
+# Additional indices affect the outcome only if there are (approximate) ties. Therefore, avoid using this with several continuous indices.
+# However, if continuous indices are NOT shared by both O1 and O2, they cause no trouble.
+# fun is the name of a function that is performed after merge. Typically it is '*', '+' or some other Ops.
+# cols is the vector of continuous indices that are merged. It is only needed if there are > 1 indices and the order is critical.
+# Otherwise, shared continuous indices are identified automatically.
+
+continuousOps <- function(O1, O2, fun, cols = NULL)
 {
-	# continuousOps merges two ovariables by continuous indices and preforms an operation.
-	# O1, O2 are ovariables. O1 is of main interest, while O2 has information that links to O2 via continuous index or indices.
-	# All locations in O1 cols are created for O2 assuming that the value in the previous location of cols applies.
-	# Note that this is asymmetric. Locations in O2 that are missing from O1 are omitted.
-	# cols are the common indices used in merge. They must be continous (numeric). Other common indices will cause trouble.
-	# continuousOps assumes that all continuous indices are in the same dimension, the first one being the main index.
-	# Additional indices affect the outcome only if there are (approximate) ties. Therefore, avoid using this with several continuous indices.
-	# fun is the function that is performed after merge. Typically it is '*', '+' or some other Ops.
-
 	rescol <- paste(O2@name, "Result", sep = "")
-	O1 <- unkeep(O1, paste(O1@name, "Source", sep = "")) # Remove these because they will create unpredictable results 
-	O2 <- unkeep(O2, paste(O2@name, "Source", sep = "")) # with orbind and merge. You should consider removing also other redundant columns.
+#	O1 <- unkeep(O1, paste(O1@name, "Source", sep = "")) # Remove these because they will create unpredictable results 
+#	O2 <- unkeep(O2, paste(O2@name, "Source", sep = "")) # with orbind and merge. You should consider removing also other redundant columns.
 
-	out <- 	merge( # Take the indices from the main ovariable and combine with additional data. Fill gaps.
-		O1@output[O1@marginal], 
+	# From O1, we only want the shared continuous indices. The rest will return in the end with Ops.
+	commons <- intersect(colnames(O1@output)[O1@marginal], colnames(O2@output)[O2@marginal])
+	contcommon <- commons[sapply(O1@output[commons], FUN = is.numeric)]
+	contcommon <- unique(c(cols, contcommon)) # The user-defined order is implemented if given.
+
+	out <- 	merge( # Take the common continuous indices from the main ovariable and combine with additional data. Fill gaps.
+		O1@output[contcommon], 
 		O2@output[O2@marginal | colnames(O2@output) == rescol], 
 		all = TRUE
 	)
 
-	out <- fillna(out, setdiff(colnames(O2@output)[O2@marginal], colnames(O1@output)[O1@marginal]))
-	
-	# Find the names of the columns that are marginals in either ovariable.
 	marginals <- colnames(out)[colnames(out) %in% union(colnames(O2@output)[O2@marginal], colnames(O1@output)[O1@marginal])]
-	contsd <- sapply(out[marginals], FUN = is.numeric) # Find continuous indices among marginals.
-	out <- orbind(out, unique(out[marginals][!contsd])) # Add a NA between each cell defined by the non-continuous indices.
+	discretes <- marginals[!sapply(out[marginals], FUN = is.numeric)] # Find continuous indices among marginals.
 
-	out <- out[do.call(order, cbind(out[marginals][!contsd], out[marginals][contsd])) , ] # Sort along the continuous indices, each cell separately.
-	for(i in 2:nrow(out)) #Replace each missing value with the value in the previous cell along the continuous index.
-	{
-		#fill in missing values except on breakpoints. NOTE! with more than one continuous index, the result is ambiguous.
-		if(is.na(out[i , rescol]) & !is.na(out[i , marginals[contsd][1]])) out[i , rescol] <- out[i - 1 , rescol]
-	}
+	if(!all(marginals %in% contcommon)) out <- fillna(out, setdiff(marginals, contcommon))
+	
+	if(length(discretes) > 0) out <- orbind(out, unique(out[discretes])) # Add a NA between each cell defined by the non-continuous indices.
 
-	out <- unique(out[!is.na(out[rescol]) , ]) # removes all rows that are before the first location in O2.
+	# Sort along the continuous indices, each group separately. Groups are unique combinations of discrete index locations.
+	out <- out[do.call(order, (out[unique(c(discretes, contcommon, marginals))])) , ] 
+	
+	out[[rescol]] <- ifelse(
+		is.na(out[[rescol]] & !is.na(out[[contcommon[1]]])), # If value is missing and this is not a group border.
+		c(NA, out[1:(nrow(out) - 1) , rescol]), # value from the previous row.
+		out[[rescol]]
+	)
+	
+	out <- unique(out[!is.na(out[[rescol]]) , ]) # removes all rows that are before the first location in O2.
 	out <- Ovariable(name = sub("Result$", "", rescol), output = out, marginal = colnames(out) %in% marginals)
-	out <- do.call(fun, list(O1, out)) # Perform the Ops or other function with the original main ovariable and the data-enhanced ovariable.
+	out <- do.call(fun, list(O1, out)) # Perform an Ops or other function with the original main ovariable and the data-enhanced ovariable.
 	return(out)
 }
