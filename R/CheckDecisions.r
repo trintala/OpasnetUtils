@@ -12,10 +12,11 @@
 
 CheckDecisions <- function(variable, indent = 0, verbose = TRUE, ...) {
 	
-	# Quit if already checked
-	if (!is.null(openv[[variable@name]][["dec_check"]])) return(variable)
-	
 	if(exists(paste("Dec", variable@name, sep = ""))) {
+		
+		# Quit if already checked
+		if (!is.null(openv[[variable@name]][["dec_check"]])) if (openv[[variable@name]][["dec_check"]]) return(variable)
+		
 		if (verbose) cat(rep("-", indent), "Processing", variable@name, "decisions", "...")
 		# Initialization: Setting up a data.frame upon which to apply desired decision - option specific effect. 
 		
