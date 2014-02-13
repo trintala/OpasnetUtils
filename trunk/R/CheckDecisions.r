@@ -24,7 +24,7 @@ CheckDecisions <- function(variable, indent = 0, verbose = TRUE, ...) {
 		dectable <- dec@dectable # Decision input table in format described on http://en.opasnet.org/w/Decision
 		temp2 <- data.frame(ignoremeiamadummy = NA) # A mergeable dummy for loop initial value
 		for (i in unique(as.character(dectable$Decision))) { # Decisions form new indices. Here the decision indices are merged together.
-			tempdec <- data.frame(dectable$Option[dectable$Decision == i])
+			tempdec <- data.frame(unique(dectable$Option[dectable$Decision == i]))
 			colnames(tempdec) <- i
 			temp2 <- merge(temp2, tempdec)
 		}
