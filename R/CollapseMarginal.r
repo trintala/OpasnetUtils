@@ -34,6 +34,7 @@ CollapseMarginal <- function(variable, cols, fun = "mean", probs = NULL, ...) { 
 	if (length(fun) == 0) fun <- "mean"
 	# If no probabilities given use function
 	# Also if given funtion is sample then equal weights are used and this section is skipped
+	if (is.na(fun)) stop("No function given to collapse with!\n")
 	if (length(probs) == 0 & fun != "sample") {
 		fun <- get(fun)
 		out <- oapply(variable, FUN = fun, cols = cols, na.rm = TRUE)

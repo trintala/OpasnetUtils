@@ -1,4 +1,4 @@
-import(methods, rjson, RCurl, xtable, reshape2, triangle, httpRequest, digest)
+import(methods, rjson, RCurl, xtable, reshape2, triangle, httpRequest, digest, ggplot2, rgdal, sp)
 #importFrom("base", merge, summary)
 #importFrom("graphics", plot)
 exportClasses(ovariable, odecision)

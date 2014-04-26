@@ -40,6 +40,6 @@ See also:
 }
 \examples{
 test <- Ovariable("test", output = data.frame(City = c("Helsinki", "Espoo"), 
-    Iter = 1, testResult = 1:2))
-CollapseMarginal(test, "City", NA)
+    Iter = 1, testResult = 1:2), marginal = c(TRUE, TRUE, FALSE))
+CollapseMarginal(test, "City", "mean")
 }

@@ -5,6 +5,6 @@ Version: 1.0.0
 Author: Teemu Rintala, Einari Happonen, Jouni Tuomisto
 Maintainer: Einari Happonen <einari.happonen@thl.fi>
 Description: This package is primarily developed for executing open assessments and modeling in Opasnet environment. See http://www.opasnet.org for more. 
-Imports: methods, rjson, RCurl, reshape2, triangle, httpRequest, digest, xtable
+Imports: methods, rjson, RCurl, reshape2, triangle, httpRequest, digest, xtable, ggplot2, rgdal, sp
 License: GPL-3
 LazyLoad: yes
