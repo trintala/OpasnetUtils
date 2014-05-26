@@ -52,16 +52,22 @@ odebug <- function(x, variance = FALSE) {
 		common_marginals <- NULL
 		all_marginals <- NULL
 		for (i in out[["marginals"]]) {
-			if (length(common_marginals) == 0) {
-				common_marginals <- i 
-			} else { 
-				common_marginals <- intersect(common_marginals, i)
-			}
+			#if (length(common_marginals) == 0) {
+			#	common_marginals <- i 
+			#} else { 
+			common_marginals <- intersect(common_marginals, i)
+			#}
 			all_marginals <- union(all_marginals, i)
+		}
+		
+		matching_marginals <- NULL
+		for (i in out[["marginals"]]) {
+			matching_marginals <- union(matching_marginals, intersect(all_marginals, i))
 		}
 		
 		out[["marginals"]][["all"]] <- all_marginals
 		out[["marginals"]][["common"]] <- common_marginals
+		out[["marginals"]][["matching"]] <- matching_marginals
 		
 		# Item 4 - missing locations in common marginals
 		
