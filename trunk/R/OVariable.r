@@ -171,7 +171,7 @@ setMethod(
 
 setMethod(f = "merge", 
 		signature = signature(x = "ovariable", y = "ovariable"),
-		definition = function(x, y, all = FALSE, ...) {
+		definition = function(x, y, all = FALSE, sort = FALSE, ...) {
 			if (nrow(x@output) == 0) stop("X output missing!")
 			if (nrow(y@output) == 0) stop("Y output missing!")
 			
@@ -182,7 +182,7 @@ setMethod(f = "merge",
 			x <- temp[[1]]
 			y <- temp[[2]]
 			
-			temp <- merge(x@output, y@output, all = all, ...)#, by = test)
+			temp <- merge(x@output, y@output, all = all, sort = sort, ...)#, by = test)
 			temp <- new("ovariable", output = temp)
 			#temp <- CheckMarginals(temp, deps = list(x,y))
 			return(temp)
