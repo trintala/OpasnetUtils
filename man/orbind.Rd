@@ -1,5 +1,6 @@
 \name{orbind}
 \alias{orbind}
+\alias{combine}
 \title{
 Rowbinding ovariables
 }

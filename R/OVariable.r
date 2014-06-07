@@ -37,13 +37,13 @@ Ovariable <- function(
 		ddata = character(),
 		output = data.frame(),
 		marginal = logical(),
-		subset = NULL,
-		getddata = TRUE, # will dynamic data be immediately be downloaded, as opposed waiting until variable output is Evaluated
-		save = FALSE, # will the variable be saved on the server using objects.put
-		public = TRUE, # will the saved variable be public or private
+		subset = character(), # add subset postfix to ddata e.g. "Op_enXXXX" -> "Op_enXXXX.subset"
+		getddata = TRUE, # download dynamic data immediately (as opposed to waiting until evaluation)
+		save = FALSE, # save on server using objects.put
+		public = TRUE, # if save = TRUE, use objects.store instead to make it publicly available
 		...
 ) {
-	if (! is.null(subset)) ddata <- paste(ddata, opbase.sanitize_subset_name(subset), sep='.')
+	if (length(subset) > 0) ddata <- paste(ddata, opbase.sanitize_subset_name(subset), sep='.')
 	
 	out <- new(
 			"ovariable",
