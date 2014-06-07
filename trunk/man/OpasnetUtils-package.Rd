@@ -2,7 +2,7 @@
 \alias{OpasnetUtils-package}
 \alias{OpasnetUtils}
 \docType{package}
-\title{Open Assessors Network Modelling Utilities}
+\title{Open Assessors Network Modeling Utilities}
 \description{
   This package contains tools made for building stochastic models within Opasnet (\url{http://www.opasnet.org}). 
 }
@@ -10,11 +10,11 @@
 \tabular{ll}{
 Package: \tab OpasnetUtils\cr
 Type: \tab Package\cr
-Version: \tab 1.0.0\cr
-Imports: \tab methods, rjson, RCurl, xtable, reshape2, triangle, httpRequest, digest\cr
+Version: \tab 1.1.0\cr
+Imports: \tab methods, rjson, RCurl, xtable, reshape2, triangle, httpRequest, digest, xtable, ggplot2, rgdal, sp\cr
 License: \tab GPL-3\cr
 LazyLoad: \tab yes\cr
-Date: \tab 2013-07-09\cr
+Date: \tab 2014-05-27\cr
 }
 
 Index:

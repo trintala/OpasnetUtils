@@ -31,7 +31,7 @@ Ovariable(name = character(), data = data.frame(),
   \item{output}{
   \code{data.frame} for the output slot
 }
-  \item{output}{
+  \item{marginal}{
   \code{logical} for the marginal slot
 }
   \item{subset}{

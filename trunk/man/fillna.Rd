@@ -1,5 +1,6 @@
 \name{fillna}
 \alias{fillna}
+\alias{fill.na.merge}
 \title{
 Interpreting empty locations in indices
 }

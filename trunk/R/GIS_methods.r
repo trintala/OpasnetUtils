@@ -103,18 +103,18 @@ GIS.Exposure <- function(
 	if (dbug) cat(XKOORD, YKOORD, "\n")
 	
 	Population <- tryCatch(
-			tidy(
-					opbase.data(
-							"Op_en2949", 
-							subset = "2012",
-							range = list(
-									XKOORD = XKOORD,
-									YKOORD = YKOORD
-							)#,
-							#...
-					)
-			), 
-			error = function(...) return(NULL)
+		tidy(
+			opbase.data(
+				"Op_en2949", 
+				subset = "2012",
+				range = list(
+					XKOORD = XKOORD,
+					YKOORD = YKOORD
+				)#,
+				#...
+			)
+		), 
+		error = function(...) return(NULL)
 	)
 	
 	if (is.null(Population)) stop("Data download failed!")
@@ -126,11 +126,11 @@ GIS.Exposure <- function(
 	
 	for (i in 1:nrow(bounds)) {
 		cond <- (
-					Population$XKOORD >=  coordinates(koord_lower)[i,1] & 
-					Population$XKOORD < coordinates(koord_upper)[i,1] &
-					Population$YKOORD >=  coordinates(koord_lower)[i,2] & 
-					Population$YKOORD < coordinates(koord_upper)[i,2]
-					)
+			Population$XKOORD >=  coordinates(koord_lower)[i,1] & 
+			Population$XKOORD < coordinates(koord_upper)[i,1] &
+			Population$YKOORD >=  coordinates(koord_lower)[i,2] & 
+			Population$YKOORD < coordinates(koord_upper)[i,2]
+		)
 		if (dbug) {
 			cat("Bound", i, "matching rows:", sum(cond), "\n")
 		}

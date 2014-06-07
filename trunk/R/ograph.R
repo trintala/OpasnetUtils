@@ -1,4 +1,4 @@
-ograph <- function( # Määritellään yleisfunktio peruskuvaajan piirtämiseen.
+ograph <- function( # maaritellaan yleisfunktio piirtamiseen
 		ovariable, 
 		x, 
 		y = character(), 
@@ -20,14 +20,14 @@ ograph <- function( # Määritellään yleisfunktio peruskuvaajan piirtämiseen.
 	if(length(type) == 0) {
 		if("Iter" %in% colnames(data)) type <- geom_boxplot() else type <- geom_bar(stat = "identity")
 	}
-	out <- ggplot(data, aes_string(x = x, y = y, fill = fill)) # Määritellään kuvan sarakkeet
+	out <- ggplot(data, aes_string(x = x, y = y, fill = fill)) # maaritellaan kuvan sarakkeet
 	out <- out + type
 	out <- out + theme_grey(base_size=24) # Fontin kokoa suurennetaan
 	out <- out + labs(
 			title	= title,
-			y = paste(unique(data[[paste(title, "Yksikkö", sep = "")]]), sep = "", collapse = ", ")
+			y = paste(unique(data[[paste(title, "Yksikk\u00f6", sep = "")]]), sep = "", collapse = ", ")
 	)
-	out <- out + theme(axis.text.x = element_text(angle = 90, hjust = 1)) # X-akselin tekstit käännetään niin että mahtuvat
+	out <- out + theme(axis.text.x = element_text(angle = 90, hjust = 1)) # X-akselin tekstit kaannetaan niin etta mahtuvat
 	if(length(other) != 0) out <- out + other
 	return(out)
 }
