@@ -169,15 +169,15 @@ opasnet.page <- function(pagename, wiki = "") {
 	}
 	if (wiki == "opasnet_en" | wiki == "op_en")
 	{
-		url <- paste("http://en.opasnet.org/w/", pagename, sep = "")
+		url <- paste("http://en.opasnet.org/en-opwiki/index.php?title=", pagename, sep = "")
 	}
 	if (wiki == "opasnet_fi" | wiki == "op_fi")
 	{
-		url <- paste("http://fi.opasnet.org/fi/", pagename, sep = "")
+		url <- paste("http://fi.opasnet.org/fi_wiki/index.php?title=", pagename, sep = "")
 	}
 	if (wiki == 'heande')
 	{
-		url <- paste("http://",args$ht_username,":",args$ht_password,"@heande.opasnet.org/heande/", pagename, sep = "")
+		url <- paste("http://",args$ht_username,":",args$ht_password,"@heande.opasnet.org/heande/index.php?title=", pagename, sep = "")
 	}
 	return(getURL(url))
 }
