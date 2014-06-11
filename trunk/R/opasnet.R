@@ -160,3 +160,24 @@ opasnet.file_url <- function(filename, wiki)
 #}
 #else {return(ge#tURL(file))}
 #}
+
+opasnet.page <- function(pagename, wiki = "") {
+	if (wiki == '')
+	{
+		if (is.null(args$user)) stop('Wiki cannot be resolved!')
+		wiki <- args$user
+	}
+	if (wiki == "opasnet_en" | wiki == "op_en")
+	{
+		url <- paste("http://en.opasnet.org/w/", pagename, sep = "")
+	}
+	if (wiki == "opasnet_fi" | wiki == "op_fi")
+	{
+		url <- paste("http://fi.opasnet.org/fi/", pagename, sep = "")
+	}
+	if (wiki == 'heande')
+	{
+		url <- paste("http://",args$ht_username,":",args$ht_password,"@heande.opasnet.org/heande/", pagename, sep = "")
+	}
+	return(getURL(url))
+}
