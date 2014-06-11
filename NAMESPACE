@@ -16,6 +16,7 @@ export(
 	opbase.upload,
 	opasnet.data,
 	opasnet.csv,
+	opasnet.page,
 	objects.get,
 	objects.latest,
 	objects.store,
