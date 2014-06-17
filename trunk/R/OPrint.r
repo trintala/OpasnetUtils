@@ -27,15 +27,15 @@ oprint.table <- function(x, show_all = FALSE, sortable = TRUE, ...) {
 	
 	if (is.null(args$token))
 	{
-		print(x)
+		print(x, ...)
 	}
 	else
 	{
 		print_html_safe(args)
 		if (sortable)
-			print(xtable(x, ...), type = 'html', html.table.attributes="class='wikitable sortable'")
+			print(xtable(x, ...), type = 'html', html.table.attributes="class='wikitable sortable'", ...)
 		else
-			print(xtable(x, ...), type = 'html', html.table.attributes="class='wikitable'")
+			print(xtable(x, ...), type = 'html', html.table.attributes="class='wikitable'", ...)
 		cat("\n<!-- html_safe_end -->\n")
 	}
 }
