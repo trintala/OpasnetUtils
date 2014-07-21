@@ -180,7 +180,24 @@ opbase.data <- function(ident, series_id = NULL, subset = NULL, verbose = FALSE,
 }
 
 # Write data to the new opasnet database
-opbase.upload <- function(input, ident = NULL, name = NULL, subset = NULL, obj_type = 'variable', act_type = 'replace', language = 'eng', unit = '', who = NULL, rescol = NULL, chunk_size = NULL, verbose = FALSE, username = NULL, password = NULL, index_units = NULL, index_types = NULL ) {
+opbase.upload <- function(
+	input, 
+	ident = NULL, 
+	name = NULL, 
+	subset = NULL, 
+	obj_type = 'variable', 
+	act_type = 'replace', 
+	language = 'eng', 
+	unit = '', 
+	who = NULL, 
+	rescol = NULL, 
+	chunk_size = NULL, 
+	verbose = FALSE, 
+	username = NULL, 
+	password = NULL, 
+	index_units = NULL, 
+	index_types = NULL
+) {
 	
 	args <- opbase.parse_args()
 	
@@ -227,6 +244,18 @@ opbase.upload <- function(input, ident = NULL, name = NULL, subset = NULL, obj_t
 	page <- as.numeric(page)
 	if (is.na(page)) stop("Could not convert characters following the wiki ident into a page number!\n")
 	if (is.null(who)==TRUE) stop("uploader name not given")
+	
+	# If trying to append, check if object exists first
+	if (act_type == 'append') {
+		series <- tryCatch(
+			opbase.series(ident),
+			error = function(...) return(NULL)
+		)
+		if (is.null(series)) {
+			act_type <- 'replace'
+		}
+	}
+	
 	if (is.null(name)==TRUE && act_type == 'replace') stop("object name not given")
 	
 	# Build index list
