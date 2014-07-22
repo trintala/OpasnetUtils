@@ -10,6 +10,7 @@ export(
 	op_baseGetData,
 	op_baseGetLocs,
 	opbase.locations,
+	opbase.indices,
 	opbase.obj.exists,
 	opbase.series,
 	opbase.data,

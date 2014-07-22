@@ -45,6 +45,30 @@ opbase.series <- function(ident, username = NULL, password = NULL, verbose = FAL
 	return(unique(ret))
 }
 
+opbase.indices <- function(ident, act = NULL, username = NULL, password = NULL, verbose = FALSE)
+{
+	query = list()
+	query[['ident']] <- ident
+	query[['username']] <- username
+	query[['password']] <- password
+	object <- opbase.query(query, username, password)
+	
+	if(is.null(object$acts)) stop("Acts not found!")
+	
+	ret = c()
+	
+	if (verbose) print(object$acts)
+	
+	if (is.null(act)) act <- length(object$acts)
+	
+	for (a in object$acts[[act]]$indices)
+	{
+		ret <- c(ret, as.character(a$name))
+	}
+	
+	return(ret)
+}
+
 # Read data from opasnet base 2
 opbase.data <- function(ident, series_id = NULL, subset = NULL, verbose = FALSE, username = NULL, password = NULL, samples = NULL, exclude = NULL, include = NULL, range = NULL, optim_test = TRUE, ...) {
 	
