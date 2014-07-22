@@ -271,8 +271,12 @@ opbase.upload <- function(
 	
 	# If trying to append, check if object exists first
 	if (act_type == 'append') {
+		temp_id <- ident
+		if (!is.null(subset)) {
+			temp_id <- paste(temp_id, subset, sep = ".")
+		}
 		series <- tryCatch(
-			opbase.series(ident),
+			opbase.series(temp_id),
 			error = function(...) return(NULL)
 		)
 		if (is.null(series)) {
