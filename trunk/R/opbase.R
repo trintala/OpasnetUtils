@@ -277,7 +277,13 @@ opbase.upload <- function(
 		}
 		series <- tryCatch(
 			opbase.series(temp_id),
-			error = function(...) return(NULL)
+			error = function(e) {
+				if(grepl("^Query response error: Load by columns: record not found!", e[[1]])) { 
+					return(NULL)
+				} else {
+					stop(paste("Unexpected error:", e[[1]]))
+				}
+			}
 		)
 		if (is.null(series)) {
 			act_type <- 'replace'
