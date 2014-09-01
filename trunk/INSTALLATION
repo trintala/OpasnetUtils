@@ -1,7 +1,0 @@
-Install the package
-
- R CMD INSTALL --build <src folder>
-
-Include in R code
-
- library(OpasnetUtils)

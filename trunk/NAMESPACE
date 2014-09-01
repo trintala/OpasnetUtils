@@ -55,5 +55,7 @@ export(
 	openv,
 	openv.setN,
 	odebug,
-	continuousOps
+	continuousOps,
+	odirichlet,
+	unkeep
 )

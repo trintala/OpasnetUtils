@@ -269,7 +269,7 @@ opbase.upload <- function(
 	if (is.na(page)) stop("Could not convert characters following the wiki ident into a page number!\n")
 	if (is.null(who)==TRUE) stop("uploader name not given")
 	
-	# If trying to append, check if object exists first
+	# If trying to append, check if object exists first (this functionality should be updated into opbase.obj.exists)
 	if (act_type == 'append') {
 		temp_id <- ident
 		if (!is.null(subset)) {

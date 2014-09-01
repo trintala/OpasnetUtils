@@ -10,7 +10,7 @@ Create \code{\link{ovariable}}s more conveniently
 Ovariable(name = character(), data = data.frame(), 
     formula = function(...) {0}, dependencies = data.frame(), 
     ddata = character(), output = data.frame(), marginal = logical(), 
-    subset = NULL, getddata = TRUE, save = FALSE, public = TRUE, ...)
+    subset = character(), getddata = TRUE, save = FALSE, public = TRUE, ...)
 }
 \arguments{
   \item{name}{
