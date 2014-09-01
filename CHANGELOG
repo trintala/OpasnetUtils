@@ -1,2 +1,6 @@
 2013-07-09 Teemu Rintala <teemu.rintala.a@gmail.com>
 *Rearranged and documented for CRAN submission. 
+
+2014-09-01 Teemu Rintala <teemu.rintala.a@gmail.com>
+*Updated with more features (odebug, Minimize, odirichlet, unkeep, dropall etc.)
+*A number of bugfixes in the Ovariable evaluation recursion.
