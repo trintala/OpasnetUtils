@@ -1,6 +1,7 @@
 \name{interpret}
 \alias{interpret}
 \alias{interpret,character-method}
+\alias{interpret,numeric-method}
 \title{
 Parse human readable distribution definitions
 }
@@ -8,7 +9,7 @@ Parse human readable distribution definitions
 Interpret textual data into probability distributions using regular expressions.
 }
 \usage{
-interpret(idata, N = 1000, rescol = "Result", dbug = FALSE, ...)
+interpret(idata, N = NULL, rescol = "Result", dbug = FALSE, ...)
 }
 
 \arguments{
@@ -39,6 +40,7 @@ Negative X and Y are determined by the number of "-": if 2, X is negative; if 3,
 If distance from mean to the higher boundary is 50-percent higher than to lower boundary log normality is assumed. \cr
 "X:Y:Z" defines a triangular distribution with min, mode and max (can be given in any order). \cr
 "X1;X2;...;Xn" defines a random unbiased sample (with replacement) between the given elements. \cr
+Numeric values are left as is. \cr
 See \url{http://en.opasnet.org/w/Interpret} for a table. 
 
 See also:

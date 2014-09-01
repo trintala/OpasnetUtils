@@ -7,7 +7,7 @@ Collapse marginals
 Apply functions (only \code{sample} at the moment) over ovaribale indices
 }
 \usage{
-CollapseMarginal(variable, cols, probs = NULL, ...)
+CollapseMarginal(variable, cols, fun = "mean", probs = NULL, ...)
 }
 \arguments{
   \item{variable}{
@@ -15,6 +15,9 @@ CollapseMarginal(variable, cols, probs = NULL, ...)
 }
   \item{cols}{
   vector of column names or indices to collapse
+}
+  \item{fun}{
+  \code{character} name of function to be used to summarize 
 }
   \item{probs}{
   list of vectors defining the distribution of values in a column index

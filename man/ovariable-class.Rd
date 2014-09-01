@@ -13,6 +13,7 @@
 \alias{Ops,ovariable,numeric-method}
 \alias{Ops,ovariable,ovariable-method}
 \alias{plot,ovariable-method}
+\alias{plot,ovariable,ANY-method}
 \alias{summary,ovariable-method}
 
 \title{Class \code{"ovariable"}}

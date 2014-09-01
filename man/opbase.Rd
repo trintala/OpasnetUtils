@@ -4,6 +4,7 @@
 \alias{opbase.locations}
 \alias{opbase.obj.exists}
 \alias{opbase.series}
+\alias{opbase.indices}
 \alias{opbase.upload}
 \title{
 OpasnetBase Access
@@ -19,6 +20,7 @@ opbase.locations(ident, index_name, series_id = NULL, username = NULL,
     password = NULL)
 opbase.obj.exists(ident, username = NULL, password = NULL)
 opbase.series(ident, username = NULL, password = NULL, verbose = FALSE)
+opbase.indices(ident, act = NULL, username = NULL, password = NULL, verbose = FALSE)
 opbase.upload(input, ident = NULL, name = NULL, subset = NULL, 
     obj_type = "variable", act_type = "replace", language = "eng", 
     unit = "", who = NULL, rescol = NULL, chunk_size = NULL, verbose = FALSE, 
@@ -31,6 +33,9 @@ opbase.upload(input, ident = NULL, name = NULL, subset = NULL,
 }
   \item{series_id}{
   Series identifier as integer.
+}
+  \item{act}{
+  Act identifier as integer.
 }
   \item{index_name}{
   Column name (index) whose locations should be returned.
@@ -120,6 +125,7 @@ See also:
 \item{opbase.locations}{Returns list of locations and their ids (as keys).}
 \item{opbase.obj.exists}{Returns TRUE if object exists, FALSE if not.}
 \item{opbase.series}{Returns vector of series ids.}
+\item{opbase.indices}{Returns a character vector of data indices.}
 \item{opbase.upload}{Returns total number of data rows uploaded.}
 }
 \author{
