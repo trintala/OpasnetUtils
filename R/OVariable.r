@@ -167,7 +167,7 @@ setMethod(
 		}
 )
 
-# SETMETHOD MERGE ########### merge of ovariables merges the 'output' slot by index columns except 'Unit'.
+# SETMETHOD MERGE ########### merge ovariable outputs
 
 setMethod(f = "merge", 
 		signature = signature(x = "ovariable", y = "ovariable"),
@@ -182,7 +182,31 @@ setMethod(f = "merge",
 			x <- temp[[1]]
 			y <- temp[[2]]
 			
-			temp <- merge(x@output, y@output, all = all, sort = sort, ...)#, by = test)
+			#temp <- merge(x@output, y@output, all = all, sort = sort, ...)#, by = test)
+			by_auto <- intersect(colnames(x@output), colnames(y@output))
+			if (length(by_auto) == 0) {
+				if (ncol(x@output) == 1) {
+					a <- data.frame(rep(x@output[[1]], each = nrow(y@output)))
+					colnames(a) <- colnames(x@output)
+				} else {
+					a <- x@output[rep(1:nrow(x@output), each = nrow(y@output)), ]
+				}
+				temp <- data.frame(a, y@output)
+			} else {
+				# Unkeep matching Result columns from y to avoid bugs
+				if (any(grepl("Result$", by_auto))) {
+					y@output <- y@output[!colnames(y@output) %in% by_auto[grepl("Result$", by_auto)]]
+					by_auto <- by_auto[!grepl("Result$", by_auto)]
+				}
+				if (all == TRUE) type <- "full" else type <- "inner"
+				test <- list()
+				for (i in by_auto) {
+					if (!is.factor(x@output[[i]])) x@output[[i]] <- factor(x@output[[i]])
+					if (!is.factor(y@output[[i]])) y@output[[i]] <- factor(y@output[[i]])
+				}
+				temp <- join(x@output, y@output, by_auto, type, "all")
+			}
+			
 			temp <- new("ovariable", output = temp)
 			#temp <- CheckMarginals(temp, deps = list(x,y))
 			return(temp)
