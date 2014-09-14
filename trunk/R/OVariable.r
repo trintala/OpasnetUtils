@@ -198,7 +198,18 @@ setMethod(f = "merge",
 					y@output <- y@output[!colnames(y@output) %in% by_auto[grepl("Result$", by_auto)]]
 					by_auto <- by_auto[!grepl("Result$", by_auto)]
 				}
-				if (all == TRUE) type <- "full" else type <- "inner"
+				type <- "inner"
+				if (all == TRUE) type <- "full" else  {
+					args <- list(...)
+					if (!is.null(args$all.x)) {
+						if (args$all.x) type <- "left"
+					}
+					if (!is.null(args$all.y)) {
+						if (args$all.y) {
+							if (type == "left") type <- "full" else type <- "right"
+						}
+					}
+				}
 				test <- list()
 				for (i in by_auto) {
 					if (!is.factor(x@output[[i]])) x@output[[i]] <- factor(x@output[[i]])
