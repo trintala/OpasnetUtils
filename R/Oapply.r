@@ -4,13 +4,13 @@
 ### X an ovariable
 ### cols overrides INDEX by choosing INDEX as all marginals NOT given in cols (character vector) argument
 
-oapply = function(X, INDEX = NULL, FUN = NULL, cols = NULL, use_plyr = TRUE, ..., simplify = TRUE) {
+oapply = function(X, INDEX = NULL, FUN = NULL, cols = NULL, use_plyr = FALSE, drop_na = TRUE, ..., simplify = TRUE) {
 	out <- X@output
 	marginals <- colnames(out)[X@marginal]
 	if (is.null(INDEX) & is.null(cols)) stop("No INDEX nor cols defined!\n")
 	if (!is.null(cols)) INDEX <- out[marginals[!marginals %in% cols]]
 	if (length(INDEX) == 0) stop("No marginals!\n")
-	if (use_plyr == TRUE) {
+	if (use_plyr) {
 		if (is.character(INDEX)) vars <- INDEX else vars <- colnames(INDEX)
 		if (is.null(vars)) stop("Unable to determine index name, please use character input.")
 		out <- ddply(
@@ -19,6 +19,7 @@ oapply = function(X, INDEX = NULL, FUN = NULL, cols = NULL, use_plyr = TRUE, ...
 			oapplyf(FUN),
 			rescol = paste(X@name, "Result", sep = ""),
 			datvars = vars, 
+			...,
 			.drop = TRUE
 		)
 	} else {
@@ -51,6 +52,7 @@ oapply = function(X, INDEX = NULL, FUN = NULL, cols = NULL, use_plyr = TRUE, ...
 		else { # function returned single value
 			out <- as.data.frame(as.table(out))
 		}
+		out <- out[!is.na(out$Freq),]
 		colnames(out)[colnames(out) == "Freq"] <- paste(X@name, "Result", sep = "")
 	}
 	X@output <- out
@@ -60,7 +62,7 @@ oapply = function(X, INDEX = NULL, FUN = NULL, cols = NULL, use_plyr = TRUE, ...
 
 oapplyf <- function(fun) {
 	if (is.character(fun)) fun <- get(fun)
-	out <- function(dat, rescol, datvars) {
+	out <- function(dat, rescol, datvars, ...) {
 		# Take first entry of each index (since they should contain only one distinct value)
 		out <- data.frame(dat[[datvars[1]]][1])
 		if (length(datvars > 1)) {
@@ -68,7 +70,7 @@ oapplyf <- function(fun) {
 				out[[i]] <- dat[[datvars[i]]][1]
 			}
 		}
-		out <- data.frame(out, fun(dat[[rescol]]))
+		out <- data.frame(out, fun(dat[[rescol]], ...))
 		colnames(out) <- c(datvars, rescol)
 		return(out)
 	}
