@@ -37,7 +37,7 @@ EvalOutput <- function(variable, fillna = FALSE, indent = 0, verbose = FALSE, ..
 		variable@output <- a
 		if (verbose) {
 			td <- Sys.time() - t1
-			cat(paste(" done(", round(td, 2), " ", td$units, ")!\n", sep = ""))
+			cat(paste(" done(", round(td, 2), " ", attributes(td)$units, ")!\n", sep = ""))
 		}
 	}
 	else if (nrow(a) == 0) {
@@ -49,7 +49,7 @@ EvalOutput <- function(variable, fillna = FALSE, indent = 0, verbose = FALSE, ..
 		if (length(tempmarginals) > 1) variable@marginal <- colnames(variable@output) %in% tempmarginals
 		if (verbose) {
 			td <- Sys.time() - t1
-			cat(paste(paste(rep("-", indent), collapse = ""), " done(", round(td, 2), " ", td$units, ")!\n", sep = ""))
+			cat(paste(paste(rep("-", indent), collapse = ""), " done(", round(td, 2), " ", attributes(td)$units, ")!\n", sep = ""))
 		}
 	}
 	else {
@@ -75,7 +75,7 @@ EvalOutput <- function(variable, fillna = FALSE, indent = 0, verbose = FALSE, ..
 		if (length(tempmarginals) > 1) variable@marginal <- colnames(variable@output) %in% tempmarginals
 		if (verbose) {
 			td <- Sys.time() - t1
-			cat(paste(paste(rep("-", indent), collapse = ""), " done(", round(td, 2), " ", td$units, ")!\n", sep = ""))
+			cat(paste(paste(rep("-", indent), collapse = ""), " done(", round(td, 2), " ", attributes(td)$units, ")!\n", sep = ""))
 		}
 	}
 	#if (verbose) cat(rep("-", indent), " done!\n")
