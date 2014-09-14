@@ -2,7 +2,10 @@
 #### Runs CheckMarginals as well
 
 EvalOutput <- function(variable, fillna = FALSE, indent = 0, verbose = FALSE, ...) { # ... for e.g na.rm 
-	if (verbose) cat(rep("-", indent), "Evaluating", variable@name, "...")
+	if (verbose) {
+		cat(rep("-", indent), "Evaluating", variable@name, "...")
+		t1 <- Sys.time()
+	}
 	ComputeDependencies(variable@dependencies, fillna = fillna, indent = indent + 1, verbose = verbose, new_code = TRUE, ...)
 	variable <- ddata_apply(variable, ...)
 	if (nrow(variable@data) > 0) {
@@ -32,7 +35,10 @@ EvalOutput <- function(variable, fillna = FALSE, indent = 0, verbose = FALSE, ..
 		colnames(a)[colnames(a) == rescol] <- paste(variable@name, "Result", sep = "")
 		a[,paste(variable@name, "Source", sep = "")] <- "Data"
 		variable@output <- a
-		if (verbose) cat(" done!\n")
+		if (verbose) {
+			td <- Sys.time() - t1
+			cat(paste(" done(", round(td, 2), " ", td$units, ")!\n", sep = ""))
+		}
 	}
 	else if (nrow(a) == 0) {
 		colnames(b)[
@@ -41,7 +47,10 @@ EvalOutput <- function(variable, fillna = FALSE, indent = 0, verbose = FALSE, ..
 		b[,paste(variable@name, "Source", sep = "")] <- "Formula"
 		variable@output <- b
 		if (length(tempmarginals) > 1) variable@marginal <- colnames(variable@output) %in% tempmarginals
-		if (verbose) cat(rep("-", indent), " done!\n")
+		if (verbose) {
+			td <- Sys.time() - t1
+			cat(paste(paste(rep("-", indent), collapse = ""), " done(", round(td, 2), " ", td$units, ")!\n", sep = ""))
+		}
 	}
 	else {
 		colnames(a)[colnames(a) == rescol] <- "FromData"
@@ -64,7 +73,10 @@ EvalOutput <- function(variable, fillna = FALSE, indent = 0, verbose = FALSE, ..
 		)
 		variable@output <- temp
 		if (length(tempmarginals) > 1) variable@marginal <- colnames(variable@output) %in% tempmarginals
-		if (verbose) cat(rep("-", indent), " done!\n")
+		if (verbose) {
+			td <- Sys.time() - t1
+			cat(paste(paste(rep("-", indent), collapse = ""), " done(", round(td, 2), " ", td$units, ")!\n", sep = ""))
+		}
 	}
 	#if (verbose) cat(rep("-", indent), " done!\n")
 	#if (verbose) cat(" done!\n")
