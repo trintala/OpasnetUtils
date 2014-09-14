@@ -59,6 +59,7 @@ oapply = function(X, INDEX = NULL, FUN = NULL, cols = NULL, use_plyr = TRUE, ...
 }
 
 oapplyf <- function(fun) {
+	if (is.character(fun)) fun <- get(fun)
 	out <- function(dat, rescol, datvars) {
 		# Take first entry of each index (since they should contain only one distinct value)
 		out <- data.frame(dat[[datvars[1]]][1])
