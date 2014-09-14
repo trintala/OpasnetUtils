@@ -10,4 +10,4 @@ Description: Contains tools for open assessments and modelling in the Opasnet en
 Imports: methods, rjson, RCurl, reshape2, triangle, httpRequest, digest, xtable, ggplot2, rgdal, sp
 License: GPL-3
 LazyLoad: yes
-URL: http://www.opasnet.org, http://en.opasnet.org/w/Modelling_in_Opasnet, http://en.opasnet.org/w/OpasnetUtils
+URL: http://www.opasnet.org , http://en.opasnet.org/w/Modelling_in_Opasnet , http://en.opasnet.org/w/OpasnetUtils
