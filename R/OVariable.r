@@ -191,7 +191,10 @@ setMethod(f = "merge",
 				} else {
 					a <- x@output[rep(1:nrow(x@output), each = nrow(y@output)), ]
 				}
-				temp <- data.frame(a, y@output)
+				temp <- data.frame(a, y@output[rep(1:nrow(y@output), times = nrow(x@output)), ])
+				if (ncol(y@output) == 1) {
+					colnames(temp)[length(colnames(temp))] <- colnames(y@output)
+				}
 			} else {
 				# Unkeep matching Result columns from y to avoid bugs
 				if (any(grepl("Result$", by_auto))) {
