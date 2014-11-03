@@ -197,9 +197,9 @@ setMethod(f = "merge",
 				}
 			} else {
 				# Unkeep matching Result columns from y to avoid bugs
-				if (any(grepl("Result$", by_auto))) {
-					y@output <- y@output[!colnames(y@output) %in% by_auto[grepl("Result$", by_auto)]]
-					by_auto <- by_auto[!grepl("Result$", by_auto)]
+				if (any(grepl("Result$|Source$", by_auto))) {
+					y@output <- y@output[!colnames(y@output) %in% by_auto[grepl("Result$|Source$", by_auto)]]
+					by_auto <- by_auto[!grepl("Result$|Source$", by_auto)]
 				}
 				type <- "inner"
 				if (all == TRUE) type <- "full" else  {
