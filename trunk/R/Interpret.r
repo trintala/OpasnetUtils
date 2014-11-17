@@ -25,11 +25,24 @@ interpf <- function(
 	if(doublePoint[1] > 0) {
 		tempArgs <- sort(as.numeric(unlist(strsplit(res.char, "\\:"))))
 		if(dbug) cat("Triangular distribution. \n")
-		return(rtriangle(n,tempArgs[1],tempArgs[3],tempArgs[2]))
+		if (n == 0) {
+			if (tempArgs[1] + tempArgs[3] == 2 * tempArgs[2]) {
+				return(tempArgs[2])
+			} else if (tempArgs[1] + tempArgs[3] > 2 * tempArgs[2]) {
+				return(tempArgs[1] + ((tempArgs[3]-tempArgs[1])(tempArgs[2]-tempArgs[1])/2)^(1/2))
+			} else {
+				return(tempArgs[3] - ((tempArgs[3]-tempArgs[1])(tempArgs[3]-tempArgs[2])/2)^(1/2))
+			}
+		} else {
+			return(rtriangle(n,tempArgs[1],tempArgs[3],tempArgs[2]))
+		}
 	}
 	if(brackets.pos > 0) {
 		n.minus.inside.brackets <- sum(minus.relevant > brackets.pos & minus.relevant < brackets.pos + brackets.length)
 		imean <- as.numeric(substr(res.char, 1, brackets.pos - 1))
+		if (n == 0) {
+			return(imean)
+		}
 		if(n.minus.inside.brackets == 1) {
 			ici <- c(as.numeric(substr(res.char, brackets.pos + 1, minus.relevant[minus.relevant > brackets.pos] - 1)), as.numeric(substr(res.char, 
 				minus.relevant[minus.relevant > brackets.pos] + 1, brackets.pos + brackets.length - 2)))
@@ -42,7 +55,7 @@ interpf <- function(
 				isd <- sum(abs(log(ici) - log(imean)) / 2) / qnorm(0.975)
 				return(exp(rnorm(n, log(imean), isd)))
 			}
-		} else 
+		}
 		if(n.minus.inside.brackets %in% c(2,3)) {
 			ici <- c(as.numeric(substr(res.char, brackets.pos + 1, minus.relevant[minus.relevant > brackets.pos][2] - 1)), as.numeric(substr(res.char, 
 				minus.relevant[minus.relevant > brackets.pos][2] + 1, brackets.pos + brackets.length - 2)))
@@ -54,8 +67,12 @@ interpf <- function(
 		return(rep(NA, n))
 	}
 	if(plusminus.pos > 0) {
+		imean <- as.numeric(substr(res.char, 1, plusminus.pos - 1))
+		if (n == 0) {
+			return(imean)
+		}
 		if(dbug) cat("Normal distribution. \n")
-		return(rnorm(n, as.numeric(substr(res.char, 1, plusminus.pos - 1)), as.numeric(substr(res.char, plusminus.pos + plusminus.length, nchar(res.char)))))
+		return(rnorm(n, imean, as.numeric(substr(res.char, plusminus.pos + plusminus.length, nchar(res.char)))))
 	}
 	if(minus.exists) {
 		if(length(minus.relevant) == 1) {
@@ -63,21 +80,36 @@ interpf <- function(
 			b <- as.numeric(substr(res.char, minus.relevant + 1, nchar(res.char)))
 			if(a / b >= 1/100 | a == 0) {
 				if(dbug) cat("Uniform distribution. \n")
+				if (n == 0) {
+					return((a+b)/2)
+				}
 				return(runif(n, a, b))
 			} else {
 				if(dbug) cat("Loguniform distribution. \n")
+				if (n == 0) {
+					return(exp((log(a)+log(b))/2))
+				}
 				return(exp(runif(n, log(a), log(b))))
 			}
 		}
 		if(length(minus.relevant) %in% c(2,3)) { # If there is more than one '-' we're porbably dealing with negative boundaries. (More than 3 will produce NAs.)
 			if(dbug) cat("Uniform distribution. \n")
 			# Assume that negative number is always first.
-			return(runif(n, as.numeric(substr(res.char, 1, minus.relevant[2] - 1)), as.numeric(substr(res.char, minus.relevant[2] + 1, nchar(res.char)))))
+			a <- as.numeric(substr(res.char, 1, minus.relevant[2] - 1))
+			b <- as.numeric(substr(res.char, minus.relevant[2] + 1, nchar(res.char)))
+			if (n == 0) {
+				return((a+b)/2)
+			}
+			return(runif(n, a, b))
 		}
 	}
 	if(sum(unlist(strsplit(res.char, ""))==";") > 0) {
 		if(dbug) cat("Discrete random samples. \n")
-		return(sample(as.numeric(unlist(strsplit(res.char, ";"))), n, replace = TRUE))
+		a <- as.numeric(unlist(strsplit(res.char, ";")))
+		if (n == 0) {
+			return(mean(a))
+		}
+		return(sample(a, n, replace = TRUE))
 	}
 	if(fromzero[[1]][1] == 1) {
 		temp <- interpret(
