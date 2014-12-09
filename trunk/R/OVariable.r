@@ -184,6 +184,13 @@ setMethod(f = "merge",
 			
 			#temp <- merge(x@output, y@output, all = all, sort = sort, ...)#, by = test)
 			by_auto <- intersect(colnames(x@output), colnames(y@output))
+			
+			# Unkeep matching Result columns from y to avoid bugs (false if by_auto is NULL)
+			if (any(grepl("Result$|Source$", by_auto))) {
+				y@output <- y@output[!colnames(y@output) %in% by_auto[grepl("Result$|Source$", by_auto)]]
+				by_auto <- by_auto[!grepl("Result$|Source$", by_auto)]
+			}
+			
 			if (length(by_auto) == 0) {
 				if (ncol(x@output) == 1) {
 					a <- data.frame(rep(x@output[[1]], each = nrow(y@output)))
@@ -196,14 +203,9 @@ setMethod(f = "merge",
 					colnames(temp)[length(colnames(temp))] <- colnames(y@output)
 				}
 			} else {
-				# Unkeep matching Result columns from y to avoid bugs
-				if (any(grepl("Result$|Source$", by_auto))) {
-					y@output <- y@output[!colnames(y@output) %in% by_auto[grepl("Result$|Source$", by_auto)]]
-					by_auto <- by_auto[!grepl("Result$|Source$", by_auto)]
-				}
 				type <- "inner"
 				if (all == TRUE) type <- "full" else  {
-					args <- list(...)
+					args <- list() #list(...)
 					if (!is.null(args$all.x)) {
 						if (args$all.x) type <- "left"
 					}
