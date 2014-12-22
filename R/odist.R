@@ -80,7 +80,7 @@ odirichlet <- function(a, n = 0, ...) {
 	if (n == 0) n <- openv$N
 	if ("Iter" %in% colnames(a@output)) n <- 1
 	
-	out <- oapply(a, FUN = rdirichlet2, n = n, use_plyr = FALSE, aggregate = FALSE, ...)
+	out <- oapply(a, FUN = rdirichlet2, n = n, use_plyr = FALSE, use_aggregate = FALSE, ...)
 	
 	if (!"Iter" %in% colnames(a@output)) {
 		levels(out@output$Var2) <- 1:n

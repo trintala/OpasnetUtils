@@ -4,8 +4,8 @@
 ### X an ovariable
 ### cols overrides INDEX by choosing INDEX as all marginals NOT given in cols (character vector) argument
 
-oapply = function(X, INDEX = NULL, FUN = NULL, cols = NULL, use_plyr = FALSE, drop_na = TRUE, aggregate = TRUE, ..., simplify = TRUE) {
-	if(!aggregate) out <- X@output
+oapply = function(X, INDEX = NULL, FUN = NULL, cols = NULL, use_plyr = FALSE, drop_na = TRUE, use_aggregate = TRUE, ..., simplify = TRUE) {
+	if(!use_aggregate) out <- X@output
 	marginals <- colnames(X@output)[X@marginal]
 	if (is.data.frame(INDEX)) INDEX <- colnames(INDEX)
 	if (is.null(INDEX) & is.null(cols)) stop("No INDEX nor cols defined!\n")
@@ -30,7 +30,7 @@ oapply = function(X, INDEX = NULL, FUN = NULL, cols = NULL, use_plyr = FALSE, dr
 			...,
 			.drop = TRUE
 		)
-	} else if (aggregate) {
+	} else if (use_aggregate) {
 		out <- aggregate(result(X), X@output[INDEX], FUN, ...)
 		colnames(out)[ncol(out)] <- paste(X@name, "Result", sep = "")
 	} else {
