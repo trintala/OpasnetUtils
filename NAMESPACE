@@ -6,6 +6,7 @@ exportMethods(merge, summary, plot)
 export(
 	oprint,
 	oapply,
+	ooapply,
 	orbind,
 	op_baseGetData,
 	op_baseGetLocs,
