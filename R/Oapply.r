@@ -4,32 +4,40 @@
 ### X an ovariable
 ### cols overrides INDEX by choosing INDEX as all marginals NOT given in cols (character vector) argument
 
-oapply = function(X, INDEX = NULL, FUN = NULL, cols = NULL, use_plyr = FALSE, drop_na = TRUE, ..., simplify = TRUE) {
-	out <- X@output
-	marginals <- colnames(out)[X@marginal]
+oapply = function(X, INDEX = NULL, FUN = NULL, cols = NULL, use_plyr = FALSE, drop_na = TRUE, aggregate = TRUE, ..., simplify = TRUE) {
+	if(!aggregate) out <- X@output
+	marginals <- colnames(X@output)[X@marginal]
+	if (is.data.frame(INDEX)) INDEX <- colnames(INDEX)
 	if (is.null(INDEX) & is.null(cols)) stop("No INDEX nor cols defined!\n")
-	if (!is.null(cols)) INDEX <- out[marginals[!marginals %in% cols]]
+	if (!is.null(cols)) INDEX <- marginals[!marginals %in% cols]
 	if (length(INDEX) == 0) {
-		warning("Zero length INDEX while oapplying.")
+		warning("Zero length INDEX while oapplying. All columns except relevant Result removed.")
+		res <- FUN(result(X))
+		X@output <- data.frame(res)
+		colnames(X@output) <- paste(X@name, "Result", sep = "")
+		X@marginal <- FALSE
 		return(X)
 	}
 	if (use_plyr) {
-		if (is.character(INDEX)) vars <- INDEX else vars <- colnames(INDEX)
-		if (is.null(vars)) stop("Unable to determine index name, please use character input.")
+		
+		if (is.null(INDEX)) stop("Unable to determine index name, please use character input.")
 		out <- ddply(
 			out, 
-			vars,
+			INDEX,
 			oapplyf(FUN),
 			rescol = paste(X@name, "Result", sep = ""),
 			datvars = vars, 
 			...,
 			.drop = TRUE
 		)
+	} else if (aggregate) {
+		out <- aggregate(result(X), X@output[INDEX], FUN, ...)
+		colnames(out)[ncol(out)] <- paste(X@name, "Result", sep = "")
 	} else {
 		# Old implementation
 		out <- tapply(
 			X = out[[paste(X@name, "Result", sep = "")]], 
-			INDEX = INDEX,
+			INDEX = X@output[INDEX],
 			FUN = FUN,
 			...,
 			simplify = simplify
@@ -58,7 +66,7 @@ oapply = function(X, INDEX = NULL, FUN = NULL, cols = NULL, use_plyr = FALSE, dr
 		nas <- is.na(out$Freq)
 		if (any(nas)) {
 			out <- out[!nas,]
-			warning(paste(sum(nas), "NAs removed. Consider using na.rm = TRUE if this seems unusual."))
+			warning(paste(sum(nas), "NAs removed. Consider using na.rm = TRUE if this seems unusual or drop_na = FALSE if you do not want to remove NAs automatically."))
 		}
 		
 		colnames(out)[colnames(out) == "Freq"] <- paste(X@name, "Result", sep = "")
