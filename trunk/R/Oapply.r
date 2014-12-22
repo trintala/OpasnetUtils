@@ -10,7 +10,7 @@ oapply = function(X, INDEX = NULL, FUN = NULL, cols = NULL, use_plyr = FALSE, dr
 	if (is.null(INDEX) & is.null(cols)) stop("No INDEX nor cols defined!\n")
 	if (!is.null(cols)) INDEX <- out[marginals[!marginals %in% cols]]
 	if (length(INDEX) == 0) {
-		warning("Zero length INDEX while oapplying.\n")
+		warning("Zero length INDEX while oapplying.")
 		return(X)
 	}
 	if (use_plyr) {
@@ -55,7 +55,12 @@ oapply = function(X, INDEX = NULL, FUN = NULL, cols = NULL, use_plyr = FALSE, dr
 		else { # function returned single value
 			out <- as.data.frame(as.table(out))
 		}
-		out <- out[!is.na(out$Freq),]
+		nas <- is.na(out$Freq)
+		if (any(nas)) {
+			out <- out[!nas,]
+			warning(paste(sum(nas), "NAs removed. Consider using na.rm = TRUE if this seems unusual."))
+		}
+		
 		colnames(out)[colnames(out) == "Freq"] <- paste(X@name, "Result", sep = "")
 	}
 	X@output <- out
