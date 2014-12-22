@@ -9,7 +9,10 @@ oapply = function(X, INDEX = NULL, FUN = NULL, cols = NULL, use_plyr = FALSE, dr
 	marginals <- colnames(out)[X@marginal]
 	if (is.null(INDEX) & is.null(cols)) stop("No INDEX nor cols defined!\n")
 	if (!is.null(cols)) INDEX <- out[marginals[!marginals %in% cols]]
-	if (length(INDEX) == 0) stop("No marginals!\n")
+	if (length(INDEX) == 0) {
+		warning("Zero length INDEX while oapplying.\n")
+		return(X)
+	}
 	if (use_plyr) {
 		if (is.character(INDEX)) vars <- INDEX else vars <- colnames(INDEX)
 		if (is.null(vars)) stop("Unable to determine index name, please use character input.")
