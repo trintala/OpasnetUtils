@@ -76,3 +76,53 @@ oapplyf <- function(fun) {
 	}
 	return(out)
 }
+
+ooapply <- function( # A memory-saving function for oapply when there is exactly one row for each unique combination.
+	# All non-marginal indices are removed.
+	X, # An ovariable
+	cols, # Names of index columns to aggregrate over
+	FUN = "sum", # A function to used in aggregation. Only "sum", "mean", "min", "max" and "prod" are available atm.
+	... # For compatibility.
+) {
+
+	rescol <- paste(X@name, "Result", sep = "")
+	X <- unkeep(X, # Unkeep all columns except critical marginals and the result.
+		cols = setdiff(colnames(X@output)[!X@marginal], rescol),
+		prevresults = TRUE,
+		sources = TRUE 
+	) 
+	keeps <- colnames(X@output)[X@marginal & !colnames(X@output) %in% cols] # Marginals to keep
+	if(any(colnames(X@output)[X@marginal] %in% cols)) {
+		ro <- unique(X@output[cols[1]]) # data.frame with all combinations of marginal locations
+		if(length(cols) == 1) colu <- keeps else colu <- c(cols[2:length(cols)], keeps)
+		for(j in colu) {
+			ro <- merge(unique(X@output[j]), ro)
+		}
+		ro <- ro[ncol(ro):1]
+		nro <- nrow(ro)
+		ro <- merge(ro, X@output, all.x = TRUE)
+		ro <- ro[do.call(order, ro[1:(ncol(ro) - 1)]) , ]
+		res <- ro[[rescol]] # Result column in the right order.
+		if(length(res) != nro) stop("The numbers of rows don't match.\n")
+		if(FUN == "prod") out <- 1
+		if(FUN %in% c("sum", "mean")) out <- 0
+		if(FUN == "min") out <- Inf
+		if(FUN == "max") out <- -Inf
+		res[is.na(res)] <- out
+		block <- unique(ro[keeps]) # All combinations of locations of marginals to keep
+		keepn <- nrow(block)
+		if(FUN == "mean") res <- res * keepn / nro
+		for(i in 1:(nro / keepn)) { # Loop across all combinations of locations of marginals not to keep
+			addi <- res[((i - 1) * keepn + 1):((i - 1) * keepn + keepn)] 
+			if(FUN == "prod") out <- out * addi
+			if(FUN %in% c("sum", "mean")) out <- out + addi
+			if(FUN == "min") out <- pmin(out, addi)
+			if(FUN == "max") out <- pmax(out, addi)
+		}
+		out <- data.frame(block, Result = out)
+		colnames(out)[colnames(out) == "Result"] <- rescol
+		X@output <- out
+		X@marginal <- colnames(X@output) %in% keeps
+	}
+	return(X)
+}
