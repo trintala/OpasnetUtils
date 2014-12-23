@@ -18,11 +18,13 @@ oapply = function(X, INDEX = NULL, FUN = NULL, cols = NULL, use_plyr = FALSE, dr
 		X@marginal <- FALSE
 		return(X)
 	}
-	if (use_plyr) {
-		
+	if (use_aggregate) {
+		out <- aggregate(result(X), X@output[INDEX], FUN, ...)
+		colnames(out)[ncol(out)] <- paste(X@name, "Result", sep = "")
+	} else if (use_plyr) {
 		if (is.null(INDEX)) stop("Unable to determine index name, please use character input.")
 		out <- ddply(
-			out, 
+			X@output, 
 			INDEX,
 			oapplyf(FUN),
 			rescol = paste(X@name, "Result", sep = ""),
@@ -30,9 +32,6 @@ oapply = function(X, INDEX = NULL, FUN = NULL, cols = NULL, use_plyr = FALSE, dr
 			...,
 			.drop = TRUE
 		)
-	} else if (use_aggregate) {
-		out <- aggregate(result(X), X@output[INDEX], FUN, ...)
-		colnames(out)[ncol(out)] <- paste(X@name, "Result", sep = "")
 	} else {
 		# Old implementation
 		out <- tapply(
