@@ -153,6 +153,7 @@ setMethod(
 		definition = function(e1, e2) {
 			e2 <- new("ovariable", output = data.frame(Result = e2))
 			out <- callGeneric(e1, e2) # Call above definition
+			out@name <- e1@name
 			return(out)
 		}
 )
@@ -163,6 +164,7 @@ setMethod(
 		definition = function(e1, e2) {
 			e1 <- new("ovariable", output = data.frame(Result = e1))
 			out <- callGeneric(e1, e2) # Call above definition
+			out@name <- e2@name
 			return(out)
 		}
 )
