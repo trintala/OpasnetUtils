@@ -95,7 +95,7 @@ CheckDecisions <- function(variable, indent = 0, verbose = TRUE, ...) {
 			
 			# Applying effects
 			# We need a slice of the ovariable to feed to the effect function
-			temp <- Ovariable(variable@name, output = out@output[cond,])
+			temp <- Ovariable(variable@name, output = out@output[cond, , drop = FALSE])
 			arg <- Ovariable(output = interpret(as.character(dectable[["Result"]][j])))
 			if (!"Iter" %in% colnames(temp@output) & "Iter" %in% colnames(arg@output)) {
 				new_values <- eff[[j]](temp, arg)
@@ -112,7 +112,7 @@ CheckDecisions <- function(variable, indent = 0, verbose = TRUE, ...) {
 				
 				# Take un-updated rows and combine with updated ones
 				
-				out@output <- out@output[!cond,]
+				out@output <- out@output[!cond, , drop = FALSE]
 				out@output <- orbind(out, new_values)
 			} else {
 				result(out)[cond] <- result(eff[[j]](temp, arg))
@@ -124,7 +124,7 @@ CheckDecisions <- function(variable, indent = 0, verbose = TRUE, ...) {
 		variable@output <- out
 		if (verbose) cat(" done!\n")
 	}
-	openv[[variable@name]][["dec_check"]] <- TRUE
+	if (nchar(variable@name)>0) openv[[variable@name]][["dec_check"]] <- TRUE
 	return(variable)
 }
 
