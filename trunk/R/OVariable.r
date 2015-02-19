@@ -151,10 +151,11 @@ setMethod(
 		f = "Ops", 
 		signature = signature(e1 = "ovariable", e2 = "numeric"), 
 		definition = function(e1, e2) {
-			e2 <- new("ovariable", output = data.frame(Result = e2))
-			out <- callGeneric(e1, e2) # Call above definition
-			out@name <- e1@name
-			return(out)
+			#e2 <- new("ovariable", output = data.frame(Result = e2))
+			#out <- callGeneric(e1, e2) # Call above definition
+			#out@name <- e1@name
+			result(e1) <- callGeneric(result(e1), e2)
+			return(e1)
 		}
 )
 
@@ -162,10 +163,11 @@ setMethod(
 		f = "Ops", 
 		signature = signature(e1 = "numeric", e2 = "ovariable"), 
 		definition = function(e1, e2) {
-			e1 <- new("ovariable", output = data.frame(Result = e1))
-			out <- callGeneric(e1, e2) # Call above definition
-			out@name <- e2@name
-			return(out)
+			#e1 <- new("ovariable", output = data.frame(Result = e1))
+			#out <- callGeneric(e1, e2) # Call above definition
+			#out@name <- e2@name
+			result(e2) <- callGeneric(e1, result(e2))
+			return(e2)
 		}
 )
 
