@@ -113,15 +113,24 @@ setMethod(
 			#}
 			
 			# If not change prefixless Result to Result.x/y
-			
+			exl_list <- ""
 			if (test1) {
 				colnames(e1@output)[colnames(e1@output)=="Result"] <- "Result.x"
 				rescol1 <- "Result.x"
+				exl_list <- c(exl_list, "Result.x")
 			}
 			
 			if (test2) {
 				colnames(e2@output)[colnames(e2@output)=="Result"] <- "Result.y"
 				rescol2 <- "Result.y"
+				exl_list <- c(exl_list, "Result.y")
+			}
+			
+			test5 <- rescol1 == rescol2
+			if (test5) {
+				colnames(e2@output)[colnames(e2@output)==rescol2] <- "Result.y"
+				rescol2 <- "Result.y"
+				exl_list <- c(exl_list, "Result.y")
 			}
 			
 			# Now merging should be possible without any confusion
@@ -136,10 +145,7 @@ setMethod(
 					"ovariable",
 					#	dependencies = data.frame(Name = c(e1@name, e2@name)),
 					output = out[
-							!colnames(out) %in% c(
-									ifelse(test1, rescol1, character()), 
-									ifelse(test2, rescol2, character())
-							) | colnames(out) == "Result"
+							!colnames(out) %in% exl_list | colnames(out) == "Result"
 					]
 			)
 			out <- CheckMarginals(out, deps = list(e1, e2), verbose = FALSE)
