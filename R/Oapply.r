@@ -43,7 +43,7 @@ oapply = function(X, INDEX = NULL, FUN = NULL, cols = NULL, use_plyr = FALSE, dr
 		)
 		if (length(out) == 0) stop("0 length return from tapply!\n")
 		if (is.list(out[1])) { # function returned array
-			rows <- tapply(1:nrow(X@output), INDEX, I)
+			rows <- tapply(1:nrow(X@output), X@output[INDEX], I)
 			if (length(dim(out[[1]])) == 2) {
 				out <- lapply(out, t)
 			}
