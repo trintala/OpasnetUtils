@@ -50,11 +50,13 @@ T. Rintala \email{teemu.rintala.a@gmail.com}
 }
 \examples{
 deps <- data.frame(Name = "exposure", Key = "6WYTFxiZUIxiY8tw")
-#Fetch(deps)
-#exposure
+\dontrun{
+Fetch(deps)
+exposure
+}
 
 # If variable exists
 exposure <- 1
 Fetch(deps)
-exposure # by default nothing is changed
+exposure # by default existing variables are not changed
 }

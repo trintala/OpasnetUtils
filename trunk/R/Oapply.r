@@ -4,7 +4,8 @@
 ### X an ovariable
 ### cols overrides INDEX by choosing INDEX as all marginals NOT given in cols (character vector) argument
 
-oapply = function(X, INDEX = NULL, FUN = NULL, cols = NULL, use_plyr = FALSE, drop_na = TRUE, use_aggregate = TRUE, ..., simplify = TRUE) {
+oapply = function(X, INDEX = NULL, FUN = NULL, cols = NULL, #use_plyr = FALSE, 
+		drop_na = TRUE, use_aggregate = TRUE, ..., simplify = TRUE) {
 	if(!use_aggregate) out <- X@output
 	marginals <- colnames(X@output)[X@marginal]
 	if (is.data.frame(INDEX)) INDEX <- colnames(INDEX)
@@ -21,17 +22,17 @@ oapply = function(X, INDEX = NULL, FUN = NULL, cols = NULL, use_plyr = FALSE, dr
 	if (use_aggregate) {
 		out <- aggregate(result(X), X@output[INDEX], FUN, ...)
 		colnames(out)[ncol(out)] <- paste(X@name, "Result", sep = "")
-	} else if (use_plyr) {
-		if (is.null(INDEX)) stop("Unable to determine index name, please use character input.")
-		out <- ddply(
-			X@output, 
-			INDEX,
-			oapplyf(FUN),
-			rescol = paste(X@name, "Result", sep = ""),
-			datvars = vars, 
-			...,
-			.drop = TRUE
-		)
+	#} else if (use_plyr) {
+	#	if (is.null(INDEX)) stop("Unable to determine index name, please use character input.")
+	#	out <- ddply(
+	#		X@output, 
+	#		INDEX,
+	#		oapplyf(FUN),
+	#		rescol = paste(X@name, "Result", sep = ""),
+	#		datvars = var, 
+	#		...,
+	#		.drop = TRUE
+	#	)
 	} else {
 		# Old implementation
 		out <- tapply(
@@ -92,8 +93,9 @@ oapplyf <- function(fun) {
 	return(out)
 }
 
-ooapply <- function( # A memory-saving function for oapply when there is exactly one row for each unique combination.
-	# All non-marginal indices are removed.
+# A memory-saving function for oapply when there is exactly one row for each unique combination.
+# All non-marginal indices are removed.
+ooapply <- function(
 	X, # An ovariable
 	cols, # Names of index columns to aggregrate over
 	FUN = "sum", # A function to used in aggregation. Only "sum", "mean", "min", "max" and "prod" are available atm.

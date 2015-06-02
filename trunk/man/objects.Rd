@@ -81,16 +81,18 @@ See also:
   \code{\link[digest]{AES}}
 }
 \examples{
-library(OpasnetUtils)
 
 # Within Opasnet only! Let's assume that the (en.opasnet.org) page identifier - 
 # where to code is - would be "Op_en1390" and code name "objs_save_test".
-# x <- stats::runif(20)
-# y <- list(a = 1, b = TRUE, c = "Jeah baby jeah!")
-# objects.store(x, y)
-
+x <- stats::runif(20)
+y <- list(a = 1, b = TRUE, c = "Jeah baby jeah!")
+\dontrun{
+objects.store(x, y)
+}
 # Fetching can be done also from local R installation.
+\dontrun{
 objects.latest("Op_en1390","objs_save_test")
+}
 print(x)
 print(y)
 

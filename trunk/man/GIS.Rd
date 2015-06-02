@@ -71,6 +71,7 @@ T. Rintala \email{teemu.rintala.a@gmail.com}
 }
 
 \examples{
+\dontrun{
 # Excerpt from http://en.opasnet.org/w/Health_impacts_of_fine_particles_in_Rauma 
 # (not evaluated)
 
@@ -136,4 +137,4 @@ Altistuminen <- new(
 )
 
 }
-
+}

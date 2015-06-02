@@ -47,7 +47,9 @@ T. Rintala \email{teemu.rintala.a@gmail.com}
 }
 
 \examples{
+\dontrun{
 var1 <- opbase.data("Op_en5674")
 var1 <- tidy(var1, "var1")
 var1
+}
 }

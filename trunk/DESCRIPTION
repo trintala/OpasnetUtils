@@ -1,7 +1,7 @@
 Package: OpasnetUtils
 Type: Package
 Title: Utility functions for dealing with data in Opasnet (www.opasnet.org) environment.
-Version: 1.1.0
+Version: 1.2.0
 Author: Teemu Rintala, Einari Happonen, Jouni Tuomisto
 Maintainer: Teemu Rintala <teemu.rintala.a@gmail.com>
 Description: Contains tools for open assessments and modelling in the Opasnet environment.

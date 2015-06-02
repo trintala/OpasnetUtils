@@ -53,7 +53,6 @@ See also:
   \code{\link[xtable]{xtable}}
 }
 \examples{
-library(OpasnetUtils)
 x <- data.frame(c(1,2),c(2,4))
 oprint(x)
 }
