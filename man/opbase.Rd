@@ -132,9 +132,9 @@ See also:
   E. Happonen \email{einari.happonen@thl.fi}
 }
 \examples{
-library(OpasnetUtils)
-
+\dontrun{
 # Read
+
 opbase.data('op_en1390')
 opbase.data('op_en2949', subset='2012', include = list('KUNTA' = 322), 
     range = list('ID_NRO' = c(20000, 30000), 'XKOORD' = c(NA,244000)))
@@ -146,5 +146,6 @@ colnames(input) <- c("Sex","Some number","result")
 input <- as.data.frame(input)
 #res <- opbase.upload(input, ident="op_en1390", name = "Sandbox TEST", 
 #    index_types = c('entity','number'), unit = "Age", who='Tester person')
+}
 }
 \keyword{database}

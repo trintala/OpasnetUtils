@@ -24,7 +24,7 @@ convert.units(x, tounit = c("kg", "s", "m", "m3", "J", "W", "A",
 }
 }
 \details{
-Uses the table in \url{en.opasnet.org/w/Unit_conversions} for the conversions, so the units used have to be specified there.
+Uses the table in \url{en.opasnet.org/w/Unit_conversions} for the conversions, which can be edited to contain relevant units.
 
 See also:
 \url{http://en.opasnet.org/}
@@ -37,5 +37,7 @@ J. Tuomisto \email{jouni.tuomisto@thl.fi}
 }
 
 \examples{
+\dontrun{
 convert.units(1, tounit = c("pg", "l"), fromunit = "ug /m3")
+}
 }

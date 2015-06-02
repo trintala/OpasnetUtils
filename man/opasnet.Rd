@@ -52,7 +52,9 @@ See also:
   \code{\link[utils]{read.table}}
 }
 \examples{
+\dontrun{
 opasnet.csv("4/49/Test.zip", wiki = "opasnet_fi", unzip = 'ejpop.csv', sep=';')
 opasnet.data("c/cc/Test_bugs_model.txt", wiki = "opasnet_en")
+}
 }
 

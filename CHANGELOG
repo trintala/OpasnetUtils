@@ -4,3 +4,7 @@
 2014-09-01 Teemu Rintala <teemu.rintala.a@gmail.com>
 *Updated with more features (odebug, Minimize, odirichlet, unkeep, dropall etc.)
 *A number of bugfixes in the Ovariable evaluation recursion.
+
+2015-06-02 Teemu Rintala <teemu.rintala.a@gmail.com>
+*Oapply to use aggregate instead of tapply for significant performance boost. 
+*Bugfixes in Ovariable Ops methods.
