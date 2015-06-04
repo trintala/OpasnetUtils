@@ -58,5 +58,6 @@ export(
 	odebug,
 	continuousOps,
 	odirichlet,
-	unkeep
+	unkeep,
+	page.print.link
 )

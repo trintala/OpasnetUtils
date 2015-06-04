@@ -13,11 +13,11 @@ Fetch <- function(dependencies, evaluate = FALSE, indent = 0, verbose = TRUE, ..
 					stop(paste("No key nor ident given for dependent variable: ", dependencies$Name[i], "!", sep = ""))
 				}
 				if (!testkey) {
-					objects.get(dependencies$Key[i]) # Key is the R-tools session identifier (shown at the end of the url)
+					objects.get(dependencies$Key[i], print_names = FALSE) # Key is the R-tools session identifier (shown at the end of the url)
 				}
 				if (testkey & !testid) {
 					ident <- strsplit(as.character(dependencies$Ident[i]), "/")[[1]] # Ident should be in format <page_id>/<code_name>
-					objects.latest(ident[1], ident[2])
+					objects.latest(ident[1], ident[2], print_names = FALSE)
 				}
 				if (evaluate) assign(
 						as.character(dependencies$Name[i]), 
