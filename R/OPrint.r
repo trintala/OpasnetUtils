@@ -13,6 +13,16 @@ oprint <- function(x, pre = TRUE, ...) {
 	}		
 }
 
+page.print.link <- function(pre = TRUE) {
+	print_html_safe(args)
+	cat("<pre>\n")
+	cat("<!-- html_safe_end -->\n")
+	cat("<a href=\"#\" onclick=\"window.print();return false;\">Print this page</a>\n")
+	print_html_safe(args)
+	cat("</pre>\n")
+	cat("<!-- html_safe_end -->\n")
+}
+
 oprint.table <- function(x, show_all = FALSE, sortable = TRUE, ...) {
 	
 	x <- as.data.frame(x)
