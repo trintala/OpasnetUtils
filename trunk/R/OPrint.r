@@ -13,7 +13,8 @@ oprint <- function(x, pre = TRUE, ...) {
 	}		
 }
 
-page.print.link <- function(pre = TRUE) {
+page.print.link <- function() {
+	args <- opbase.parse_args()
 	print_html_safe(args)
 	cat("<pre>\n")
 	cat("<!-- html_safe_end -->\n")
