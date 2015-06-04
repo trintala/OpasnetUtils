@@ -1,5 +1,5 @@
 # DROPALL #####################################
-## dropall pudottaa data.framesta pois kaikki faktorien sellaiset levelit, joita ei käytetä.
+## dropall pudottaa data.framesta pois kaikki faktorien sellaiset levelit, joita ei kayteta.
 ## parametrit: x = data.frame   
 
 dropall <- function(x){

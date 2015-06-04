@@ -62,7 +62,9 @@ odebug <- function(x, variance = FALSE) {
 		
 		matching_marginals <- NULL
 		for (i in out[["marginals"]]) {
-			matching_marginals <- union(matching_marginals, intersect(all_marginals, i))
+			for (j in out[["marginals"]]) {
+				matching_marginals <- union(matching_marginals, intersect(all_marginals, i))
+			}
 		}
 		
 		out[["marginals"]][["all"]] <- all_marginals
