@@ -1,13 +1,18 @@
 Package: OpasnetUtils
 Type: Package
-Title: Utility functions for dealing with data in Opasnet (www.opasnet.org) environment.
+Title: Opasnet Modelling Environment Utility Functions
 Version: 1.2.0
 Author: Teemu Rintala, Einari Happonen, Jouni Tuomisto
 Maintainer: Teemu Rintala <teemu.rintala.a@gmail.com>
-Description: Contains tools for open assessments and modelling in the Opasnet environment.
-  The operating principle of this package is maximum openness and modularity. Variables are defined publicly on wiki pages using wiki inputs/tables, 
-  our database and R code. There are also a couple of impact assessment tools such as GIS functions in the package. 
+Description: Contains tools for open assessment and modelling in Opasnet,
+ a wiki-based web site and workspace for societal decision making
+ (see <http://en.opasnet.org/w/Main_Page> for more information).
+ The core principle of the workspace is maximal openness and modularity.
+ Variables are defined on public wiki pages using wiki inputs/tables,
+ databases and R code. This package provides the functionality to download and use these
+ variables. It also contains health impact assessment tools such as
+ spatial methods for exposure modelling.
 Imports: methods, rjson, RCurl, reshape2, triangle, httpRequest, digest, xtable, ggplot2, rgdal, sp, plyr
 License: GPL-3
 LazyLoad: yes
-URL: http://www.opasnet.org , http://en.opasnet.org/w/Modelling_in_Opasnet , http://en.opasnet.org/w/OpasnetUtils
+URL: http://en.opasnet.org/w/Main_Page , http://en.opasnet.org/w/Modelling_in_Opasnet , http://en.opasnet.org/w/OpasnetUtils
