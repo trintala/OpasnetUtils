@@ -18,7 +18,7 @@ page.print.link <- function() {
 	print_html_safe(args)
 	cat("<pre>\n")
 	cat("<!-- html_safe_end -->\n")
-	cat("<a href=\"#\" onclick=\"window.print();return false;\">Print this page</a>\n")
+	cat("<a href=\"javascript:window.print()\">Print this page</a>\n")
 	print_html_safe(args)
 	cat("</pre>\n")
 	cat("<!-- html_safe_end -->\n")
