@@ -30,9 +30,14 @@ odebug <- function(x, variance = FALSE) {
 	
 	if (nrow(x@dependencies)>0) {
 		for (i in x@dependencies$Name){
-			out[["NAs"]][[i]] <- list()
 			if (class(get(i)) == "ovariable") {
+				out[["NAs"]][[i]] <- list()
 				out[["NAs"]][[i]][["total"]] <- sum(is.na(result(get(i))))
+			} else {
+				if (is.numeric(get(i))) {
+					out[["NAs"]][[i]] <- list()
+					out[["NAs"]][[i]] <- sum(is.na(get(i)))
+				}
 			}
 		}
 	}
@@ -60,12 +65,42 @@ odebug <- function(x, variance = FALSE) {
 			all_marginals <- union(all_marginals, i)
 		}
 		
-		matching_marginals <- NULL
-		for (i in out[["marginals"]]) {
-			for (j in out[["marginals"]]) {
-				matching_marginals <- union(matching_marginals, intersect(all_marginals, i))
+		missing <- list()
+		matching_marginals <- list()
+		for (i in 1:(nrow(x@dependencies) - 1)) {
+			namei <- as.character(x@dependencies$Name[i])
+			matching_marginals[[namei]] <- list()
+			missing[[namei]] <- list()
+			for (j in (i + 1):nrow(x@dependencies)) {
+				namej <- as.character(x@dependencies$Name[j])
+				temp <- intersect(
+					out[["marginals"]][[namei]], 
+					out[["marginals"]][[namej]]
+				)
+				temp <- as.character(temp)
+				missing[[namei]][[namej]] <- list()
+				if(length(temp) > 0) {
+					matching_marginals[[namei]][[namej]] <- temp
+					for (k in 1:length(temp)) {
+						temp2 <- setdiff(
+							unique(get(as.character(namei))@output[[temp[k]]]),
+							unique(get(as.character(namej))@output[[temp[k]]])
+						)
+						if(length(temp2)>0) missing[[namei]][[namej]][[temp[k]]][[namej]] <- temp2
+						temp2 <- setdiff(
+							unique(get(as.character(namej))@output[[temp[k]]]),
+							unique(get(as.character(namei))@output[[temp[k]]])
+						)
+						if(length(temp2)>0) missing[[namei]][[namej]][[temp[k]]][[namei]] <- temp2
+					}
+				}
+				if (sum(rapply(missing[[namei]][[namej]], length)) == 0) {missing[[namei]][[namej]] <- NULL}
 			}
+			if (sum(rapply(matching_marginals[[namei]], length)) == 0) {matching_marginals[[namei]] <- NULL}
+			if (sum(rapply(missing[[namei]], length)) == 0) {missing[[namei]] <- NULL}
 		}
+		if (sum(rapply(matching_marginals, length)) == 0) {matching_marginals <- "No matching indices between variables."}
+		if (sum(rapply(missing, length)) == 0) {missing <- "No locations missing in matching indices between variables."}
 		
 		out[["marginals"]][["all"]] <- all_marginals
 		out[["marginals"]][["common"]] <- common_marginals
@@ -73,26 +108,26 @@ odebug <- function(x, variance = FALSE) {
 		
 		# Item 4 - missing locations in common marginals
 		
-		locs <- list()
-		missing <- list()
-		for (j in x@dependencies$Name){
-			missing[[j]] <- list()
-		}
-		for (i in common_marginals) {
-			locs[[i]] <- NULL
-			for (j in x@dependencies$Name){
-				if (class(get(j)) == "ovariable") {
-					locs[[i]] <- union(locs[[i]], get(j)@output[[i]])
-				}
-			}
-			for (j in x@dependencies$Name){
-				if (class(get(j)) == "ovariable") {
-					missing[[j]][[i]] <- setdiff(locs[[i]], get(j)@output[[i]])
-				}
-			}
-		}
+		#locs <- list()
+		#missing <- list()
+		#for (j in x@dependencies$Name){
+		#	missing[[j]] <- list()
+		#}
+		#for (i in common_marginals) {
+		#	locs[[i]] <- NULL
+		#	for (j in x@dependencies$Name){
+		#		if (class(get(j)) == "ovariable") {
+		#			locs[[i]] <- union(locs[[i]], get(j)@output[[i]])
+		#		}
+		#	}
+		#	for (j in x@dependencies$Name){
+		#		if (class(get(j)) == "ovariable") {
+		#			missing[[j]][[i]] <- setdiff(locs[[i]], get(j)@output[[i]])
+		#		}
+		#	}
+		#}
 		
-		out[["marginal_index_locations"]] <- locs
+		#out[["marginal_index_locations"]] <- locs
 		out[["missing_locations"]] <- missing
 		
 		# Item 4.1 - mispelt index names
