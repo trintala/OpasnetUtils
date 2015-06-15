@@ -82,31 +82,31 @@ objects.get <- function(token, print_names = TRUE){
 	# Try locally first
 	fname <- paste(token,'_objs.RData.gz',sep='')	
 	
-	if (print_names) {
-		vars_before <- ls(envir = .GlobalEnv)
-	}
+	#if (print_names) {
+	#	vars_before <- ls(envir = .GlobalEnv)
+	#}
 	
 	if (file.exists(fname)) {
 		load(fname, .GlobalEnv)
 	} else {
 		# And then via web server
 		fname <- paste('http://cl1.opasnet.org/rtools_server/runs/',token,'_objs.RData.gz',sep='')	
-		load(url(fname), .GlobalEnv)
+		load(url(fname), .GlobalEnv, verbose = print_names)
 	}
 	
-	if (print_names) {
-		vars_after <- ls(envir = .GlobalEnv)
-		cat(
-			paste(
-				"Loaded objects:", 
-				paste(
-					vars_after[!vars_after %in% vars_before], 
-					collapse = ", "
-				), 
-				"\n"
-			)
-		)
-	}
+	#if (print_names) {
+	#	vars_after <- ls(envir = .GlobalEnv)
+	#	cat(
+	#		paste(
+	#			"Loaded objects:", 
+	#			paste(
+	#				vars_after[!vars_after %in% vars_before], 
+	#				collapse = ", "
+	#			), 
+	#			"\n"
+	#		)
+	#	)
+	#}
 }
 
 # New method for storing objects, writes key to the opasnet base as well

@@ -51,12 +51,14 @@ combine <- function(..., name = character()) {
 		
 		# Get index column names (excluding own source)
 		temp <- colnames(var@output)[var@marginal & colnames(var@output) != old_source_col]
-		marginals <- c(marginals, as.character(temp))
+		marginals <- union(marginals, as.character(temp))
 		
 		# Reformat source columns
 		temp <- var@output[[old_source_col]]
 		colnames(var@output)[colnames(var@output) == old_source_col] <- new_source_col
-		var@output[[new_source_col]] <- paste(var@name, temp, sep = "") # XFormula, XData, X, etc.
+		temp <- paste(var@name, temp, sep = "") # XFormula, XData, X, etc.
+		if (length(temp) == 0) temp <- "Unknown"
+		var@output[[new_source_col]] <- temp
 		
 		# Rename individual result columns to common name
 		
