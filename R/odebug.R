@@ -82,6 +82,7 @@ odebug <- function(x, variance = FALSE) {
 				if(length(temp) > 0) {
 					matching_marginals[[namei]][[namej]] <- temp
 					for (k in 1:length(temp)) {
+						missing[[namei]][[namej]][[temp[k]]] <- list()
 						temp2 <- setdiff(
 							unique(get(as.character(namei))@output[[temp[k]]]),
 							unique(get(as.character(namej))@output[[temp[k]]])

@@ -4,16 +4,18 @@ unkeep <- function (X, cols = NA, sources = FALSE, prevresults = FALSE)
 	if (sources) 
 		cols <- c(cols, colnames(X@output)[grepl("Source$", colnames(X@output))])
 	
-	for(i in cols) { # Give warning about unkept indices with >1 locations.
+	for(i in cols) { # Give warning about unkept marginals with >1 locations.
+		locs <- as.character(unique(X@output[[i]]))
+		locs <- locs[!is.na(locs)]
 		if(
-				length(unique(X@output[[i]])) > 1 & 
-				X@marginal[match(i, colnames(X@output))]
-				) {
+			length(locs) > 1 & 
+			X@marginal[match(i, colnames(X@output))]
+		) {
 			warning(paste(
-							"There is >1 unique locations in column", 
-							i, ":", 
-							paste(as.character(unique(X@output[[i]])), collapse = ", ")
-					))
+				"There is >1 unique locations in column", 
+				i, ":", 
+				paste(locs, collapse = ", ")
+			))
 		}
 	}
 	

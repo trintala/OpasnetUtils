@@ -2,7 +2,7 @@ import(methods, rjson, RCurl, xtable, reshape2, triangle, httpRequest, digest, g
 #importFrom("base", merge, summary)
 #importFrom("graphics", plot)
 exportClasses(ovariable, odecision)
-exportMethods(merge, summary, plot)
+exportMethods(merge, summary, plot, unique)
 export(
 	oprint,
 	oapply,

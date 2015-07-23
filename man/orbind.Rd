@@ -9,6 +9,7 @@ Combine two \code{ovariable}s or \code{data.frame}s using rbind even if columns 
 }
 \usage{
 orbind(x, y)
+combine(..., name = character())
 }
 \arguments{
   \item{x}{
@@ -17,9 +18,16 @@ orbind(x, y)
   \item{y}{
   second object
 }
+  \item{\dots}{
+   any number of \code{\link{ovariable}}s separated by commas
+}
+  \item{name}{
+  name of resulting \code{ovariable}, affects Source and Result column names
+}
 }
 \details{
 Missing columns from each \code{\link{ovariable}} are added to the other and filled with \code{NA}. 
+Combine is similar to \code{orbind}, but takes multiple arguments and tracks Sources under a single index.
 
 See also:
 \url{http://en.opasnet.org/}

@@ -95,6 +95,8 @@ CheckDecisions <- function(variable, indent = 0, verbose = TRUE, ...) {
 			
 			# Applying effects
 			# We need a slice of the ovariable to feed to the effect function
+			# Also check if any rows are actually matched by cond
+			#if (sum(cond) == 0) {warning(paste(variable@name, ""), )}
 			temp <- Ovariable(variable@name, output = out@output[cond, , drop = FALSE])
 			arg <- Ovariable(output = interpret(as.character(dectable[["Result"]][j])))
 			if (!"Iter" %in% colnames(temp@output) & "Iter" %in% colnames(arg@output)) {
