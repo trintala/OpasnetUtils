@@ -6,7 +6,6 @@
 
 oapply = function(X, INDEX = NULL, FUN = NULL, cols = NULL, #use_plyr = FALSE, 
 		drop_na = TRUE, use_aggregate = TRUE, ..., simplify = TRUE) {
-	if(!use_aggregate) out <- X@output
 	marginals <- colnames(X@output)[X@marginal]
 	if (is.data.frame(INDEX)) INDEX <- colnames(INDEX)
 	if (is.null(INDEX) & is.null(cols)) stop("No INDEX nor cols defined!\n")
@@ -18,6 +17,24 @@ oapply = function(X, INDEX = NULL, FUN = NULL, cols = NULL, #use_plyr = FALSE,
 		colnames(X@output) <- paste(X@name, "Result", sep = "")
 		X@marginal <- FALSE
 		return(X)
+	}
+	#NAindex <- sapply(lapply(lapply(X@output[INDEX], unique), is.na), sum)
+	#NAindex <- names(NAindex)[NAindex != 0]
+	NAindex <- sapply(lapply(X@output[INDEX], is.na), any)
+	NAindex <- names(NAindex)[NAindex]
+	if (length(NAindex) > 0) {
+		warning(
+			paste(
+				"While oapplying ",
+				X@name, 
+				", found NAs in indices: ", 
+				paste(NAindex, collapse = ", "), 
+				". They were automatically filled using fillna, which may result in a multiplied population. ", 
+				"Please check your ovariable before using oapply.",
+				sep = ""
+			)
+		)
+		X@output <- fillna(X@output, NAindex)
 	}
 	if (use_aggregate) {
 		out <- aggregate(result(X), X@output[INDEX], FUN, ...)
@@ -35,6 +52,7 @@ oapply = function(X, INDEX = NULL, FUN = NULL, cols = NULL, #use_plyr = FALSE,
 	#	)
 	} else {
 		# Old implementation
+		out <- X@output
 		out <- tapply(
 			X = out[[paste(X@name, "Result", sep = "")]], 
 			INDEX = X@output[INDEX],

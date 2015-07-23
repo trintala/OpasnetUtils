@@ -8,7 +8,8 @@ setClass(
 		marginal		= "logical", 
 		formula			= "function", 
 		dependencies	= "data.frame",
-		ddata			= "character"
+		ddata			= "character",
+		meta			= "list"
 	),
 	prototype = prototype(
 		name			= character(),
@@ -17,7 +18,8 @@ setClass(
 		marginal		= logical(),
 		formula			= function(...){0},
 		dependencies	= data.frame(),
-		ddata			= character()
+		ddata			= character(),
+		meta			= list()
 	)
 )
 
@@ -45,6 +47,16 @@ Ovariable <- function(
 ) {
 	if (length(subset) > 0) ddata <- paste(ddata, opbase.sanitize_subset_name(subset), sep='.')
 	
+	meta <- list()
+	meta$created <- date()
+	args <- opbase.parse_args()
+	if (exists("wiki_username")) meta$wiki_username <- wiki_username
+	if (length(args) > 0) {
+		meta$wiki_page_id <- args$wiki_page_id
+		meta$code_name <- args$code_names
+		meta$token <- args$token
+	}
+	
 	out <- new(
 			"ovariable",
 			name = name,
@@ -53,7 +65,8 @@ Ovariable <- function(
 			dependencies = dependencies,
 			ddata = ddata,
 			output = output,
-			marginal = marginal
+			marginal = marginal,
+			meta = meta
 	)
 	if (getddata) out <- ddata_apply(out)
 	if (save){
@@ -135,20 +148,26 @@ setMethod(
 			
 			# Now merging should be possible without any confusion
 			
-			out <- merge(e1, e2)@output
+			out <- merge(e1, e2)#@output
 			
 			# Call generic function on the two Result-columns
 			
-			out$Result <- callGeneric(out[[rescol1]], out[[rescol2]])
+			margs <- colnames(out@output)[out@marginal]
+
+			out@output$Result <- callGeneric(out@output[[rescol1]], out@output[[rescol2]])
 			
-			out <- new(
-					"ovariable",
-					#	dependencies = data.frame(Name = c(e1@name, e2@name)),
-					output = out[
-							!colnames(out) %in% exl_list | colnames(out) == "Result"
-					]
-			)
-			out <- CheckMarginals(out, deps = list(e1, e2), verbose = FALSE)
+			# Subsetting manages marginals correctly if marginals are up to speed
+			out@marginal <- colnames(out@output) %in% margs
+			out <- out[,!colnames(out@output) %in% exl_list | colnames(out@output) == "Result"]
+			
+			#out <- new(
+			#		"ovariable",
+			#		#	dependencies = data.frame(Name = c(e1@name, e2@name)),
+			#		output = out[
+			#				!colnames(out) %in% exl_list | colnames(out) == "Result"
+			#		]
+			#)
+			#out <- CheckMarginals(out, deps = list(e1, e2), verbose = FALSE)
 			return(out)
 		}
 )
@@ -185,6 +204,12 @@ setMethod(f = "merge",
 			if (nrow(x@output) == 0) stop("X output missing!")
 			if (nrow(y@output) == 0) stop("Y output missing!")
 			
+			# Get marginal names before they are potentially lost
+			xmargs <- colnames(x@output)[x@marginal]
+			ymargs <- colnames(y@output)[y@marginal]
+			xnomargs <- colnames(x@output)[!x@marginal]
+			ynomargs <- colnames(y@output)[!y@marginal]
+			
 			x@output <- dropall(x@output)
 			y@output <- dropall(y@output)
 			
@@ -215,7 +240,7 @@ setMethod(f = "merge",
 			} else {
 				type <- "inner"
 				if (all == TRUE) type <- "full" else  {
-					args <- list() #list(...)
+					args <- list(...) #list()
 					if (!is.null(args$all.x)) {
 						if (args$all.x) type <- "left"
 					}
@@ -234,7 +259,12 @@ setMethod(f = "merge",
 			}
 			
 			temp <- new("ovariable", output = temp)
-			#temp <- CheckMarginals(temp, deps = list(x,y))
+			temp <- CheckMarginals(
+				temp, 
+				dep_margs = list(xmargs, ymargs), 
+				dep_nomargs = list(xnomargs, ynomargs), 
+				verbose = FALSE
+			)
 			return(temp)
 		}
 )
@@ -269,6 +299,135 @@ setMethod(f = "merge",
 			y <- new("ovariable", output = x)
 			return(callGeneric(x, y, ...))
 		}
+)
+
+setMethod(f = "[",
+	signature(x = "ovariable", i = "ANY", j = "ANY"),
+	function(x, i, j, ..., drop = FALSE){
+		#if (nrow(x@output) == 0) {
+		#	stop(paste("Trying to subset unevaluated", x@name))
+		#}
+		if (length(attributes(x)) == 8) {
+			return(
+				Ovariable(
+					x@name, 
+					x@data, 
+					x@formula, 
+					x@dependencies, 
+					x@ddata,
+					x@output[i, j, drop = FALSE],
+					x@marginal[j],
+					getddata = FALSE
+				)
+			)
+		} else {
+			return(initialize(x, output = x@output[i, j, drop = FALSE], marginal = x@marginal[j]))
+		}
+	}
+)
+
+setMethod(f = "[",
+	signature(x = "ovariable", i = "ANY", j = "missing"),
+	function(x, i, j, ..., drop = FALSE){
+		#if (nrow(x@output) == 0) {
+		#	stop(paste("Trying to subset unevaluated", x@name))
+		#}
+		if (length(attributes(x)) == 8) {
+			return(
+				Ovariable(
+					x@name, 
+					x@data, 
+					x@formula, 
+					x@dependencies, 
+					x@ddata,
+					x@output[i, , drop = FALSE],
+					x@marginal,
+					getddata = FALSE
+				)
+			)
+		} else {
+			return(initialize(x, output = x@output[i, , drop = FALSE], marginal = x@marginal))
+		}
+	}
+)
+
+setMethod(f = "[",
+	signature(x = "ovariable", i = "ANY", j = "character"),
+	function(x, i, j, ..., drop = FALSE){
+		#if (nrow(x@output) == 0) {
+		#	stop(paste("Trying to subset unevaluated", x@name))
+		#}
+		if (length(attributes(x)) == 8) {
+			return(
+				Ovariable(
+					x@name, 
+					x@data, 
+					x@formula, 
+					x@dependencies, 
+					x@ddata,
+					x@output[i, j, drop = FALSE],
+					x@marginal[match(j, colnames(x@output))],
+					getddata = FALSE
+				)
+			)
+		} else {
+			return(initialize(x, output = x@output[i, j, drop = FALSE], marginal = x@marginal[match(j, colnames(x@output))]))
+		}
+	}
+)
+
+setMethod(f = "$",
+		signature(x = "ovariable"),
+		function(x, name){
+			return(x@output[[name]])
+		}
+)
+
+setMethod(f = "$<-",
+		signature(x = "ovariable"),
+		function(x, name, value){
+			if (is.null(value)) {
+				x@marginal <- x@marginal[colnames(x@output) != name]
+			} else {
+				if (!name %in% colnames(x@output)) {
+					if (is.numeric(value)) {
+						x@marginal <- c(x@marginal, FALSE)
+					} else {
+						x@marginal <- c(x@marginal, TRUE)
+					}
+				} 
+			}
+			
+			x@output[[name]] <- value
+			
+			return(x)
+		}
+)
+
+setGeneric("unique")
+setMethod(f = "unique",
+	signature(x = "ovariable"),
+	function(x, ...) {
+		if (nrow(x@output) == 0) {
+			stop(paste("Trying to subset unevaluated", x@name))
+		}
+		if (length(attributes(x)) == 8) {
+			return(
+				Ovariable(
+					x@name, 
+					x@data, 
+					x@formula, 
+					x@dependencies, 
+					x@ddata,
+					callGeneric(x@output, ...),
+					x@marginal,
+					getddata = FALSE
+				)
+			)
+		} else {
+			return(initialize(x, output = callGeneric(x@output, ...)))
+		}
+	}
 )
 
 # SETMETHOD PLOT ################ plot diagrams about ovariable data

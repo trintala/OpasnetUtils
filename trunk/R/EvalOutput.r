@@ -25,6 +25,8 @@ EvalOutput <- function(variable, fillna = FALSE, indent = 0, verbose = FALSE, ..
 				paste(variable@name, "Source", sep = "") # CheckMarginal expects complete a marginal if it exists at all
 			) 
 		}
+		# Rescol has to be named Result for the rest of the code to work
+		colnames(b@output)[colnames(b@output) == paste(b@name, "Result", sep = "")] <- "Result"
 		b <- b@output
 	}
 	if (is.numeric(b) & nrow(a) == 0) {
@@ -41,6 +43,7 @@ EvalOutput <- function(variable, fillna = FALSE, indent = 0, verbose = FALSE, ..
 		}
 	}
 	else if (nrow(a) == 0) {
+		if (!"Result" %in% colnames(b)) stop(paste("No Result column found after evaluating", variable@name, "formula."))
 		colnames(b)[
 			colnames(b) %in% "Result"
 		] <- paste(variable@name, "Result", sep = "")
@@ -53,6 +56,7 @@ EvalOutput <- function(variable, fillna = FALSE, indent = 0, verbose = FALSE, ..
 		}
 	}
 	else {
+		if (!"Result" %in% colnames(b)) stop(paste("No Result column found after evaluating", variable@name, "formula."))
 		colnames(a)[colnames(a) == rescol] <- "FromData"
 		colnames(b)[colnames(b) %in% c(paste(variable@name, "Result", sep = ""), "Result")] <- "FromFormula" # *
 		# <variablename> prefix not necessitated for "Result" column of formula output
