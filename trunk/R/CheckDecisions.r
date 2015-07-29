@@ -73,7 +73,22 @@ CheckDecisions <- function(variable, indent = 0, verbose = TRUE, ...) {
 					for (k in 1:length(sel1)) { # For each condition separated by ";"
 						if (length(sel2[[k]]) > 1) { # If ":" has been used for condition k
 							locs <- strsplit(sel2[[k]][2], split = ",")[[1]] # Split by "," for multiple locs per given index
-							selection[[k]] <- out@output[, sel2[[k]][1]] %in% locs # Match our data.frame to the condition
+							locs <- gsub("^ *| *$", "", locs)
+							if (grepl("^<=", locs[1])) {
+								locs <- as.numeric(as.character(gsub("^<= *", "", locs)))
+								selection[[k]] <- as.numeric(as.character(out@output[[gsub("^ *| *$", "", sel2[[k]][1])]])) <= locs
+							} else if (grepl("^<", locs[1])) {
+								locs <- as.numeric(as.character(gsub("^< *", "", locs)))
+								selection[[k]] <- as.numeric(as.character(out@output[[gsub("^ *| *$", "", sel2[[k]][1])]])) < locs
+							} else if (grepl("^>=", locs[1])) {
+								locs <- as.numeric(as.character(gsub("^>= *", "", locs)))
+								selection[[k]] <- as.numeric(as.character(out@output[[gsub("^ *| *$", "", sel2[[k]][1])]])) >= locs
+							} else if (grepl("^>", locs[1])) {
+								locs <- as.numeric(as.character(gsub("^> *", "", locs)))
+								selection[[k]] <- as.numeric(as.character(out@output[[gsub("^ *| *$", "", sel2[[k]][1])]])) > locs
+							} else {
+								selection[[k]] <- out@output[[gsub("^ *| *$", "", sel2[[k]][1])]] %in% locs # Match our data.frame to the condition
+							}
 						}
 					}
 					
@@ -96,28 +111,29 @@ CheckDecisions <- function(variable, indent = 0, verbose = TRUE, ...) {
 			# Applying effects
 			# We need a slice of the ovariable to feed to the effect function
 			# Also check if any rows are actually matched by cond
-			#if (sum(cond) == 0) {warning(paste(variable@name, ""), )}
-			temp <- Ovariable(variable@name, output = out@output[cond, , drop = FALSE])
-			arg <- Ovariable(output = interpret(as.character(dectable[["Result"]][j])))
-			if (!"Iter" %in% colnames(temp@output) & "Iter" %in% colnames(arg@output)) {
-				new_values <- eff[[j]](temp, arg)
-				new_values@output[[paste(variable@name, "Result", sep = "")]] <- new_values@output[["Result"]]
-				if (nchar(variable@name) > 0) new_values@output$Result <- NULL
-				#colnames(new_values@output)[colnames(new_values@output) == "Result"] <- "new_values_dummy"
-				#out <- merge(out, new_values, all = TRUE)
-				#result(out) <- ifelse(
-				#	is.na(out@output$new_values_dummy), 
-				#	result(out),
-				#	out@output$new_values_dummy
-				#)
-				#out@output$new_values_dummy <- NULL
-				
-				# Take un-updated rows and combine with updated ones
-				
-				out@output <- out@output[!cond, , drop = FALSE]
-				out@output <- orbind(out, new_values)
-			} else {
-				result(out)[cond] <- result(eff[[j]](temp, arg))
+			if (sum(cond) > 0) {
+				temp <- Ovariable(variable@name, output = out@output[cond, , drop = FALSE])
+				arg <- Ovariable(output = interpret(as.character(dectable[["Result"]][j])))
+				if (!"Iter" %in% colnames(temp@output) & "Iter" %in% colnames(arg@output)) {
+					new_values <- eff[[j]](temp, arg)
+					new_values@output[[paste(variable@name, "Result", sep = "")]] <- new_values@output[["Result"]]
+					if (nchar(variable@name) > 0) new_values@output$Result <- NULL
+					#colnames(new_values@output)[colnames(new_values@output) == "Result"] <- "new_values_dummy"
+					#out <- merge(out, new_values, all = TRUE)
+					#result(out) <- ifelse(
+					#	is.na(out@output$new_values_dummy), 
+					#	result(out),
+					#	out@output$new_values_dummy
+					#)
+					#out@output$new_values_dummy <- NULL
+					
+					# Take un-updated rows and combine with updated ones
+					
+					out@output <- out@output[!cond, , drop = FALSE]
+					out@output <- orbind(out, new_values)
+				} else {
+					result(out)[cond] <- result(eff[[j]](temp, arg))
+				}
 			}
 		}
 		
