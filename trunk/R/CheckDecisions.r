@@ -74,14 +74,14 @@ CheckDecisions <- function(variable, indent = 0, verbose = TRUE, ...) {
 						if (length(sel2[[k]]) > 1) { # If ":" has been used for condition k
 							locs <- strsplit(sel2[[k]][2], split = ",")[[1]] # Split by "," for multiple locs per given index
 							locs <- gsub("^ *| *$", "", locs)
-							if (grepl("^<=", locs[1])) {
-								locs <- as.numeric(as.character(gsub("^<= *", "", locs)))
+							if (grepl("^< *=", locs[1])) {
+								locs <- as.numeric(as.character(gsub("^< *= *", "", locs)))
 								selection[[k]] <- as.numeric(as.character(out@output[[gsub("^ *| *$", "", sel2[[k]][1])]])) <= locs
 							} else if (grepl("^<", locs[1])) {
 								locs <- as.numeric(as.character(gsub("^< *", "", locs)))
 								selection[[k]] <- as.numeric(as.character(out@output[[gsub("^ *| *$", "", sel2[[k]][1])]])) < locs
-							} else if (grepl("^>=", locs[1])) {
-								locs <- as.numeric(as.character(gsub("^>= *", "", locs)))
+							} else if (grepl("^> *=", locs[1])) {
+								locs <- as.numeric(as.character(gsub("^>  *= *", "", locs)))
 								selection[[k]] <- as.numeric(as.character(out@output[[gsub("^ *| *$", "", sel2[[k]][1])]])) >= locs
 							} else if (grepl("^>", locs[1])) {
 								locs <- as.numeric(as.character(gsub("^> *", "", locs)))
