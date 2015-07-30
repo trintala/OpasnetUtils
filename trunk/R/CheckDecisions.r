@@ -81,7 +81,7 @@ CheckDecisions <- function(variable, indent = 0, verbose = TRUE, ...) {
 								locs <- as.numeric(as.character(gsub("^< *", "", locs)))
 								selection[[k]] <- as.numeric(as.character(out@output[[gsub("^ *| *$", "", sel2[[k]][1])]])) < locs
 							} else if (grepl("^> *=", locs[1])) {
-								locs <- as.numeric(as.character(gsub("^>  *= *", "", locs)))
+								locs <- as.numeric(as.character(gsub("^> *= *", "", locs)))
 								selection[[k]] <- as.numeric(as.character(out@output[[gsub("^ *| *$", "", sel2[[k]][1])]])) >= locs
 							} else if (grepl("^>", locs[1])) {
 								locs <- as.numeric(as.character(gsub("^> *", "", locs)))
