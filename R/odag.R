@@ -5,7 +5,6 @@
 ## good functions for layout: layout.fruchterman.reingold() layout.reingold.tilford() layout.lgl()
 
 odag <- function(...) {
-	require(igraph)
 	edg <- data.frame()
 	ova <- character()
 	dec <- character()
@@ -27,6 +26,10 @@ odag <- function(...) {
 							weight = 1 # Not sure yet what should be used as weight.
 					))
 		}
+	}
+	if (length(edg) == 0) {
+		warning("No edges found!")
+		return()
 	}
 	dag <- graph.data.frame(edg, directed = TRUE) # Create directed acyclic graph
 	for(i in dec) {
