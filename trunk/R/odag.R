@@ -4,7 +4,7 @@
 ## voi analysis results are shown as the size of vertex. Can this be retrieved from somewhere automatically? Only if there is a specific object eg voi. 
 ## good functions for layout: layout.fruchterman.reingold() layout.reingold.tilford() layout.lgl()
 
-odag <- function(...) {
+odag <- function(plotting = TRUE, ...) {
 	edg <- data.frame()
 	ova <- character()
 	dec <- character()
@@ -53,12 +53,15 @@ odag <- function(...) {
 	V(dag)$Indices[is.na(V(dag)$Indices)] <- ""
 	V(dag)$Decisions[is.na(V(dag)$Decisions)] <- ""
 	
-	plot(
-			dag, 
-			vertex.label.cex = 0.8, 
-			vertex.size = log(V(dag)$Size)+2, # Vertex size is (non-linearly) relative to rows in output.
-			vertex.color = ifelse(nchar(V(dag)$Decisions) > 0, "Red", "SkyBlue2"),
-			layout = layout.fruchterman.reingold
-	)
-	return(dag)
+	if(plotting) {
+		plot(
+				dag, 
+				vertex.label.cex = 0.7, 
+				vertex.size = log(V(dag)$Size)+2, # Vertex size is (non-linearly) relative to rows in output.
+				vertex.color = ifelse(nchar(V(dag)$Decisions) > 0, "Red", "SkyBlue2"),
+				layout = layout.fruchterman.reingold
+		)
+	} else {
+		return(dag) 
+	}
 }
