@@ -48,13 +48,13 @@ CollapseMarginal <- function(variable, cols, fun = "mean", probs = NULL, ...) { 
 	if (!is.list(probs) & is.numeric(probs)) probs <- list(probs)
 	if (!is.null(probs) & length(probs) != length(cols)) stop("Number of columns does not match number of probability vectors given!\n")
 	if ("Iter" %in% colnames(out)) {
-		N <- max(out$Iter)
+		N <- max(as.numeric(as.character(out$Iter)))
 	} else {
 		N <- get("N", openv)
 	}
 	for (i in 1:length(cols)) {
 		b <- probs[[i]]
-		locs <- levels(out[[cols[i]]])
+		locs <- unique(out[[cols[i]]])
 		if (is.null(b)) b <- rep(1, length(locs))
 		if (any(is.na(b))) b <- rep(1, length(locs)) # dont see why NA would turn up here, but hey lets just be sure
 		if (length(b) != length(locs)) {
