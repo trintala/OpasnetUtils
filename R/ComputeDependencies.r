@@ -5,8 +5,8 @@
 # '...' can be used for input substitution, na.rm, number of iterations (N) and others
 # new_code is a parameter for old codes where ComputeDependencies was not automated
 
-ComputeDependencies <- function(dependencies, forceEval = FALSE, indent = 0, verbose = FALSE, new_code = FALSE, ...) { 
-	if (new_code) {
+ComputeDependencies <- function(dependencies, forceEval = FALSE, indent = 0, verbose = FALSE, ...) { #new_code = FALSE, ...) { 
+	#if (new_code) {
 		if (verbose) cat("\n")
 		Fetch2(dependencies, indent = indent, verbose = verbose, ...)
 		for (i in as.character(dependencies$Name)) {
@@ -18,7 +18,7 @@ ComputeDependencies <- function(dependencies, forceEval = FALSE, indent = 0, ver
 				if (nrow(get(i)@output) == 0 | forceEval) {
 					#assign(i, EvalOutput(get(i), indent = indent, verbose = verbose, ...), envir = as.environment(find(i)))
 					ret1 <- tryCatch(
-						assign(i, EvalOutput(get(i), indent = indent, verbose = verbose, ...), envir = as.environment(find(i))), 
+						assign(i, EvalOutput(get(i), indent = indent, verbose = verbose, forceEval = forceEval, ...), envir = as.environment(find(i))), 
 						error = function(e) return(NULL)
 					)
 					if (is.null(ret1)) stop(paste("Evaluating", get(i)@name, "failed! Error:", geterrmessage()))
@@ -42,5 +42,5 @@ ComputeDependencies <- function(dependencies, forceEval = FALSE, indent = 0, ver
 			}
 		}
 		if (verbose) cat("\n")
-	}
+	#}
 }

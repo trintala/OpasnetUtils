@@ -497,13 +497,15 @@ setMethod(
 			# Apply the selected functions
 			temp <- list()
 			for(fun in functions){
-				temp[[length(temp)+1]] <- tapply(result(object), object@output[marginals], fun)
+				#temp[[length(temp)+1]] <- tapply(result(object), object@output[marginals], fun)
+				temp[[length(temp)+1]] <- aggregate(result(object), object@output[marginals], fun, simplify = FALSE, ...)
+				colnames(temp)[ncol(temp)] <- "Freq"
 			}
 			#out <- data.frame()
 			
 			# Convert results to data.frames and remove useless rows
 			for(i in 1:length(temp)){
-				temp[[i]] <- as.data.frame(as.table(temp[[i]]))
+				#temp[[i]] <- as.data.frame(as.table(temp[[i]]))
 				temp[[i]] <- temp[[i]][!is.na(temp[[i]][["Freq"]]),]
 				colnames(temp[[i]])[colnames(temp[[i]])=="Freq"] <- function_names[i]
 			}

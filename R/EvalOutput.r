@@ -6,7 +6,7 @@ EvalOutput <- function(variable, fillna = FALSE, indent = 0, verbose = FALSE, ..
 		cat(rep("-", indent), "Evaluating", variable@name, "...")
 		t1 <- Sys.time()
 	}
-	ComputeDependencies(variable@dependencies, fillna = fillna, indent = indent + 1, verbose = verbose, new_code = TRUE, ...)
+	ComputeDependencies(variable@dependencies, fillna = fillna, indent = indent + 1, verbose = verbose, ...) # new_code = TRUE, ...)
 	variable <- ddata_apply(variable, ...)
 	if (nrow(variable@data) > 0) {
 		colnames(variable@data)[colnames(variable@data) %in% "Result"] <- paste(variable@name, "Result", sep = "")
