@@ -13,19 +13,6 @@ oprint <- function(x, pre = TRUE, ...) {
 	}		
 }
 
-page.print.link <- function() {
-	args <- opbase.parse_args()
-	print_html_safe(args)
-	cat("<pre>\n")
-	cat("<!-- html_safe_end -->\n")
-	#cat("<a href=\"javascript:window.print()\">Print this page</a>\n")
-	#cat("<button onClick=\"window.print()\">Print this page</button>\n")
-	cat("<table class='wikitable'>\n<tr> <th>  </th> <th> a </th>  </tr>\n<tr> <td align=\"right\"> 1 </td> <td align=\"right\"> 1 </td> </tr>\n<tr> <td align=\"right\"> 2 </td> <td align=\"right\">   2 </td> </tr>\n</table>\n")
-	print_html_safe(args)
-	cat("</pre>\n")
-	cat("<!-- html_safe_end -->\n")
-}
-
 oprint.table <- function(x, show_all = FALSE, sortable = TRUE, ...) {
 	
 	x <- as.data.frame(x)

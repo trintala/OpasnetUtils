@@ -8,7 +8,7 @@ Fetches, evaluates and \code{\link{Check}}s \code{\link{ovariable}} dependencies
 }
 \usage{
 ComputeDependencies(dependencies, forceEval = FALSE, indent = 0, 
-    verbose = FALSE, new_code = FALSE, ...)
+    verbose = FALSE, ...)
 }
 \arguments{
   \item{dependencies}{
@@ -22,9 +22,6 @@ ComputeDependencies(dependencies, forceEval = FALSE, indent = 0,
 }
   \item{verbose}{
   TRUE to enable status message printing assists (line breaks) and status messages for other function calls
-}
-  \item{new_code}{
-  a flag for compatibility with older code, default \code{FALSE} nullifies \code{ComputeDependencies} usage in \code{ovariable} formulas
 }
   \item{\dots}{
   arguments to pass on to the various recursive checks and evaluations

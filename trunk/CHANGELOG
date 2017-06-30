@@ -1,10 +1,14 @@
-2013-07-09 Teemu Rintala <teemu.rintala.a@gmail.com>
-*Rearranged and documented for CRAN submission. 
+1.3 (2017-06-28) Teemu Rintala <teemu.rintala.a@gmail.com>
+*Fixed minor bugs and performance issues
+*New feature: odag
 
-2014-09-01 Teemu Rintala <teemu.rintala.a@gmail.com>
+1.2 (2015-06-02) Teemu Rintala <teemu.rintala.a@gmail.com>
+*Oapply to use aggregate instead of tapply for significant performance boost. 
+*Bugfixes in Ovariable Ops methods.
+
+1.1 (2014-09-01) Teemu Rintala <teemu.rintala.a@gmail.com>
 *Updated with more features (odebug, Minimize, odirichlet, unkeep, dropall etc.)
 *A number of bugfixes in the Ovariable evaluation recursion.
 
-2015-06-02 Teemu Rintala <teemu.rintala.a@gmail.com>
-*Oapply to use aggregate instead of tapply for significant performance boost. 
-*Bugfixes in Ovariable Ops methods.
+1.0 (2013-07-09) Teemu Rintala <teemu.rintala.a@gmail.com>
+*Rearranged and documented for CRAN submission. 

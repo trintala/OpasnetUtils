@@ -50,7 +50,7 @@ Ovariable <- function(
 	meta <- list()
 	meta$created <- date()
 	args <- opbase.parse_args()
-	if (exists("wiki_username")) meta$wiki_username <- wiki_username
+	if (exists("wiki_username")) meta$wiki_username <- get("wiki_username")
 	if (length(args) > 0) {
 		meta$wiki_page_id <- args$wiki_page_id
 		meta$code_name <- args$code_names

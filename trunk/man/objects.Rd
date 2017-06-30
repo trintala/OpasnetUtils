@@ -15,8 +15,8 @@ Library for using R objects (like \code{\link{ovariable}}s.) stored in Opasnet R
 \usage{
 objects.encode(obj, key)
 objects.decode(eobj, key)
-objects.get(token)
-objects.latest(page_ident, code_name, verbose = FALSE)
+objects.get(token, print_names = TRUE)
+objects.latest(page_ident, code_name, verbose = FALSE, ...)
 objects.put(..., list = character())
 objects.store(..., list = character(), verbose = FALSE)
 }
@@ -34,6 +34,9 @@ objects.store(..., list = character(), verbose = FALSE)
   \item{token}{
   R-tools run token string to identify a stored object on Opasnet R server.
 }
+  \item{print_names}{
+  if \code{TRUE} prints the names of all the downloaded objects (sets \code{load(verbose = TRUE)})
+}
   \item{page_ident}{
   Opasnet Media Wiki page identifier (e.g. op_en1390).
 }
@@ -44,7 +47,7 @@ objects.store(..., list = character(), verbose = FALSE)
   Flag to set more verbose output (for debug purposes).
 }
   \item{\dots}{
-  Objects will be passed straight to R core \code{save} function.
+  Objects will be passed straight to R core \code{save} function. In case of \code{objects.latest} \dots are passed on to \code{objects.get}.
 }
   \item{list}{
   List will be passed straight to R core \code{save} function.
