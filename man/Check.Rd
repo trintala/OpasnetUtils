@@ -14,8 +14,8 @@ The Check functions are used to introduce common model specific alterations to v
 CheckCollapse(variable, indent = 0, verbose = TRUE, ...)
 CheckDecisions(variable, indent = 0, verbose = TRUE, ...)
 CheckInput(variable, substitute = FALSE, indent = 0, verbose = TRUE, ...)
-CheckMarginals(variable, deps = list(), priormarg = TRUE, indent = 0, 
-    verbose = TRUE, ...)
+CheckMarginals(variable, deps = list(), dep_margs = list(), dep_nomargs = list(), 
+    priormarg = TRUE, indent = 0, verbose = TRUE, ...)
 }
 
 \arguments{
@@ -23,8 +23,10 @@ CheckMarginals(variable, deps = list(), priormarg = TRUE, indent = 0,
   an ovariable to run Check on.
 }
   \item{deps}{
-  the dependency list of a latent ovariable, used by CheckMarginals to keep track of index columns. 
+  the dependency list of a latent ovariable, used by CheckMarginals to keep track of index columns. Ignored if length 0.
 }
+  \item{dep_margs}{list of marginals, main use is in ovarible merge method. Ignored if length 0.}
+  \item{dep_nomargs}{list of non-marginals, main use is in ovarible merge method. Ignored if length 0.}
   \item{priormarg}{
   flag determining whether columns are assumed to be indices by default when checking marginals.
 }
