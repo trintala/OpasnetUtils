@@ -463,8 +463,7 @@ setMethod(
 			if("Iter" %in% colnames(object@output) && !"Iter" %in% marginals) {
 				if (length(function_names)==0) function_names <- c("mean", "sd", "min", "Q0.025", "median", "Q0.975", "max")
 				#object@output <- object@output[object@output$Iter == 1, ]
-			}
-			else {
+			} else {
 				if (length(function_names)==0) function_names <- c("mean")
 			}
 			function_names <- unique(function_names)
@@ -499,7 +498,7 @@ setMethod(
 			for(fun in functions){
 				#temp[[length(temp)+1]] <- tapply(result(object), object@output[marginals], fun)
 				temp[[length(temp)+1]] <- aggregate(result(object), object@output[marginals], fun, simplify = FALSE, ...)
-				colnames(temp)[ncol(temp)] <- "Freq"
+				colnames(temp[[length(temp)]])[ncol(temp[[length(temp)]])] <- "Freq"
 			}
 			#out <- data.frame()
 			
@@ -518,8 +517,7 @@ setMethod(
 						out <- merge(out, temp[[i]], all = TRUE)
 					}
 				}
-			}
-			else {
+			} else {
 				out <- temp[[1]]
 			}
 			#if(nrow(object@output) > 200) {
