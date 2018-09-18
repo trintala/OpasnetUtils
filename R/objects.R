@@ -136,7 +136,7 @@ objects.store <- function(..., list = character(), verbose = FALSE){
 	
 	# Write to base
 	#data <- matrix(c(args$wiki_page_id, args$code_name, format(now,"%Y-%m-%dT%I:%M:%OS2Z",tz='GMT'), okey), ncol=4, byrow=TRUE)
-	data <- matrix(c(args$wiki_page_id, args$code_name, format(now,"%Y-%m-%d %H:%M:%S",tz='GMT'), okey), ncol=4, byrow=TRUE)
+	data <- matrix(c(args$wiki_page_id, args$code_name, format(now,"%Y-%m-%dT%H:%M:%S",tz='GMT'), okey), ncol=4, byrow=TRUE)
 	colnames(data) <- c("Page ident","Code name","Time","result")
 	data <- as.data.frame(data)
 	
