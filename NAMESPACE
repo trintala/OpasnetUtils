@@ -1,4 +1,4 @@
-import(methods, rjson, RCurl, xtable, reshape2, triangle, httpRequest, digest, ggplot2, rgdal, sp, plyr, igraph)
+import(methods, rjson, RCurl, xtable, reshape2, triangle, httpRequest, digest, ggplot2, rgdal, sp, plyr, igraph, httr)
 importFrom("stats", "aggregate", "aov", "as.formula", "qnorm", "quantile", "reshape", "rgamma", "rnorm", "runif")
 importFrom("utils", "URLencode", "combn", "find", "read.table")
 #importFrom("base", merge, summary)

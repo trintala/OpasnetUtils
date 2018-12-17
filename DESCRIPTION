@@ -12,7 +12,7 @@ Description: Contains tools for open assessment and modelling in Opasnet,
  databases and R code. This package provides the functionality to download and use these
  variables. It also contains health impact assessment tools such as
  spatial methods for exposure modelling.
-Imports: utils, methods, rjson, RCurl, reshape2, triangle, httpRequest, digest, xtable, ggplot2, rgdal, sp, plyr, igraph
+Imports: utils, methods, rjson, RCurl, reshape2, triangle, httpRequest, digest, xtable, ggplot2, rgdal, sp, plyr, igraph, httr
 License: GPL-3
 LazyLoad: yes
 URL: http://en.opasnet.org/w/Main_Page , http://en.opasnet.org/w/Modelling_in_Opasnet , http://en.opasnet.org/w/OpasnetUtils
