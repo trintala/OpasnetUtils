@@ -8,16 +8,17 @@
 # If Function is not given mean is assumed
 #####################################
 
-CollapseTableParser <- function(CTable, env = .GlobalEnv){ # CTable is a data.frame
-	for (i in unique(as.character(CTable$Variable))) {
-		temp <- CTable[CTable$Variable == i,]
-		cols <- temp[["Index"]]
-		probs <- strsplit(as.character(temp[["Probs"]]), ",")
-		probs <- lapply(probs, as.numeric)
-		fun <- temp[["Function"]]
-		out <- list(cols = cols, probs = probs, fun = fun)
-		assign(paste("Col", i, sep = ""), out, envir = env)
-	}
+CollapseTableParser <- function (CTable, env = .GlobalEnv) # There is a bug in code. This is adjusted for non-sample functions.
+{ 
+  for (i in unique(as.character(CTable$Variable))) {
+    temp <- CTable[CTable$Variable == i, ]
+    cols <- strsplit(as.character(temp[["Index"]]), ",")[[1]] # Assumes one row per ovariable
+    probs <- strsplit(as.character(temp[["Probs"]]), ",") 
+    probs <- lapply(probs, as.numeric) 
+    fun <- temp[["Function"]] 
+    out <- list(cols = cols, probs = probs, fun = fun) 
+    assign(paste("Col", i, sep = ""), out, envir = env)
+  } 
 }
 
 CheckCollapse <- function(variable, indent = 0, verbose = TRUE, ...) {
