@@ -29,9 +29,9 @@ interpf <- function(
 			if (tempArgs[1] + tempArgs[3] == 2 * tempArgs[2]) {
 				return(tempArgs[2])
 			} else if (tempArgs[1] + tempArgs[3] > 2 * tempArgs[2]) {
-				return(tempArgs[1] + ((tempArgs[3]-tempArgs[1])(tempArgs[2]-tempArgs[1])/2)^(1/2))
+				return(tempArgs[1] + ((tempArgs[3]-tempArgs[1])*(tempArgs[2]-tempArgs[1])/2)^(1/2))
 			} else {
-				return(tempArgs[3] - ((tempArgs[3]-tempArgs[1])(tempArgs[3]-tempArgs[2])/2)^(1/2))
+				return(tempArgs[3] - ((tempArgs[3]-tempArgs[1])*(tempArgs[3]-tempArgs[2])/2)^(1/2))
 			}
 		} else {
 			return(rtriangle(n,tempArgs[1],tempArgs[3],tempArgs[2]))

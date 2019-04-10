@@ -199,13 +199,13 @@ makeurl <- function(
   return(out)
 }
 
-#' Scrape ovariables of an assessment
+#' Scrape ovariables and other objects in an assessment
 #' 
 #' scrape.assessment makes standard data.frame for insight diagram out of all ovariables, odecisions, and data.frames and their dependencies in the global environment.
 #' 
 #' @param assessment ovariable that contains other assessment objects as dependencies
 #' @param objectives names of ovariables that are objectives in the model
-#' @return a list of two data.frames. The first one is for making insight diagrams, the second for making discussion ovariables for analysis
+#' @return a list of two data.frames. The first one is for making insight diagrams, the second for making discussion ovariables for analysis (the latter part not implemented yet)
 
 scrape.assessment <- function(
   assessment,
@@ -229,7 +229,7 @@ scrape.assessment <- function(
     if("odecision" %in% cl) dec <- c(dec, i)
     if("data.frame" %in% cl) dat <- c(dat, i)
     if(any(c("ggplot","dgr_graph") %in% cl)) plo <- c(plo, i)
-    if(is.list(get(i))) objs <- c(objs, list(get(i))) else objs <- c(objs, get(i))
+    if(is.vector(get(i))) objs <- c(objs, list(get(i))) else objs <- c(objs, get(i))
   }
   names(objs) <- dep$Name
   
@@ -242,11 +242,10 @@ scrape.assessment <- function(
       nod <- rbind(
         nod,
         data.frame(
-          Oldid = paste("Opt", match(i, dec), sep=""),
+          #          Oldid = paste("Opt", match(i, dec), sep=""),
           type = "option",
           Item = as.character(deci$Option[tst]),
-          label = as.character(deci$Option[tst]),
-          Relation = "is option for",
+          rel = "is option for",
           Object = as.character(deci$Decision[tst]),
           Description = if(is.null(deci$Description)) NA else
             as.character(deci$Description[tst]),
@@ -259,11 +258,10 @@ scrape.assessment <- function(
       nod <- rbind(
         nod,
         data.frame(
-          Oldid = paste("Dec", match(i, dec), sep=""),
+          #          Oldid = paste("Dec", match(i, dec), sep=""),
           type = "decision",
           Item = as.character(deci$Decision[tst]),
-          label = as.character(deci$Decision[tst]),
-          Relation = "affects",
+          rel = "affects",
           Object = as.character(deci$Variable[tst]),
           Description = if(is.null(deci$Description)) NA else
             as.character(deci$Description[tst]),
@@ -278,36 +276,35 @@ scrape.assessment <- function(
   
   for(i in ova) {
     obj <- objs[[i]]
+    nam <- if(length(obj@name)>0) obj@name else ""
     nod <- rbind( # Add dependencies
       nod,
       data.frame(
-        Oldid = paste("Ova",match(i,ova),sep=""),
+        #        Oldid = paste("Ova",match(i,ova),sep=""),
         type = "ovariable",
-        Item = obj@name,
-        label = obj@name,
-        Relation = "is affected by",
+        Item = nam,
+        rel = "is affected by",
         Object = if(nrow(obj@dependencies)==0) NA else as.character(obj@dependencies$Name),
         Description = if(is.null(obj@meta$Description)) NA else
           obj@meta$Description,
-        URL = makeurl(obj@meta$wiki_page_id, obj@name),
+        URL = makeurl(obj@meta$wiki_page_id, nam),
         stringsAsFactors = FALSE
       )
     )
-    tmp <- colnames(obj@output)[                          # Add indices
+    tmp <- colnames(obj@output)[  # Add indices
       obj@marginal &
         !grepl("Source$", colnames(obj@output)) &
-        ! colnames(obj@output) %in% c(deci, "Iter")
+        ! colnames(obj@output) %in% c("Iter") # deci not tested because of error
       ]
     if(length(tmp)>0) {
       nod <- rbind(
         nod,
         data.frame(
-          Oldid = paste0("Ova",match(i,ova),tmp),
+          #          Oldid = paste0("Ova",match(i,ova),tmp),
           type = "index",
           Item = tmp,
-          label = tmp,
-          Relation = "is index for",
-          Object = obj@name,
+          rel = "is index for",
+          Object = nam,
           Description = NA,
           URL = makeurl(URLass, tmp),
           stringsAsFactors = FALSE
@@ -318,32 +315,34 @@ scrape.assessment <- function(
   
   ### Add graphs
   
-  nod <- orbind(
-    nod,
-    data.frame(
-      Oldid = paste0("Plo", 1:length(plo)),
-      type = "graph",
-      Item = plo,
-      label = plo,
-      stringsAsFactors = FALSE
+  if(length(plo)>0) {
+    nod <- orbind(
+      nod,
+      data.frame(
+        #        Oldid = paste0("Plo", 1:length(plo)),
+        type = "graph",
+        Item = plo,
+        stringsAsFactors = FALSE
+      )
     )
-  )
+  }
   
   # V(dag)$Size[V(dag)$name == i] <- nrow(obj@output)     # Size
   # vertex.size = log(V(dag)$Size)+2, # Vertex size is (non-linearly) relative to rows in output.
   
   ### Add data.frames 
   
-  nod <- orbind(
-    nod,
-    data.frame(
-      Oldid = paste("Dat", 1:length(dat), sep=""),
-      type = "data",
-      Item = dat,
-      label = dat,
-      stringsAsFactors = FALSE
+  if(length(dat)>0) {
+    nod <- orbind(
+      nod,
+      data.frame(
+        #        Oldid = paste("Dat", 1:length(dat), sep=""),
+        type = "data",
+        Item = dat,
+        stringsAsFactors = FALSE
+      )
     )
-  )
+  }
   
   # Retype objectives and assessments if available
   nod$type[nod$Item %in% objectives] <- "objective"
@@ -365,7 +364,16 @@ scrape.assessment <- function(
   #Add info (with force) from type column in dep if available
   if(!is.null(dep$type)) {
     tst <- dep$Name[!(is.na(dep$type) | dep$type=="")]
+    tst <- tst[tst %in% nod$Item] # Necessary because some names may be missing
     nod$type[match(tst,nod$Item)] <- as.character(dep$type[match(tst,dep$Name)])
+  }
+  
+  #Add info (with force) from label column in dep if available
+  nod$label <- NA # Add column anyway because makeInsightTables requires standard columns
+  if(!is.null(dep$label)) {
+    tst <- dep$Name[!(is.na(dep$label) | dep$label=="")]
+    tst <- tst[tst %in% nod$Item] # Necessary because some names may be missing
+    nod$label[match(tst,nod$Item)] <- as.character(dep$label[match(tst,dep$Name)])
   }
   
   # Add relations defined by hand on assessment@dependencies
@@ -374,9 +382,9 @@ scrape.assessment <- function(
     nod <- orbind(
       nod,
       data.frame(
-        Oldid = as.character(nod$Oldid[match(tst,nod$Item)]),
+        #        Oldid = as.character(nod$Oldid[match(tst,nod$Item)]),
         Item = as.character(tst),
-        Relation = c(
+        rel = c(
           rep("indirectly affects",3),
           "is data for",
           "describes"
