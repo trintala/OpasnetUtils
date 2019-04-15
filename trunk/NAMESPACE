@@ -61,5 +61,9 @@ export(
 	odebug,
 	continuousOps,
 	odirichlet,
-	unkeep
+	unkeep,
+	scrape.assessment,
+	scrape.discussion,
+	scrape.gssheet,
+	scrape.webtable
 )
