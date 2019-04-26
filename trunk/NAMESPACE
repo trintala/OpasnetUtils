@@ -62,8 +62,11 @@ export(
 	continuousOps,
 	odirichlet,
 	unkeep,
+	scrape,
 	scrape.assessment,
 	scrape.discussion,
 	scrape.gssheet,
-	scrape.webtable
+	scrape.webtable,
+	pushIndicatorGraph,
+	case_specifics
 )

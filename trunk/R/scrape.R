@@ -1,3 +1,22 @@
+#' Wrapper function for scraping data from various sources.
+#' 
+#' scrape can be used for scraping data from discussions, assessments, webtables, or google sheets.
+#' @param page url for the page to be scraped.
+#' @param type type of function to use. Possible values: "discussion","assessment","webtable","gsheet"
+#' @param n number(s) of the tables or discussions on the page to scrape.
+#' @param firstrow atom vector with the number of the first data row on the gsheet
+#' @param assessment ovariable that contains other assessment objects as dependencies
+#' @param objectives names of ovariables that are objectives in the model
+#' @return data.frame of standard type
+ 
+scrape <- function(page, type, n, firstrow, assessment, objectives) {
+  if(type=="discussion") return(scrape.discussion(page, n)[[1]])
+  if(type=="assessment") return(scrape.assessment(assessment, objectives))
+  if(type=="webtable") return(scrape.webtable(page, n))
+  if(type=="gsheet") return(scrape.gsheet(page, firstrow))
+  stop("type not found.")
+}
+
 #' Scraping structured discussions from the web
 #' 
 #' scrape.discussion is a function that takes a discussion in Opasnet and converts it to a standard graph table.
@@ -146,13 +165,13 @@ scrape.discussion <- function(page, n=NULL) {
 
 #' Scrape data from google sheets
 #' 
-#' scrape.gssheet is a function for scraping google sheets and making data.frames.
+#' scrape.gsheet is a function for scraping google sheets and making data.frames.
 #' 
 #' @param page character vector with the URL of the google sheet
 #' @param firstrow atom vector with the number of the first data row on the gsheet
 #' @return a data.frame
 
-scrape.gssheet <- function(page, firstrow) {
+scrape.gsheet <- function(page, firstrow) {
   require(gsheet)
   
   out <- gsheet2tbl(page)
@@ -165,12 +184,12 @@ scrape.gssheet <- function(page, firstrow) {
 #' scrape.webpage is a function for scraping data from a table on a webpage.
 #' 
 #' @param page URL of the page to be scraped.
-#' @param table number of table on the page to be scraped.
+#' @param n number of table on the page to be scraped.
 #' @return a data.frame
 
-scrape.webtable <- function(page, table) {
+scrape.webtable <- function(page, n) {
   require(rvest)
-  out <- html_table(read_html(page),fill=TRUE)[[table]]
+  out <- html_table(read_html(page),fill=TRUE)[[n]]
   return(out)
 }
 

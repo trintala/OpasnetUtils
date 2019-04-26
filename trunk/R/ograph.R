@@ -1,3 +1,34 @@
+#' pushIndicatorGraph pushes a plotly graph (as JSON) to a website through a REST interface.
+#' @param plotlyGraph a plotly graph
+#' @param indicatorId the indentifier of the indicator in the receiving website.
+#' @return a status note
+
+pushIndicatorGraph <- function (plotlyGraph, indicatorId)
+{
+  require(plotly)
+  require(httr)
+  require(jsonlite)
+  indicatorId <- toString(indicatorId)
+  json <- plotly_json(plotlyGraph, jsonedit = FALSE)
+  plotlyData <- fromJSON(json)
+  apiUri <- paste0(Sys.getenv("APLANS_API_BASE_URL"), "indicator_graph/")
+  authHeader <- paste("Token", Sys.getenv("APLANS_API_KEY"))
+  indicatorUri <- paste0(Sys.getenv("APLANS_API_BASE_URL"), "indicator/", indicatorId, "/")
+  data <- list(data = plotlyData$data, layout = plotlyData$layout)
+  resp <- POST(apiUri, body = list(indicator = indicatorUri,
+                                   data = data), encode = "json", add_headers('Authorization' = authHeader))
+  if (resp$status_code != 201 && resp$status_code != 200) {
+    respData <- content(resp)
+    msg = sprintf("API call failed with HTTP %s:\n%s", resp$status_code,
+                  respData)
+    print(msg)
+    stop_for_status(resp)
+  }
+  resp
+}
+
+
+
 ograph <- function( # maaritellaan yleisfunktio piirtamiseen
 		ovariable, 
 		x, 
