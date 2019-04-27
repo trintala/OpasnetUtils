@@ -1,4 +1,4 @@
-import(methods, rjson, RCurl, xtable, reshape2, triangle, httpRequest, digest, ggplot2, rgdal, sp, plyr) # , igraph)
+import(methods, rjson, RCurl, xtable, reshape2, triangle, httpRequest, digest, ggplot2, rgdal, sp, plyr, igraph)
 importFrom("stats", "aggregate", "aov", "as.formula", "qnorm", "quantile", "reshape", "rgamma", "rnorm", "runif")
 importFrom("utils", "URLencode", "combn", "find", "read.table")
 #importFrom("base", merge, summary)
@@ -63,10 +63,10 @@ export(
 	odirichlet,
 	unkeep,
 	scrape,
-	scrape.assessment,
+#	scrape.assessment,
 	scrape.discussion,
-	scrape.gssheet,
-	scrape.webtable,
+#	scrape.gsheet,
+#	scrape.webtable,
 	pushIndicatorGraph,
 	case_specifics
 )

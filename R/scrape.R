@@ -9,156 +9,196 @@
 #' @param objectives names of ovariables that are objectives in the model
 #' @return data.frame of standard type
  
-scrape <- function(page, type, n, firstrow, assessment, objectives) {
-  if(type=="discussion") return(scrape.discussion(page, n)[[1]])
-  if(type=="assessment") return(scrape.assessment(assessment, objectives))
-  if(type=="webtable") return(scrape.webtable(page, n))
-  if(type=="gsheet") return(scrape.gsheet(page, firstrow))
+scrape <- function(page, type, n = NULL, wiki = "", Url ="",
+                   firstrow = NULL, assessment=NULL, objectives=NULL) {
+  if(type=="discussion") return(scrape.discussion(page=page, n=n, wiki=wiki, Url=Url))
+  if(type=="assessment") return(scrape.assessment(assessment=assessment, objectives=objectives))
+  if(type=="webtable") return(scrape.webtable(page=page, n=n))
+  if(type=="gsheet") return(scrape.gsheet(page=page, firstrow=firstrow))
   stop("type not found.")
 }
 
-#' Scraping structured discussions from the web
-#' 
+#' Scrape structured (pragma-dialectical) discussions
+#'
 #' scrape.discussion is a function that takes a discussion in Opasnet and converts it to a standard graph table.
 #' 
-#' @param page URL for the page to read.
-#' @param n number of discussion on the page. If NULL, all discussions on the page will be read.
+#' @param page name of the page to read.
+#' @param wiki name of the Opasnet wiki for the page
+#' @param Url string for the url of the page to be used as link in insight networks
+#' @param n numbers of discussions on the page to scrape. If NULL, all discussions on the page will be read.
 #' @return a list of two data.frames. The first has standard headings for a graph table. The second has columns id, type, title, content, sign, target, type, paradigm, relation, and Result; and is ready for creating ovariables from arguments.
 
-scrape.discussion <- function(page, n=NULL) {
-  require(rvest)
+scrape.discussion <- function(page, wiki = "", Url="", n=NULL) {
+  require(rvest) # html_nodes
   require(xml2)
   require(reshape2)
-  discall <- html_nodes(read_html(page), css="div.discussion")
+  
+  # Find the previous argument that is one level higher, i.e. the target argument, and the overtarget.
+  findtarget <- function(rel, disc, discItem) {
+    
+    level <- rep(0,nrow(rel))
+    for(j in 0:20) {
+      level[rel$rel_id %in% html_attr(html_nodes(disc, css=paste(paste(rep("dd", j), collapse=" ")," .argument")),"rel_id")] <- j
+    }
+    test <- 1:length(level)
+    rel$Object <- rep("", length(level)) # Object is target of argument, overtarget is target of Object
+    for(j in test) {
+      rel$Object[j] <-  rel$Item[max(c(-Inf,test[level == level[j]-1 & test < j]))]
+      rel$overtarget[j] <- rel$Item[max(c(-Inf,test[level == level[j]-2 & test < j]))]
+    }
+    rel$Object[is.na(rel$Object)] <- discItem[1]
+    rel$overtarget[is.na(rel$overtarget) & level == 1] <- discItem[1]
+    return(rel)
+  }
+  
+  discall <- html_nodes(
+    read_html(
+      opasnet.page(page,wiki)
+    ), css="div.discussion"
+  )
   if(is.null(n)) n <- 1:length(discall)
-  out <- list(data.frame(),data.frame())
-  for(k in n) {
+  out <- data.frame()
+  for(k in n) { # Go through each discussion
     disc <- discall[[k]]
-    stat <- html_text(html_nodes(disc, css=".statements"), trim=TRUE)
-    reso <- html_text(html_nodes(disc, css=".resolution"), trim=TRUE)
-    resd <- html_text(html_nodes(disc, css=".resolved"), trim=TRUE)
-    title<- html_text(html_nodes(disc, css="b.title"), trim=TRUE)
+    
+    resd <- html_text(html_nodes(disc, css=".resolved"), trim=TRUE) # Not used
+    
     type <- tolower(trimws(substr(html_text(html_nodes(disc, css="font.type")),1,5)))
     type <- gsub("arvok", "value", type)
     type <- gsub("fakta", "fact", type)
-    id <- html_attr(disc, "id")
-    disc.id <- paste(id, c("statement","resolution"),sep=".")
+    context <- html_attr(disc, "id")
+    discItem <- paste(context,c("openingStatement","closingStatement"),sep=".")
     
-    # Make argument and paradigm id's specific to argument-target pairs.
+    # Make unique rel_id for argument-target relations.
     nods <- html_nodes(disc, css=".argumentation .argument")
-    tmp <- html_attr(nods,"id")
-    tmp <- paste(tmp, 1:length(tmp),sep="£££")
-    xml_attrs(nods) <- lapply(tmp, function(x) {c(class="argument",id=x)})
-    for(l in 1:length(tmp)) {
+    
+    for(l in 1:length(nods)) {
+      xml_attr(nods[[l]], "rel_id") <- l
       nodtmp <- html_nodes(nods[[l]], css=".paradigm")
-      xml_attrs(nodtmp) <- rep(list(c(id=tmp[l], class="paradigm")), length(nodtmp))
+      xml_attr(nodtmp, "rel_id") <- l
     }
+    
+    # Make data.frame for opening and closing statements
     
     tmp <- data.frame(
-      Oldid = disc.id,
-      type = paste(type,c("statement","resolution")),
-      Item = disc.id,
-      label = c(".",title),
-      Relation = c("produces",""),
-      Object = c(disc.id[2],""),
-      Description = c(stat, reso),
-      URL = paste(page, id, sep="#"),
+      Context = context,
+      rel_id = discItem,
+      type = paste(type,c("opening statement","closing statement")),
+      Item = discItem,
+      label = c(".",html_text(html_nodes(disc, css="b.title"), trim=TRUE)),
+      rel = c("produces",""),
+      Object = c(discItem[2],""),
+      Description = c(
+        html_text(html_nodes(disc, css=".openingStatement"), trim=TRUE),
+        html_text(html_nodes(disc, css=".closingStatement"), trim=TRUE)),
+      URL = paste(Url, context, sep="#"),
+      sign = "",
+      overtarget = "",
+      paradigm = "science",
       stringsAsFactors = FALSE
     )
-    if(nrow(out[[1]])==0) out[[1]] <- tmp else out[[1]] <- orbind(out[[1]], tmp)
+    out <- rbind(out, tmp)
     
-    ######## arg: Find parameters that are unique within the id-target pairs
+    ######## rel: Find parameters that are unique within the id-target relations
+    ######## (one argument may show up several times)
     #   "id"  "title" "type"  "content" "sign"  "target"   "overtarget"
     
-    arg <- data.frame(
-      id = html_attr(html_nodes(disc, css=" .argument"), "id"),
-      title = html_text(html_nodes(disc, css=" .argument .title")),
+    arg_id <- html_attr(html_nodes(disc, css=" .argument"), "id") # argument id
+    
+    rel <- data.frame(
+      Context = context,
+      rel_id = html_attr(html_nodes(disc, css=" .argument"), "rel_id"), # relation id
       type = html_text(html_nodes(disc, css=".argument i.type ")),
-      content = html_text(html_nodes(disc, css=" .argument .content")),
+      Item = arg_id,
+      label = html_text(html_nodes(disc, css=" .argument .title")),
+      Description = html_text(html_nodes(disc, css=" .argument .content")),
+      URL = paste(Url, arg_id, sep="#"),
       sign = html_text(html_nodes(disc, css=" .argument .sign a:first-of-type")),
+      #     refs = html_text(html_nodes(nods, css="sup.reference"), trim=TRUE),
       stringsAsFactors = FALSE
     )
     
-    # Find the previous argument that is one level higher, i.e. the target argument, and the overtarget.
-    findtarget <- function(arg, disc) {
-      
-      level <- rep(0,nrow(arg))
-      for(j in 0:8) {
-        level[arg$id %in% html_attr(html_nodes(disc, css=paste(paste(rep("dd", j), collapse=" ")," .argument")),"id")] <- j
-      }
-      test <- 1:length(level)
-      arg$target <- rep("", length(level))
-      for(j in test) {
-        arg$target[j] <-  arg$id[max(c(-Inf,test[level == level[j]-1 & test < j]))]
-        arg$overtarget[j] <- arg$id[max(c(-Inf,test[level == level[j]-2 & test < j]))]
-      }
-      arg$target[is.na(arg$target)] <- disc.id[1]
-      arg$overtarget[is.na(arg$overtarget) & level == 1] <- disc.id[1]
-      return(arg)
-    }
+    rel <- findtarget(rel, disc, discItem) # add Object and overtarget
     
-    arg <- findtarget(arg, disc)
-    
-    ######### targ: find parameters that are unique in id-target-paradigm triples
+    ######### para: find parameters that are unique in id-target-paradigm triples
     #  "id"        "paradigm"  "relation"  "relevance" "selftruth" "truth"  
     
-    targ <- data.frame(
-      id = html_attr(html_nodes(disc, css=" .argument .paradigm"), "id"),
+    para <- data.frame(
+      rel_id = html_attr(html_nodes(disc, css=" .argument .paradigm"), "rel_id"),
       paradigm = html_text(html_nodes(disc, css=" .argument .paradigm")),
-      relation = html_text(html_nodes(disc, css=" .argument .relation")),
-      relevance = html_attr(html_nodes(disc, css=" .argument .relation"), "color"),
-      selftruth = html_attr(html_nodes(disc, css=" .argument .selftruth"), "color"),
+      rel = html_text(html_nodes(disc, css=" .argument .relation")),
       stringsAsFactors = FALSE
     )
     
-    targ$relation  <- c("attack","defense","comment","branch")[match(substr(targ$relation,1,3), c("\U21E4--","\U2190--","---","--\U2192"))]
-    targ$truth     <- ifelse(targ$relevance=="gray",0,1)
-    targ$relevance <- ifelse(targ$relevance=="gray",0,1)
-    targ$selftruth <- ifelse(targ$selftruth=="gray",0,1)
-    targ <- findtarget(targ, disc)[-8] # Remove redundant overtarget
-    
-    ### Create another data.frame with full argument structure for ovariable formation
-    
-    tmp <- arg # Add rows for selftruth
-    tmp$type <- "selftruth"
-    tmp <- rbind(arg,tmp)
-    tmp <- tmp[!duplicated(arg$id, arg$type) , ]
-    
-    arg2 <- melt(
-      targ,
-      measure.vars = c("relevance","truth","selftruth"),
-      variable.name="type",
-      value.name="Result"
-    )
-    arg2 <- merge(tmp, arg2)
-    out[[2]] <- rbind(out[[2]], arg2)
-    
-    # Produce a vector with the same nrow as arg but all paradigms combined.
-    
-    arg1 <- merge(arg,targ)
-    selftruth <- c("false","true")[arg1$selftruth+1]
-    tmp <- sapply(tapply(
-      paste(arg1$paradigm, selftruth, sep=": "),
-      arg1["id"], paste),function(x) paste(x, collapse="; "))
-    tmp <- data.frame(id = names(tmp), par = tmp, stringsAsFactors = FALSE)
-    arg1 <- merge(arg1,tmp) # Merge instead of cbind in case tapply mixes the order of arguments.
-    arg1$id <- gsub("£££.*", "", arg1$id) # Replace argument-target-specific id's again with argument id's.
-    arg1$target <- gsub("£££.*", "", arg1$target)
-    
-    out[[1]] <- orbind(out[[1]], data.frame(  ### Arguments
-      Oldid = paste(id,arg1$id,sep="."),
-      type = paste(selftruth,"argument"),
-      Item = arg1$id,
-      label = arg1$title,
-      Relation = paste(c("irrelevat","relevant")[arg1$relevance+1], arg1$relation),
-      Object = arg1$target,
-      Description = paste(arg1$content, "| paradigms:", arg1$par),
-      URL = paste(page, arg1$id,sep="#"),
-      stringsAsFactors = FALSE
-    ))
+    out <- rbind(out, merge(rel,para))
   }
-  out[[1]]$label <- ifelse(out[[1]]$label==".",substr(out[[1]]$Description, 1, 30),out[[1]]$label)
-  for(i in 1:ncol(out[[1]])) out[[1]][[i]] <- gsub("['\"]", "", out[[1]][[i]])
+  out$label <- ifelse(out$label %in% c(".",""),substr(out$Description, 1, 30),out$label)
+  out <- out[order(out$label, decreasing=TRUE),]
+  #  for(i in 1:ncol(out[[1]])) out[[1]][[i]] <- gsub("['\"]", "", out[[1]][[i]])
+  
+  ###########################################
+  # Make inferences about validity and truth based on different paradigms
+  
+  # Add rows from science paradigm to all other paradigms if missing
+  default <- merge(
+    unique(out["paradigm"]),
+    out[out$paradigm=="science",colnames(out)!="paradigm"]
+  )
+  default <- rbind(out,default)
+  out <- default[!duplicated(default[c("Context","rel_id","paradigm")]),]
+  
+  # Initial situation: all nodes are true and active
+  
+  out$true <- TRUE
+  out$relevant <- TRUE
+  out$active <- TRUE
+  
+  tmp2 <- out # Temporarily store the data.frame
+  
+  # Function to test for truth, relevance, activity, orphan, type, and relation
+  
+  nodetest <- function(dat, type, relation) {
+    return(
+      dat$type==type & # nodes that are about truth of target
+        dat$rel==relation & # nodes that have the relation of interest (usually attack)
+        dat$true & # nodes that are true
+        dat$active & # nodes that are active
+        !dat$Item %in% dat$Object[dat$active] & # nodes that are orphans
+        dat$relevant # node-object pairs that are relevant
+    )
+  }
+  
+  # Start inference from orphan nodes (nodes that do not have parents)
+  out <- data.frame()
+  for(i in unique(tmp2$paradigm)) {
+    tmp <- tmp2[tmp2$paradigm==i,]
+    while(any(tmp$active)) { # Handles threads until all nodes and relations have been handled
+      
+      # Find nodes that make successful truth attacks
+      # Successful truth attacks invalidate their target nodes
+      tmp$true[tmp$Item %in% tmp$Object[nodetest(tmp, "truth","attack")]] <- FALSE
+      
+      # In paradigm personaltine, invalidate all arguments by Tine Bizjak
+      if(i=="personaltine") {
+        tmp$true[grepl("Tine Bizjak",tmp$sign)] <- FALSE
+      }
+      
+      # Find nodes that make successful relevance attacks
+      tst <- nodetest(tmp,"relevance","attack")
+      # Successful relevance attacks invalidate their target-overtarget relations
+      tmp$relevant[paste(tmp$Item,tmp$Object,sep="-") %in% paste(tmp$Object,tmp$overtarget,sep="-")[tst]] <- FALSE
+      
+      # Remove orphan nodes from active nodes
+      tmp$active[!tmp$Item %in% tmp$Object[tmp$active]] <- FALSE
+      
+    }
+    out <- rbind(out, tmp)
+  }
+  
+  # Post-processing: adjust type and rel so that graphs plot correctly
+  tst <- out$type %in% c("truth","relevance")
+  out$type[tst] <- ifelse(out$true, "true statement", "false statement")[tst]
+  out$rel[tst] <- paste(ifelse(out$relevant,"relevant","irrelevant"),out$rel)[tst]
   
   return(out)
 }
@@ -227,7 +267,7 @@ makeurl <- function(
 #' @return a list of two data.frames. The first one is for making insight diagrams, the second for making discussion ovariables for analysis (the latter part not implemented yet)
 
 scrape.assessment <- function(
-  assessment,
+  assessment=NULL,
   objectives = character()
 ) {
   #  require(DiagrammeR)
@@ -237,8 +277,17 @@ scrape.assessment <- function(
   dec <- character()
   dat <- character()
   plo <- character()
-  dep <- assessment@dependencies
-  URLass <- assessment@meta$wiki_page_id
+  if(is.null(assessment)) {
+    dep <- character()
+    for(i in ls(envir= .GlobalEnv)) {
+      if("ovariable" %in% class(get(i))) dep <- c(dep, i)
+    }
+    if(length(dep)==0) stop("No ovariables found!")
+    dep <- data.frame(Name = dep)
+  } else {
+    dep <- assessment@dependencies
+    URLass <- assessment@meta$wiki_page_id
+  }
   
   #### Find all objects (decisions, ovariables, data.frames and graphs)
   objs <- list()
@@ -365,7 +414,7 @@ scrape.assessment <- function(
   
   # Retype objectives and assessments if available
   nod$type[nod$Item %in% objectives] <- "objective"
-  nod$type[nod$Item %in% assessment@name] <- "assessment"
+  if(!is.null(assessment)) nod$type[nod$Item %in% assessment@name] <- "assessment"
   
   # Add info from Page column if available and doesn't exist already
   if(!is.null(dep$Page)) {
