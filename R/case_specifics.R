@@ -18,7 +18,7 @@ case_specifics <- function(specs, verbose = FALSE, fetch = TRUE) {
     if(length(tmp)>0) {
       for(k in tmp) {
         if(verbose) cat(paste('Fetch code', k, '\n', collapse=" "))
-        objects.latest(strsplit(k, "\\/")[[1]][1], code_name=strsplit(k, "\\/")[[1]]) # Fetch all the version-specific codes needed
+        objects.get(k) # Fetch all the version-specific codes needed
       }
     }
   }

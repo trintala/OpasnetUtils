@@ -4,6 +4,9 @@ orbind <- function(x, y) {
 	if("ovariable" %in% class(x)) x <- x@output
 	if("ovariable" %in% class(y)) y <- y@output
 	
+	if(nrow(y)==0) return(x)
+	if(nrow(x)==0) return(y)
+	
 	temp1 <- addmissingcol(x, y) # See below
 	temp2 <- addmissingcol(y, x)
 	

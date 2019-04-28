@@ -284,6 +284,7 @@ scrape.assessment <- function(
     }
     if(length(dep)==0) stop("No ovariables found!")
     dep <- data.frame(Name = dep)
+    URLass <- ""
   } else {
     dep <- assessment@dependencies
     URLass <- assessment@meta$wiki_page_id
