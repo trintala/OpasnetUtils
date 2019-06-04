@@ -11,7 +11,7 @@ CollapseTableParser(CTable, env = .GlobalEnv)
 }
 \arguments{
   \item{CTable}{
-  a data.frame with columns "Variable" (variable names), "Index" (column names) and "Probs" (propabilities of column levels in marginal distribution, comma separated)
+  a data.frame with columns "Variable" (variable names), "Index" (column names), "Function" (function to collapse the columns), and "Probs" (probabilities of column levels in marginal distribution, comma separated. Used when function is "sample".)
 }
   \item{env}{
   target \code{environment}, default is \code{.GlobalEnv}

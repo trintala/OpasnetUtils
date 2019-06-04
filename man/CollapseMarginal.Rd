@@ -27,7 +27,7 @@ CollapseMarginal(variable, cols, fun = "mean", probs = NULL, ...)
 }
 }
 \details{
-Samples over a fully defined column index (marginal) treating it as a nuisance parameter. 
+Possible functions include "sample", "unkeep", and "mean" and other functions that can be used in oapply. Samples over a fully defined column index (marginal) treating it as a nuisance parameter. 
 Increases the joint distribution uncertainty (loses information). Weighted sampling is also possible.
 
 Used to streamline heavy models (output has fewer rows of data). 

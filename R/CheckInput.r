@@ -3,11 +3,13 @@
 # returns an ovariable
 
 CheckInput <- function(variable, substitute = FALSE, indent = 0, verbose = TRUE, ...) { # ... e.g for na.rm
+  require(reshape2)
 	#if (verbose) cat(rep("-", indent), "Checking", variable@name, "inputs", "...")
 	if (nrow(variable@output) == 0) stop(paste(variable@name, "output not evaluated yet!"))
 	if (exists(paste("Inp", variable@name, sep = ""))) {
 		if (verbose) cat(rep("-", indent), "Processing", variable@name, "inputs", "...")
 		inputvar <- get(paste("Inp", variable@name, sep = ""))
+		marginals <- union(colnames(variable@output)[variable@marginal], colnames(inputvar@output)[inputvar@marginal])
 		if (substitute) {
 		#	colnames(inputvar@output)[colnames(inputvar@output) == paste(variable@name, "Result", sep = "")] <- "InpVarRes"
 		#	colnames(variable@output)[colnames(variable@output) == paste(variable@name, "Result", sep = "")] <- "VarRes"
@@ -51,8 +53,8 @@ CheckInput <- function(variable, substitute = FALSE, indent = 0, verbose = TRUE,
 			)
 			colnames(temp)[colnames(temp) %in% "Result"] <- i
 		}
-		colnames(inputvar@output)[colnames(inputvar@output) == paste(variable@name, "Result", sep = "")] <- "Input"
-		temp <- merge(temp, inputvar@output)
+		colnames(inputvar@output)[colnames(inputvar@output) == paste(inputvar@name, "Result", sep = "")] <- "Input"
+		temp <- merge(temp, inputvar@output, all=TRUE)
 		variable@output <- melt(
 			temp, 
 			measure.vars = c(j, "Input"), 
@@ -60,6 +62,7 @@ CheckInput <- function(variable, substitute = FALSE, indent = 0, verbose = TRUE,
 			value.name = paste(variable@name, "Result", sep = ""), 
 			...
 		)
+		variable@marginal <- colnames(variable@output) %in% marginals
 		if (verbose) cat(" done!\n")
 		return(variable)
 	}
