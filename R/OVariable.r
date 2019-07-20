@@ -40,6 +40,7 @@ Ovariable <- function(
 		output = data.frame(),
 		marginal = logical(),
 		subset = character(), # add subset postfix to ddata e.g. "Op_enXXXX" -> "Op_enXXXX.subset"
+		unit = NA, # measurement unit of the ovariable. If varies between rows, a column should be used.
 		getddata = TRUE, # download dynamic data immediately (as opposed to waiting until evaluation)
 		save = FALSE, # save on server using objects.put
 		public = TRUE, # if save = TRUE, use objects.store instead to make it publicly available
@@ -55,6 +56,7 @@ Ovariable <- function(
 		meta$wiki_page_id <- args$wiki_page_id
 		meta$code_name <- args$code_names
 		meta$token <- args$token
+		meta$unit <- args$unit
 	}
 	
 	out <- new(
@@ -437,14 +439,84 @@ setMethod(
 		signature = signature(x = "ovariable"),
 		definition = function(x) {
 			plot(
-					x    = x@output[, paste("Source", x@name, sep = "")], 
-					y    = x@output$Result, 
-					xlab = paste("Source", x@name, sep = ""), 
-					ylab = x@output[x@output[, paste("Source", x@name, sep = "")] == "Data", "Unit"][1], 
+					x    = x@output[, paste0(x@name, "Source")], 
+					y    = result(x), 
+					xlabel = paste0(x@name, "Source"), 
+					ylabel = x@output[x@output[, paste0(x@name, "Source") == "Data"], "Unit"][1], 
 					main = x@name
 			)
 		}
 )
+
+# OGGPLOT ################ ggplot diagrams about ovariable data
+
+oggplot <- function(x, type="bar") {
+  require(ggplot2)
+  if(nrow(x@output)==0) return(paste0("Ovariable ", x@name," is not evaluated.\n"))
+  if("Iter" %in% colnames(x@output)) {
+    x <- oapply(x, NULL, mean, "Iter")
+    subtitle <- "probabilistic"
+  } else {
+    subtitle <- NULL
+  }
+
+  if(sum(x@marginal)==0) x$Dummy <- "dummy" # In case there are no indices
+  
+  ind <- x@output[x@marginal]
+  leng <- sapply(ind, function(a) length(unique(a)))
+  nume <- sapply(ind, is.numeric)
+  deci <- c("Exposcen", as.character(unlist(sapply(
+    ls()[grepl("^Dec",ls())],
+    function(x) tryCatch(get(x)@dectable, error = function(e1) NULL)$Decision)
+  )))
+
+  # Make the longest numeric (or other) index the x axis
+  if(sum(nume)>0) {
+    xaxis <- colnames(ind)[which.max(leng*nume)]
+  } else {
+    xaxis <- colnames(ind)[which.max(leng)]
+  }
+  
+  # Add single-location indices except sources to subtitle
+  for(i in 1:length(leng)) {
+    if(leng[i]==1 & !grepl("Source$", colnames(ind)[i])) subtitle <- c(subtitle, paste0(colnames(ind)[i], ": ", as.character(ind[[i]][1])))
+  }
+  subtitle <- paste(subtitle, collapse="; ")
+  
+  # Use the remaining indices
+  rema <- colnames(ind)[order(-leng)]
+  rema <- setdiff(colnames(ind), c(xaxis, colnames(ind)[leng==1]))
+  if(length(rema)>3) subtitle <- paste0(
+    subtitle, ". Not shown: ", paste(rema[4:length(rema)], collapse=", ")
+  )
+    
+  if(length(rema)>0) grou <- rema[1] else grou <- NULL
+  posi <- "stack"
+  if(!is.null(grou)) if(grou %in% deci) posi <- "dodge"
+  g <- ggplot(
+    x@output,
+    aes_string(
+      x = xaxis,
+      weight = paste0(x@name,"Result"),
+#      y = paste0(x@name,"Result"),
+      group = grou,
+      fill=grou
+#      colour = grou
+    ))
+    if(type=="bar") g <- g + geom_bar(position=posi)
+#    if(type=="line") g <- g + geom_line()
+    g <- g + labs(
+      title = paste0(x@name, " by ", xaxis),
+      subtitle = subtitle,
+      y = paste(x@name, " (", x@meta$Unit, ")")
+    )
+  if(length(rema)==2) g <- g + facet_wrap(~get(rema[2]))
+  if(length(rema)>=3) g <- g + facet_grid(get(rema[2]) ~ get(rema[3]))
+  if(sum(nchar(as.character(unique(ind[[xaxis]]))))>50) g <- g + coord_flip()
+    
+  return(g)
+}
+
 
 # SETMETHOD summary ################### Summary defines how summaries of ovariables are shown.
 setMethod(
@@ -520,6 +592,7 @@ setMethod(
 			} else {
 				out <- temp[[1]]
 			}
+			out <- as.data.frame(lapply(out, unlist))
 			#if(nrow(object@output) > 200) {
 			#	object@output <- object@output[1:200, ]
 			#}
@@ -536,6 +609,13 @@ Q0.975 <- function(x){
 	return(quantile(x, probs = 0.975))
 }
 
+Q0.05 <- function(x){
+  return(quantile(x, probs = 0.05))
+}
+
+Q0.95 <- function(x){
+  return(quantile(x, probs = 0.95))
+}
 
 
 ####################
@@ -546,10 +626,13 @@ Q0.975 <- function(x){
 ### name as the attribute comment.
 ### e1 is the ovariable to operate with.
 
-result <- function(e1) { # e1 must be an ovariable or a data.frame.
+result <- function(e1) { # e1 must be an ovariable or a constant, i.e. a numeric vector of length 1.
 	
-# Should we allow people to use this for data.frames as well?
+# Should we allow people to use this for data.frames as well? # NO WE SHOULD NOT
 #	if(class(e1) == "data.frame") e1 <- new("ovariable", name = character(), output = e1)
+  if("numeric" %in% class(e1)) {
+    if(length(e1)==1) return(e1)
+  }
 	
 	# First check presence of name specific Result-columns
 	
