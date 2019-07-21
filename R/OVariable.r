@@ -56,8 +56,8 @@ Ovariable <- function(
 		meta$wiki_page_id <- args$wiki_page_id
 		meta$code_name <- args$code_names
 		meta$token <- args$token
-		meta$unit <- args$unit
 	}
+	meta$unit <- unit
 	
 	out <- new(
 			"ovariable",

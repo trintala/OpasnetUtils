@@ -7,6 +7,7 @@ exportClasses(ovariable, odecision)
 exportMethods(merge, summary, plot, unique)
 export(
 	odag,
+	oggplot,
 	oprint,
 	oapply,
 	ooapply,
