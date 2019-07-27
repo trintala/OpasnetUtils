@@ -3,6 +3,8 @@
 ### ideas of additional atteibutes: decision indices are shown as specific colour on vertex border. 
 ## voi analysis results are shown as the size of vertex. Can this be retrieved from somewhere automatically? Only if there is a specific object eg voi. 
 ## good functions for layout: layout.fruchterman.reingold() layout.reingold.tilford() layout.lgl()
+## This function is outdated and depreciated. Use functions from 
+## code Op_en3861/makeGraph and others from [[Insight network]] instead.
 
 odag <- function(plotting = TRUE, ...) {
 	edg <- data.frame()

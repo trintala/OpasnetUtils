@@ -8,6 +8,7 @@ exportMethods(merge, summary, plot, unique)
 export(
 	opPOSThelsinki,
 	odag,
+	oggplot,
 	oprint,
 	oapply,
 	ooapply,
@@ -62,5 +63,12 @@ export(
 	odebug,
 	continuousOps,
 	odirichlet,
-	unkeep
+	unkeep,
+	scrape,
+#	scrape.assessment,
+	scrape.discussion,
+#	scrape.gsheet,
+#	scrape.webtable,
+	pushIndicatorGraph,
+	case_specifics
 )

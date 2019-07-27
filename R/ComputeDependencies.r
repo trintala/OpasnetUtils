@@ -29,16 +29,16 @@ ComputeDependencies <- function(dependencies, forceEval = FALSE, indent = 0, ver
 					error = function(e) return(NULL)
 				)
 				if (is.null(ret2)) warning(paste("Input checking", get(i)@name, "failed! Error:", geterrmessage()))
+				ret4 <- tryCatch( # This can be used to remove reduntant marginals with NA and fillna others. It reduces errors in CheckDecisions.
+				  assign(i, CheckCollapse(get(i), indent = indent, verbose = verbose, ...), envir = as.environment(find(i))), 
+				  error = function(e) return(NULL)
+				)
+				if (is.null(ret4)) warning(paste("Collapse checking", get(i)@name, "failed! Error:", geterrmessage()))
 				ret3 <- tryCatch(
 						assign(i, CheckDecisions(get(i), indent = indent, verbose = verbose, ...), envir = as.environment(find(i))), 
 						error = function(e) return(NULL)
 				)
 				if (is.null(ret3)) warning(paste("Decision checking", get(i)@name, "failed! Error:", geterrmessage()))
-				ret4 <- tryCatch(
-						assign(i, CheckCollapse(get(i), indent = indent, verbose = verbose, ...), envir = as.environment(find(i))), 
-						error = function(e) return(NULL)
-				)
-				if (is.null(ret4)) warning(paste("Collapse checking", get(i)@name, "failed! Error:", geterrmessage()))
 			}
 		}
 		if (verbose) cat("\n")
